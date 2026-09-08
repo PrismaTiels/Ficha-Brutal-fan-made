@@ -181,9 +181,43 @@
     padding:9px 14px;font-size:11px;color:var(--bone-dim);border-radius:20px;box-shadow:var(--shadow-card);
   }
   .sound-toggle:hover{color:var(--bone);border-color:var(--blood-bright);}
+
+  /* status de sincronização */
+  .status-conexao{display:flex;align-items:center;gap:6px;font-size:10.5px;letter-spacing:.06em;color:var(--bone-dim);
+    background:var(--panel);border:1px solid var(--line);padding:6px 12px;border-radius:20px;white-space:nowrap;}
+  .status-conexao::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--bone-dim);flex-shrink:0;}
+  .status-conexao.ok{color:var(--sick-bright);}
+  .status-conexao.ok::before{background:var(--sick-bright);box-shadow:0 0 6px rgba(163,217,121,.7);}
+  .status-conexao.off{color:var(--amber);}
+  .status-conexao.off::before{background:var(--amber);box-shadow:0 0 6px rgba(217,147,59,.7);animation:pulse-amber 1.4s infinite;}
+  @keyframes pulse-amber{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+  /* notificações */
+  .toast-container{position:fixed;top:16px;right:16px;left:16px;z-index:500;display:flex;flex-direction:column;
+    align-items:flex-end;gap:8px;pointer-events:none;}
+  .toast{pointer-events:auto;max-width:340px;background:var(--panel-2);border:1px solid var(--line);
+    border-left:4px solid var(--bone-dim);padding:12px 16px;border-radius:6px;font-size:12.5px;line-height:1.5;
+    color:var(--bone);box-shadow:var(--shadow-card);animation:toast-in .25s ease-out;}
+  .toast.sucesso{border-left-color:var(--sick-bright);}
+  .toast.erro{border-left-color:var(--blood-bright);}
+  .toast.info{border-left-color:var(--amber);}
+  .toast.saindo{animation:toast-out .2s ease-in forwards;}
+  @keyframes toast-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+  @keyframes toast-out{to{opacity:0;transform:translateY(-6px);}}
+
+  .skeleton{border:1px dashed var(--line);border-radius:6px;padding:22px;text-align:center;color:var(--bone-dim);font-size:12px;}
+
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .tape:focus-visible{
+    outline:2px solid var(--sick-bright);outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;}
+  }
 </style>
 </head>
 <body>
+
+<div class="toast-container" id="toast-container"></div>
 
 <header>
   <div class="logo">BRUTAL<span>thriller de mesa</span></div>
@@ -194,6 +228,7 @@
     <button data-target="dados">Dados</button>
     <button data-target="campanhas">Campanhas</button>
   </nav>
+  <div class="status-conexao" id="status-conexao" style="display:none;">conectando…</div>
 </header>
 
 <main>
@@ -204,10 +239,10 @@
       <p>Uma noite comum vira uma caçada. Monte suas Sobreviventes, prepare o Assassino, arrisque seus dados em tempo real com seu grupo e não durma até o fim do Thriller.</p>
     </div>
     <div class="tapes">
-      <div class="tape" data-num="01" onclick="goTo('sobreviventes')"><h3>Sobreviventes</h3><p>Fichas completas: Arquétipo, habilidades, atributos, Feridas, Sequelas e Pontos de Tensão.</p></div>
-      <div class="tape" data-num="02" onclick="goTo('assassino')"><h3>Assassino</h3><p>Monte a ameaça da mesa com as 13 Ameaças, ações e Pontos de Horror — exclusivo da Diretora.</p></div>
-      <div class="tape" data-num="03" onclick="goTo('dados')"><h3>Dados</h3><p>Arrisque sua pilha e veja o grupo inteiro acompanhar a tensão das rolagens na nuvem.</p></div>
-      <div class="tape" data-num="04" onclick="goTo('campanhas')"><h3>Campanhas</h3><p>Crie ou entre numa sala compartilhada via Firebase Firestore com sincronização ao vivo.</p></div>
+      <div class="tape" data-num="01" tabindex="0" role="button" onclick="goTo('sobreviventes')" onkeydown="if(event.key==='Enter')goTo('sobreviventes')"><h3>Sobreviventes</h3><p>Fichas completas: Arquétipo, habilidades, atributos, Feridas, Sequelas e Pontos de Tensão.</p></div>
+      <div class="tape" data-num="02" tabindex="0" role="button" onclick="goTo('assassino')" onkeydown="if(event.key==='Enter')goTo('assassino')"><h3>Assassino</h3><p>Monte a ameaça da mesa com as 13 Ameaças, ações e Pontos de Horror — exclusivo da Diretora.</p></div>
+      <div class="tape" data-num="03" tabindex="0" role="button" onclick="goTo('dados')" onkeydown="if(event.key==='Enter')goTo('dados')"><h3>Dados</h3><p>Arrisque sua pilha e veja o grupo inteiro acompanhar a tensão das rolagens em tempo real.</p></div>
+      <div class="tape" data-num="04" tabindex="0" role="button" onclick="goTo('campanhas')" onkeydown="if(event.key==='Enter')goTo('campanhas')"><h3>Campanhas</h3><p>Crie ou entre numa sala compartilhada via Firebase, com sincronização instantânea entre todos os jogadores.</p></div>
     </div>
   </section>
 
@@ -267,7 +302,7 @@
 
   <section id="campanhas">
     <div class="panel-title"><h2>Campanhas</h2><span class="tag">salas compartilhadas</span></div>
-    <div class="note">O código da sala é único. Quem cria vira a Diretora; quem entra depois vira Intérprete. Os dados são sincronizados no Firebase.</div>
+    <div class="note">O código da sala é único. Quem cria vira a Diretora; quem entra depois vira Intérprete. Tudo sincroniza em tempo real pelo Firebase — sem precisar dar refresh.</div>
     <div class="card"><h4>Criar campanha (você vira a Diretora)</h4>
       <div class="row">
         <div class="field"><label>Nome da campanha</label><input id="c-nome" placeholder="ex: Acampamento Lago Negro"></div>
@@ -294,7 +329,12 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, deleteDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+  import {
+    getFirestore, doc, setDoc, getDoc, deleteDoc,
+    collection, getDocs, onSnapshot,
+    query, orderBy, startAt, endAt, limitToLast, documentId,
+    enableIndexedDbPersistence
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB-Hnv0ZsZxa3SHKuOdMvYdcU0MPg65umY",
@@ -308,6 +348,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  enableIndexedDbPersistence(db).catch(()=>{ /* várias abas abertas ou navegador sem suporte: segue sem cache offline */ });
 
   window.db = db;
   window.fsDoc = doc;
@@ -317,53 +358,166 @@
   window.fsCollection = collection;
   window.fsGetDocs = getDocs;
   window.fsOnSnapshot = onSnapshot;
+  window.fsQuery = query;
+  window.fsOrderBy = orderBy;
+  window.fsStartAt = startAt;
+  window.fsEndAt = endAt;
+  window.fsLimitToLast = limitToLast;
+  window.fsDocumentId = documentId;
+  window.dispatchEvent(new Event('firebase-pronto'));
 </script>
 
 <script>
-/* ================= CONEXÃO FIRESTORE / STORAGE REAL ================= */
+/* =====================================================================
+   UTILITÁRIOS DE INTERFACE (notificações, status de conexão, escape)
+   ===================================================================== */
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function toast(mensagem, tipo = 'info'){
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${tipo}`;
+  el.textContent = mensagem;
+  container.appendChild(el);
+  setTimeout(()=>{
+    el.classList.add('saindo');
+    setTimeout(()=> el.remove(), 220);
+  }, 4200);
+}
+window.toast = toast;
+
+let conectado = null;
+function marcarConectado(status){
+  if (conectado === status) return;
+  conectado = status;
+  const el = document.getElementById('status-conexao');
+  if (!el) return;
+  el.style.display = 'flex';
+  el.className = 'status-conexao ' + (status ? 'ok' : 'off');
+  el.textContent = status ? 'sincronizado com o grupo' : 'sem conexão — usando cache local';
+}
+window.addEventListener('offline', ()=> marcarConectado(false));
+
+/* =====================================================================
+   CAMADA DE ARMAZENAMENTO
+   - modo local: sempre grava/lê do localStorage (funciona sem internet)
+   - modo compartilhado (shared=true): sincroniza com o Firestore.
+     storageSet/storageGet/storageDelete continuam existindo para
+     leituras/escritas pontuais; watchDoc/watchPrefix abrem um listener
+     em tempo real (onSnapshot) e chamam o callback sempre que algo
+     mudar no Firestore — sem precisar dar refresh nem ficar perguntando
+     no braço a cada X segundos.
+   ===================================================================== */
+function cleanKey(key){ return key.replace(/[\/:]/g, "_"); }
+
 async function storageSet(key, value, shared = false) {
   try {
-    const cleanKey = key.replace(/[\/:]/g, "_");
     if (shared && window.db) {
-      await window.fsSetDoc(window.fsDoc(window.db, "brutal_data", cleanKey), { value: JSON.stringify(value) });
+      await window.fsSetDoc(window.fsDoc(window.db, "brutal_data", cleanKey(key)), { value: JSON.stringify(value) });
+      marcarConectado(true);
     }
     localStorage.setItem(key, JSON.stringify(value));
-  } catch(e) { console.error("Erro ao salvar:", e); }
+    return true;
+  } catch(e) {
+    console.error("Erro ao salvar:", e);
+    if (shared) { marcarConectado(false); toast('Não consegui sincronizar com o Firebase agora. Salvei só no seu aparelho.', 'erro'); }
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch(e2){}
+    return false;
+  }
 }
 
 async function storageGet(key, shared = false) {
   try {
-    const cleanKey = key.replace(/[\/:]/g, "_");
     if (shared && window.db) {
-      const snap = await window.fsGetDoc(window.fsDoc(window.db, "brutal_data", cleanKey));
+      const snap = await window.fsGetDoc(window.fsDoc(window.db, "brutal_data", cleanKey(key)));
+      marcarConectado(true);
       if (snap.exists()) return JSON.parse(snap.data().value);
+      return null;
     }
     const local = localStorage.getItem(key);
     return local ? JSON.parse(local) : null;
-  } catch(e) { console.error("Erro ao buscar:", e); return null; }
+  } catch(e) {
+    console.error("Erro ao buscar:", e);
+    if (shared) marcarConectado(false);
+    const local = localStorage.getItem(key);
+    return local ? JSON.parse(local) : null;
+  }
 }
 
 async function storageList(prefix, shared = false) {
   try {
-    const cleanPrefix = prefix.replace(/[\/:]/g, "_");
     if (shared && window.db) {
-      const snap = await window.fsGetDocs(window.fsCollection(window.db, "brutal_data"));
-      const keys = [];
-      snap.forEach(d => { if (d.id.startsWith(cleanPrefix)) keys.push(d.id); });
+      const cp = cleanKey(prefix);
+      const q = window.fsQuery(
+        window.fsCollection(window.db, "brutal_data"),
+        window.fsOrderBy(window.fsDocumentId()),
+        window.fsStartAt(cp),
+        window.fsEndAt(cp + '\uf8ff')
+      );
+      const snap = await window.fsGetDocs(q);
+      marcarConectado(true);
+      const keys = []; snap.forEach(d => keys.push(d.id));
       return keys;
     }
     return Object.keys(localStorage).filter(k => k.startsWith(prefix));
-  } catch(e) { return Object.keys(localStorage).filter(k => k.startsWith(prefix)); }
+  } catch(e) {
+    console.error("Erro ao listar:", e);
+    if (shared) marcarConectado(false);
+    return Object.keys(localStorage).filter(k => k.startsWith(prefix));
+  }
 }
 
 async function storageDelete(key, shared = false) {
   try {
-    const cleanKey = key.replace(/[\/:]/g, "_");
     if (shared && window.db) {
-      await window.fsDeleteDoc(window.fsDoc(window.db, "brutal_data", cleanKey));
+      await window.fsDeleteDoc(window.fsDoc(window.db, "brutal_data", cleanKey(key)));
+      marcarConectado(true);
     }
     localStorage.removeItem(key);
-  } catch(e) { console.error("Erro ao deletar:", e); }
+  } catch(e) {
+    console.error("Erro ao deletar:", e);
+    if (shared) marcarConectado(false);
+  }
+}
+
+/** Observa um único documento em tempo real. Retorna a função pra cancelar a inscrição. */
+function watchDoc(key, shared, cb) {
+  if (shared && window.db) {
+    const ref = window.fsDoc(window.db, "brutal_data", cleanKey(key));
+    return window.fsOnSnapshot(ref, snap => {
+      marcarConectado(true);
+      cb(snap.exists() ? JSON.parse(snap.data().value) : null);
+    }, err => { console.error("Erro no listener:", err); marcarConectado(false); });
+  }
+  storageGet(key, false).then(cb);
+  return () => {};
+}
+
+/** Observa todos os documentos com um prefixo em tempo real (ex: sobreviventes de uma campanha). */
+function watchPrefix(prefix, shared, cb, limite) {
+  if (shared && window.db) {
+    const cp = cleanKey(prefix);
+    let q = window.fsQuery(
+      window.fsCollection(window.db, "brutal_data"),
+      window.fsOrderBy(window.fsDocumentId()),
+      window.fsStartAt(cp),
+      window.fsEndAt(cp + '\uf8ff')
+    );
+    if (limite) q = window.fsQuery(q, window.fsLimitToLast(limite));
+    return window.fsOnSnapshot(q, snap => {
+      marcarConectado(true);
+      const itens = []; snap.forEach(d => itens.push(JSON.parse(d.data().value)));
+      cb(itens);
+    }, err => { console.error("Erro no listener:", err); marcarConectado(false); });
+  }
+  storageList(prefix, false).then(async keys => {
+    const itens = [];
+    for (const k of keys) { const v = await storageGet(k, false); if (v) itens.push(v); }
+    cb(itens);
+  });
+  return () => {};
 }
 
 /* ================= DADOS DO SISTEMA ================= */
@@ -511,6 +665,7 @@ function goTo(target){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.target===target));
   window.scrollTo({top:0,behavior:'smooth'});
   if(target==='assassino') renderAssassino();
+  if(target!=='campanhas') document.getElementById('status-conexao').style.display = campanhaAtiva ? 'flex' : 'none';
 }
 window.goTo = goTo;
 
@@ -580,7 +735,7 @@ window.renderHabilidadesPreview = renderHabilidadesPreview;
 
 async function salvarSobrevivente(){
   const nome = document.getElementById('s-nome').value.trim();
-  if(!nome){ alert('Dê um nome pra sobrevivente.'); return; }
+  if(!nome){ toast('Dê um nome pra sobrevivente.', 'erro'); return; }
   const arquetipo = document.getElementById('s-arquetipo').value;
   const especialidades = Array.from(document.querySelectorAll('.s-especialidade:checked')).map(c=>c.value);
   const habilidades = Array.from(document.querySelectorAll('.s-hab-check')).map((c,i)=>({idx:i, tem:c.checked, usado:false}));
@@ -598,29 +753,35 @@ async function salvarSobrevivente(){
   await storageSet(key, dados, shared);
   document.getElementById('s-nome').value=''; document.getElementById('s-item').value='';
   document.getElementById('s-relacao').value=''; document.getElementById('s-desejo').value='';
-  carregarSobreviventes();
+  toast(`${nome} entrou na mesa.`, 'sucesso');
+  if(!shared) carregarSobreviventes();
+  // em modo campanha o listener em tempo real (watchPrefix) já atualiza a lista sozinho
 }
 window.salvarSobrevivente = salvarSobrevivente;
 
+/** Modo solo: lê a lista uma vez do localStorage. Modo campanha usa o listener em tempo real (ver iniciarListenersCampanha). */
 async function carregarSobreviventes(){
+  if(campanhaAtiva) return; // a lista da campanha é mantida pelo listener em tempo real
+  const keys = await storageList('sobrevivente:', false);
+  const lista = [];
+  for(const k of keys){ const d = await storageGet(k, false); if(d) lista.push(d); }
+  renderListaSobreviventes(lista, false);
+}
+
+function renderListaSobreviventes(lista, shared){
   const el = document.getElementById('lista-sobreviventes');
-  let keys, shared;
-  if(campanhaAtiva){ keys = await storageList(`campanha:${campanhaAtiva.codigo}:sobrevivente:`, true); shared=true; }
-  else { keys = await storageList('sobrevivente:', false); shared=false; }
-  if(!keys.length){ el.innerHTML = '<div class="empty">Nenhuma sobrevivente criada ainda.</div>'; return; }
-  let html = '';
-  for(const k of keys){
-    const d = await storageGet(k, shared); if(!d) continue;
-    html += renderFichaSobrevivente(d, k, shared);
-  }
-  el.innerHTML = html;
+  if(!lista.length){ el.innerHTML = '<div class="empty">Nenhuma sobrevivente criada ainda.</div>'; return; }
+  const codigo = campanhaAtiva ? campanhaAtiva.codigo : null;
+  el.innerHTML = lista
+    .map(d => renderFichaSobrevivente(d, shared ? `campanha:${codigo}:sobrevivente:${d.id}` : `sobrevivente:${d.id}`, shared))
+    .join('');
 }
 
 function renderFichaSobrevivente(d, key, shared){
   const habs = ARQUETIPOS[d.arquetipo] || [];
   const habHtml = (d.habilidades||[]).filter(h=>h.tem).map(h=>{
     const info = habs[h.idx]; if(!info) return '';
-    return `<div class="ability"><div class="txt"><b>${info.n}</b><p>${info.d}</p></div>
+    return `<div class="ability"><div class="txt"><b>${escapeHtml(info.n)}</b><p>${escapeHtml(info.d)}</p></div>
       <label><input type="checkbox" ${h.usado?'checked':''} onchange="marcarHabilidadeUsada('${key}',${shared},${h.idx},this.checked)"> usada</label></div>`;
   }).join('') || '<p class="meta">Nenhuma habilidade marcada.</p>';
 
@@ -628,7 +789,7 @@ function renderFichaSobrevivente(d, key, shared){
   const sequelaDots = Array.from({length:5}).map((_,i)=>`<div class="dot sequela ${i<d.sequela?'on':''}" onclick="ajustarStat('${key}',${shared},'sequela',${i+1})"></div>`).join('');
 
   return `<div class="card">
-    <h4>${d.nome} <span class="pill">${d.arquetipo}</span> ${(d.especialidades||[]).map(e=>`<span class="pill">${e}</span>`).join('')}</h4>
+    <h4>${escapeHtml(d.nome)} <span class="pill">${escapeHtml(d.arquetipo)}</span> ${(d.especialidades||[]).map(e=>`<span class="pill">${escapeHtml(e)}</span>`).join('')}</h4>
     <div class="row">
       <div class="field"><label>Pontos de Tensão</label><div class="row" style="align-items:center;gap:8px;">
         <b style="font-size:20px;">${d.pt}</b>
@@ -640,12 +801,12 @@ function renderFichaSobrevivente(d, key, shared){
       <div class="field"><label>Feridas</label><div class="dots">${feridaDots}</div></div>
       <div class="field"><label>Sequelas</label><div class="dots">${sequelaDots}</div></div>
     </div>
-    <p class="meta">${d.item?('Item icônico: '+d.item+'. '):''}${d.relacao?('Relação afetiva: '+d.relacao+'. '):''}${d.desejo?('Desejo obscuro: '+d.desejo+'.'):''}</p>
+    <p class="meta">${d.item?('Item icônico: '+escapeHtml(d.item)+'. '):''}${d.relacao?('Relação afetiva: '+escapeHtml(d.relacao)+'. '):''}${d.desejo?('Desejo obscuro: '+escapeHtml(d.desejo)+'.'):''}</p>
     <details style="margin-top:10px;"><summary style="cursor:pointer;color:var(--sick-bright);font-size:12px;">Habilidades</summary>${habHtml}</details>
     <details style="margin-top:8px;"><summary style="cursor:pointer;color:var(--sick-bright);font-size:12px;">Vantagens (gastar PT)</summary>
-      ${VANTAGENS_GERAIS.map(v=>`<div class="ability"><div class="txt"><b>${v.n} ${typeof v.custo==='number'?`(${v.custo} PT)`:''}</b><p>${v.d}</p></div>
+      ${VANTAGENS_GERAIS.map(v=>`<div class="ability"><div class="txt"><b>${escapeHtml(v.n)} ${typeof v.custo==='number'?`(${v.custo} PT)`:''}</b><p>${escapeHtml(v.d)}</p></div>
         <button class="btn small" onclick="usarVantagem('${key}',${shared},'${v.n}',${typeof v.custo==='number'?v.custo:0})">usar</button></div>`).join('')}
-      ${VANTAGENS_ESPECIALIDADE.filter(v=>(d.especialidades||[]).includes(v.attr)).map(v=>`<div class="ability"><div class="txt"><b>${v.n} (${v.attr}, ${typeof v.custo==='number'?v.custo+' PT':v.custo})</b><p>${v.d}</p></div>
+      ${VANTAGENS_ESPECIALIDADE.filter(v=>(d.especialidades||[]).includes(v.attr)).map(v=>`<div class="ability"><div class="txt"><b>${escapeHtml(v.n)} (${v.attr}, ${typeof v.custo==='number'?v.custo+' PT':v.custo})</b><p>${escapeHtml(v.d)}</p></div>
         <button class="btn small" onclick="usarVantagem('${key}',${shared},'${v.n}',${typeof v.custo==='number'?v.custo:0})">usar</button></div>`).join('')}
     </details>
   </div>`;
@@ -654,23 +815,23 @@ function renderFichaSobrevivente(d, key, shared){
 async function ajustarPT(key, shared, delta){
   const d = await storageGet(key, shared); if(!d) return;
   d.pt = Math.max(0, Math.min(10, d.pt + delta));
-  await storageSet(key, d, shared); carregarSobreviventes();
+  await storageSet(key, d, shared); if(!shared) carregarSobreviventes();
 }
 window.ajustarPT = ajustarPT;
 
 async function usarVantagem(key, shared, nome, custo){
   const d = await storageGet(key, shared); if(!d) return;
-  if(custo > 0 && d.pt < custo){ alert(`${d.nome} não tem PT suficiente pra "${nome}" (precisa de ${custo}).`); return; }
+  if(custo > 0 && d.pt < custo){ toast(`${d.nome} não tem PT suficiente pra "${nome}" (precisa de ${custo}).`, 'erro'); return; }
   if(custo > 0){ d.pt -= custo; await storageSet(key, d, shared); }
-  alert(`${d.nome} usou "${nome}"${custo>0?` (-${custo} PT)`:''}. Aplique o efeito na mesa.`);
-  carregarSobreviventes();
+  toast(`${d.nome} usou "${nome}"${custo>0?` (-${custo} PT)`:''}. Aplique o efeito na mesa.`, 'info');
+  if(!shared) carregarSobreviventes();
 }
 window.usarVantagem = usarVantagem;
 
 async function marcarHabilidadeUsada(key, shared, idx, usado){
   const d = await storageGet(key, shared); if(!d) return;
   const h = (d.habilidades||[]).find(x=>x.idx===idx); if(h) h.usado = usado;
-  await storageSet(key, d, shared); carregarSobreviventes();
+  await storageSet(key, d, shared); if(!shared) carregarSobreviventes();
 }
 window.marcarHabilidadeUsada = marcarHabilidadeUsada;
 
@@ -678,7 +839,7 @@ async function ajustarStat(key, shared, campo, valorClicado){
   const d = await storageGet(key, shared); if(!d) return;
   d[campo] = (d[campo] === valorClicado) ? valorClicado - 1 : valorClicado;
   await storageSet(key, d, shared);
-  carregarSobreviventes();
+  if(!shared) carregarSobreviventes();
 }
 window.ajustarStat = ajustarStat;
 
@@ -708,7 +869,7 @@ async function renderAssassino(){
     <div class="card">
       <h4>Identidade</h4>
       <div class="row">
-        <div class="field"><label>Nome / apelido</label><input id="a-nome" value="${d.nome}" onchange="atualizarAssassinoCampo('nome',this.value)"></div>
+        <div class="field"><label>Nome / apelido</label><input id="a-nome" value="${escapeHtml(d.nome)}" onchange="atualizarAssassinoCampo('nome',this.value)"></div>
         <div class="field"><label>Pontos de Horror</label>
           <div class="row" style="align-items:center;gap:8px;"><b style="font-size:22px;">${d.ph}</b>
             <button class="btn ghost small" onclick="ajustarPH(1)">+1</button>
@@ -786,10 +947,10 @@ async function usarAcaoGeral(nome){
   if(nome === 'Ferir'){
     const v = 1 + Math.floor(Math.random()*6);
     tocarDado();
-    if(v===6) alert('Ferir: resultado 6 — a sobrevivente morre instantaneamente. Descarte o dado.');
-    else alert(`Ferir: resultado ${v} — entregue como dado marcador de ferimento (some se ela já tiver outro).`);
+    if(v===6) toast('Ferir: resultado 6 — a sobrevivente morre instantaneamente. Descarte o dado.', 'erro');
+    else toast(`Ferir: resultado ${v} — entregue como dado marcador de ferimento (some se ela já tiver outro).`, 'info');
   } else {
-    alert(`Ação "${nome}" registrada — aplique o efeito na mesa.`);
+    toast(`Ação "${nome}" registrada — aplique o efeito na mesa.`, 'info');
   }
 }
 window.usarAcaoGeral = usarAcaoGeral;
@@ -855,18 +1016,34 @@ async function rolarDados(){
     const logKey = `campanha:${campanhaAtiva.codigo}:log:${Date.now()}`;
     await storageSet(logKey, {jogador, valores, sucessos, falhas, necessarios, resultado:passou?'sucesso':'falha'}, true);
     if(falhas>0) await incrementarDescarte(falhas);
-    carregarLogCampanha(campanhaAtiva.codigo);
+    // o histórico e o banner "rolando" atualizam sozinhos pros outros jogadores via listener em tempo real
   }
 }
 window.rolarDados = rolarDados;
 
-/* ================= CAMPANHAS ================= */
+/* =====================================================================
+   CAMPANHAS — salas compartilhadas em tempo real via Firestore
+   Ao entrar numa campanha, abrimos um listener (onSnapshot) pra cada
+   pedaço de dado da sala. Cada listener chama de volta sozinho sempre
+   que algo muda no Firebase — pra qualquer jogador, na hora. Guardamos
+   as funções de cancelamento em campanhaUnsubs pra fechá-las direito
+   se a pessoa recarregar a sala ou trocar de campanha.
+   ===================================================================== */
 function gerarCodigo(nome){ return nome.toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-' + Math.floor(Math.random()*90+10); }
+
+let campanhaUnsubs = [];
+let campanhaEstado = { info:null, iniciativa:{indice:0}, arquetiposNaMesa:new Set() };
+
+function pararListenersCampanha(){
+  campanhaUnsubs.forEach(unsub => { try{ unsub(); }catch(e){} });
+  campanhaUnsubs = [];
+  campanhaEstado = { info:null, iniciativa:{indice:0}, arquetiposNaMesa:new Set() };
+}
 
 async function criarCampanha(){
   const nome = document.getElementById('c-nome').value.trim();
   const jogador = document.getElementById('c-jogador').value.trim() || 'Diretora';
-  if(!nome){ alert('Dê um nome pra campanha.'); return; }
+  if(!nome){ toast('Dê um nome pra campanha.', 'erro'); return; }
   const codigo = gerarCodigo(nome);
   await storageSet(`campanha:${codigo}:info`, {nome, membros:[{nome:jogador, papel:'diretora'}]}, true);
   await storageSet(`campanha:${codigo}:descarte`, {valor:0}, true);
@@ -874,6 +1051,7 @@ async function criarCampanha(){
   await storageSet('minha-campanha-ativa', {codigo, jogador, papel:'diretora'}, false);
   campanhaAtiva = {codigo, jogador, papel:'diretora'};
   atualizarUIporPapel();
+  toast(`Sala "${nome}" criada. Código: ${codigo}`, 'sucesso');
   mostrarCampanhaAtiva(codigo);
 }
 window.criarCampanha = criarCampanha;
@@ -881,46 +1059,72 @@ window.criarCampanha = criarCampanha;
 async function entrarCampanha(){
   const codigo = document.getElementById('c-codigo').value.trim().toUpperCase();
   const jogador = document.getElementById('c-jogador2').value.trim();
-  if(!codigo || !jogador){ alert('Preencha o código e seu nome.'); return; }
+  if(!codigo || !jogador){ toast('Preencha o código e seu nome.', 'erro'); return; }
   const info = await storageGet(`campanha:${codigo}:info`, true);
-  if(!info){ alert('Não encontrei nenhuma campanha com esse código no Firebase.'); return; }
+  if(!info){ toast('Não encontrei nenhuma campanha com esse código no Firebase.', 'erro'); return; }
   if(!info.membros.find(m=>m.nome===jogador)) info.membros.push({nome:jogador, papel:'jogador'});
   await storageSet(`campanha:${codigo}:info`, info, true);
   await storageSet('minha-campanha-ativa', {codigo, jogador, papel:'jogador'}, false);
   campanhaAtiva = {codigo, jogador, papel:'jogador'};
   atualizarUIporPapel();
+  toast(`Você entrou em "${info.nome}".`, 'sucesso');
   mostrarCampanhaAtiva(codigo);
 }
 window.entrarCampanha = entrarCampanha;
 
-async function mostrarCampanhaAtiva(codigo){
-  const info = await storageGet(`campanha:${codigo}:info`, true);
-  if(!info) return;
-  document.getElementById('campanha-atual').innerHTML = `<div class="card">
-    <h4>Sala ativa: ${info.nome}</h4>
-    <p class="meta">Código: <b>${codigo}</b> — compartilhe com o grupo pra eles entrarem.</p>
-    <p class="meta">Você está como: <b>${campanhaAtiva.jogador}</b> (${campanhaAtiva.papel})</p>
-  </div>`;
-  renderIniciativaCampanha(codigo, info);
-  renderMembros(info);
-  carregarLogCampanha(codigo);
-  carregarSobreviventes();
-  const desc = await storageGet(`campanha:${codigo}:descarte`, true);
-  document.getElementById('descarte-atual').textContent = desc? desc.valor : 0;
+function mostrarCampanhaAtiva(codigo){
+  pararListenersCampanha();
+  document.getElementById('status-conexao').style.display = 'flex';
+
+  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:info`, true, info => {
+    if(!info) return;
+    campanhaEstado.info = info;
+    document.getElementById('campanha-atual').innerHTML = `<div class="card">
+      <h4>Sala ativa: ${escapeHtml(info.nome)}</h4>
+      <p class="meta">Código: <b>${codigo}</b> — compartilhe com o grupo pra eles entrarem.</p>
+      <p class="meta">Você está como: <b>${escapeHtml(campanhaAtiva.jogador)}</b> (${campanhaAtiva.papel})</p>
+    </div>`;
+    renderMembros(info);
+    renderIniciativaCampanha(codigo);
+  }));
+
+  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:descarte`, true, desc => {
+    document.getElementById('descarte-atual').textContent = desc ? desc.valor : 0;
+  }));
+
+  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:iniciativa`, true, iniciativa => {
+    campanhaEstado.iniciativa = iniciativa || {indice:0};
+    renderIniciativaCampanha(codigo);
+  }));
+
+  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:rolando`, true, rolando => {
+    document.getElementById('banner-rolando').innerHTML = rolando
+      ? `<div class="banner-rolando">🎲 ${escapeHtml(rolando.jogador)} está arriscando os dados...</div>` : '';
+  }));
+
+  campanhaUnsubs.push(watchPrefix(`campanha:${codigo}:log:`, true, entradas => {
+    const el = document.getElementById('dice-log');
+    if(!entradas.length){ el.innerHTML = '<p class="empty">Nenhuma rolagem registrada ainda nesta campanha.</p>'; return; }
+    el.innerHTML = entradas.slice().reverse().map(d =>
+      `<div class="log-entry"><b>${escapeHtml(d.jogador)}</b> rolou [${d.valores.join(', ')}] → ${d.sucessos} sucesso(s) / ${d.falhas} falha(s) — <b>${d.resultado.toUpperCase()}</b></div>`
+    ).join('');
+  }, 15));
+
+  campanhaUnsubs.push(watchPrefix(`campanha:${codigo}:sobrevivente:`, true, lista => {
+    campanhaEstado.arquetiposNaMesa = new Set(lista.map(s => s.arquetipo));
+    renderListaSobreviventes(lista, true);
+    renderIniciativaCampanha(codigo);
+  }));
 }
 
 function renderMembros(info){
   document.getElementById('campanha-membros').innerHTML = `<div class="card"><h4>Membros da sala</h4>
-    ${info.membros.map(m=>`<span class="pill">${m.nome}${m.papel==='diretora'?' (Diretora)':''}</span>`).join('')}</div>`;
+    ${info.membros.map(m=>`<span class="pill">${escapeHtml(m.nome)}${m.papel==='diretora'?' (Diretora)':''}</span>`).join('')}</div>`;
 }
 
-async function renderIniciativaCampanha(codigo, info){
-  const sobKeys = await storageList(`campanha:${codigo}:sobrevivente:`, true);
-  const arquetiposNaMesa = new Set();
-  for(const k of sobKeys){ const s = await storageGet(k, true); if(s) arquetiposNaMesa.add(s.arquetipo); }
-  const ordem = INICIATIVA_ORDEM.filter(a => a==='Assassino' || arquetiposNaMesa.has(a));
-  const iniciativa = (await storageGet(`campanha:${codigo}:iniciativa`, true)) || {indice:0};
-  const idx = iniciativa.indice % Math.max(ordem.length,1);
+function renderIniciativaCampanha(codigo){
+  const ordem = INICIATIVA_ORDEM.filter(a => a==='Assassino' || campanhaEstado.arquetiposNaMesa.has(a));
+  const idx = campanhaEstado.iniciativa.indice % Math.max(ordem.length,1);
   document.getElementById('campanha-iniciativa').innerHTML = `<div class="card">
     <h4>Iniciativa</h4>
     <div class="initiative">${ordem.map((a,i)=>`<div class="init-step ${a==='Assassino'?'assassino':''} ${i===idx?'current':''}">${a}</div>`).join('')}</div>
@@ -933,44 +1137,17 @@ async function avancarIniciativa(codigo, total){
   const atual = (await storageGet(key, true)) || {indice:0};
   atual.indice = (atual.indice + 1) % Math.max(total,1);
   await storageSet(key, atual, true);
-  mostrarCampanhaAtiva(codigo);
+  // o listener de iniciativa já re-renderiza sozinho pra todo mundo na sala
 }
 window.avancarIniciativa = avancarIniciativa;
-
-async function carregarLogCampanha(codigo){
-  const rolando = await storageGet(`campanha:${codigo}:rolando`, true);
-  document.getElementById('banner-rolando').innerHTML = rolando? `<div class="banner-rolando">🎲 ${rolando.jogador} está arriscando os dados...</div>` : '';
-
-  const keys = await storageList(`campanha:${codigo}:log:`, true);
-  const el = document.getElementById('dice-log');
-  if(!keys.length){ el.innerHTML = '<p class="empty">Nenhuma rolagem registrada ainda nesta campanha.</p>'; return; }
-  const entradas = [];
-  for(const k of keys.slice(-15).reverse()){
-    const d = await storageGet(k, true);
-    if(d) entradas.push(`<div class="log-entry"><b>${d.jogador}</b> rolou [${d.valores.join(', ')}] → ${d.sucessos} sucesso(s) / ${d.falhas} falha(s) — <b>${d.resultado.toUpperCase()}</b></div>`);
-  }
-  el.innerHTML = entradas.join('') || '<p class="empty">Nenhuma rolagem registrada ainda nesta campanha.</p>';
-}
-
-/* ================= ATUALIZAÇÃO AUTOMÁTICA EM TEMPO REAL ================= */
-setInterval(async ()=>{
-  if(campanhaAtiva){
-    carregarLogCampanha(campanhaAtiva.codigo);
-    const desc = await storageGet(`campanha:${campanhaAtiva.codigo}:descarte`, true);
-    if(desc) document.getElementById('descarte-atual').textContent = desc.valor;
-    const info = await storageGet(`campanha:${campanhaAtiva.codigo}:info`, true);
-    if(info){ renderIniciativaCampanha(campanhaAtiva.codigo, info); renderMembros(info); }
-    if(document.getElementById('sobreviventes').classList.contains('active')) carregarSobreviventes();
-  }
-}, 3000);
 
 /* ================= INICIALIZAÇÃO ================= */
 window.addEventListener('DOMContentLoaded', async () => {
   preencherSelectArquetipo();
   await initPilha();
   await carregarContexto();
-  carregarSobreviventes();
   if(campanhaAtiva){ mostrarCampanhaAtiva(campanhaAtiva.codigo); }
+  else { carregarSobreviventes(); }
 });
 </script>
 </body>
