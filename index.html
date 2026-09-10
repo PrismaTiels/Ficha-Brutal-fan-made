@@ -1,1154 +1,528 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BRUTAL — Thriller de Mesa</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Butcherman&family=Anton&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#080504; --bg-alt:#0f0908; --panel:#170f0e; --panel-2:#201412;
-    --line:#38201c; --blood:#8a1212; --blood-bright:#e62e28; --blood-deep:#470a0a;
-    --bone:#f0e8dd; --bone-dim:#a39585; --sick:#4d6e3d; --sick-bright:#a3d979; --amber:#d9933b;
-    --glow-red: 0 0 15px rgba(230, 46, 40, 0.35);
-    --glow-green: 0 0 15px rgba(163, 217, 121, 0.35);
-    --shadow-card: 0 8px 24px rgba(0,0,0,0.6);
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--bone);font-family:'IBM Plex Mono',monospace;}
-  body{
-    position:relative;min-height:100vh;overflow-x:hidden;
-    background-image:
-      radial-gradient(circle at 15% 10%, rgba(138,18,18,0.22), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(77,110,61,0.12), transparent 45%),
-      linear-gradient(180deg, #080504 0%, #0d0706 100%);
-  }
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:999;
-    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px);
-  }
-  body::after{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:998;
-    box-shadow: inset 0 0 120px rgba(0,0,0,0.85);
-  }
-  h2,h3,.display{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:0.04em;text-transform:uppercase;}
-  a{color:inherit;} button{font-family:inherit;cursor:pointer;} input,select,textarea{font-family:inherit;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BRUTAL — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Butcherman&family=Anton&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET E VARIÁVEIS ===== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: #0b0808;
+      --bg-card: rgba(26,18,17,0.75);
+      --border: rgba(61,42,38,0.5);
+      --border-light: rgba(61,42,38,0.25);
+      --blood: #a02020;
+      --blood-bright: #d43f34;
+      --blood-glow: rgba(212,63,52,0.25);
+      --bone: #f0ede8;
+      --bone-dim: #9a8c82;
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.6);
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    html, body {
+      height:100%;
+      background: var(--bg);
+      color: var(--bone);
+      font-family: 'Inter', sans-serif;
+      font-size:14px;
+      line-height:1.6;
+    }
+    body {
+      background-image: radial-gradient(ellipse at 20% 10%, rgba(160,32,32,0.12), transparent 50%),
+                        radial-gradient(ellipse at 80% 90%, rgba(136,192,91,0.05), transparent 40%);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+    input, select { font:inherit; color:inherit; background:transparent; border:none; outline:none; }
 
-  header{
-    position:sticky;top:0;z-index:100;
-    background:rgba(8,5,4,0.92); backdrop-filter:blur(10px);
-    border-bottom:2px solid var(--blood);
-    display:flex;align-items:center;justify-content:space-between;
-    padding:12px 28px;flex-wrap:wrap;gap:12px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.8);
-  }
-  .logo{
-    font-family:'Butcherman',cursive;font-size:34px;color:var(--blood-bright);letter-spacing:0.04em;
-    text-shadow:var(--glow-red), 2px 2px 0 #000; animation:flicker 5s infinite;
-  }
-  @keyframes flicker{0%,92%,100%{opacity:1;} 93%{opacity:0.8;} 94%{opacity:1;} 96%{opacity:0.65;} 97%{opacity:1;}}
-  .logo span{
-    color:var(--bone-dim);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.2em;
-    display:block;text-transform:uppercase;margin-top:-6px;
-  }
-  nav{display:flex;gap:6px;flex-wrap:wrap;}
-  nav button{
-    background:var(--panel);border:1px solid var(--line);color:var(--bone-dim);
-    padding:9px 16px;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
-    border-radius:4px;transition:all .2s ease;
-  }
-  nav button:hover{color:var(--bone);border-color:var(--blood-bright);box-shadow:var(--glow-red);}
-  nav button.active{background:var(--blood);color:#fff;border-color:var(--blood-bright);box-shadow:var(--glow-red);}
-  nav button.locked{opacity:.35;pointer-events:none;}
+    /* ===== TIPOGRAFIA ===== */
+    h1,h2,h3,h4 { font-family:'Anton',sans-serif; font-weight:400; letter-spacing:0.06em; text-transform:uppercase; }
+    .logo {
+      font-family:'Butcherman',cursive;
+      font-size:28px;
+      background:linear-gradient(135deg, var(--blood-bright), var(--blood));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 16px var(--blood-glow));
+      line-height:1;
+    }
+    .logo small { display:block; font-family:'Inter',sans-serif; font-size:9px; letter-spacing:0.2em; color:var(--bone-dim); -webkit-text-fill-color:var(--bone-dim); text-transform:uppercase; margin-top:-2px; }
 
-  main{max-width:1080px;margin:0 auto;padding:32px 20px 90px;}
-  section{display:none;} section.active{display:block;animation:fadein .3s ease-out;}
-  @keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+    /* ===== HEADER ===== */
+    header {
+      position:sticky; top:0; z-index:100;
+      background:rgba(11,8,8,0.88); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      padding:10px 28px;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    }
+    .header-left { display:flex; align-items:center; gap:20px; }
+    .header-right { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
 
-  .hero{
-    padding:36px 32px;border:1px solid var(--line);margin-bottom:32px;border-radius:8px;
-    background:linear-gradient(135deg, rgba(138,18,18,0.2) 0%, rgba(23,15,14,0.9) 100%);
-    box-shadow:var(--shadow-card), inset 0 0 40px rgba(138,18,18,0.15);position:relative;overflow:hidden;
-  }
-  .hero::after{
-    content:"";position:absolute;top:-50%;right:-20%;width:300px;height:300px;
-    background:radial-gradient(circle, rgba(230,46,40,0.15), transparent 70%);pointer-events:none;
-  }
-  .hero h1{
-    font-family:'Butcherman',cursive;font-size:clamp(52px,9vw,96px);line-height:0.9;margin:0 0 14px;
-    color:var(--blood-bright); text-shadow:var(--glow-red), 3px 3px 0 #000;
-  }
-  .hero p{color:var(--bone-dim);max-width:65ch;font-size:13px;line-height:1.8;}
+    /* ===== BUTTONS ===== */
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:10px 20px; border-radius:10px; font-weight:600; font-size:12px;
+      letter-spacing:0.06em; text-transform:uppercase;
+      border:1px solid var(--border);
+      background:rgba(26,18,17,0.6);
+      color:var(--bone);
+      transition:var(--transition);
+      cursor:pointer;
+    }
+    .btn:hover { background:var(--blood); border-color:var(--blood-bright); transform:translateY(-2px); box-shadow:0 8px 24px var(--blood-glow); }
+    .btn.ghost { background:transparent; border-color:var(--border-light); }
+    .btn.ghost:hover { background:rgba(212,63,52,0.12); border-color:var(--blood-bright); transform:none; box-shadow:none; }
+    .btn.sick { background:rgba(136,192,91,0.12); border-color:#88c05b; color:#88c05b; }
+    .btn.sick:hover { background:#88c05b; color:#0b0808; border-color:#88c05b; box-shadow:0 8px 24px rgba(136,192,91,0.2); }
+    .btn.small { padding:6px 14px; font-size:10px; border-radius:6px; }
 
-  .tapes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:28px;}
-  .tape{
-    background:var(--panel);border:1px solid var(--line);padding:20px;border-radius:6px;cursor:pointer;position:relative;
-    transition:all .2s ease;box-shadow:var(--shadow-card);
-  }
-  .tape:hover{border-color:var(--blood-bright);transform:translateY(-3px);box-shadow:var(--glow-red);}
-  .tape::before{content:attr(data-num);position:absolute;top:12px;right:16px;font-size:11px;color:var(--blood-bright);font-weight:700;}
-  .tape h3{margin:0 0 8px;font-size:20px;color:var(--sick-bright);}
-  .tape p{margin:0;font-size:12px;color:var(--bone-dim);line-height:1.6;}
+    /* ===== CARDS ===== */
+    .card {
+      background:var(--bg-card);
+      backdrop-filter:blur(8px);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      transition:border-color var(--transition), transform var(--transition);
+    }
+    .card:hover { border-color:rgba(212,63,52,0.3); }
+    .card-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border-light);
+    }
+    .card-header h4 { font-size:16px; color:var(--bone); letter-spacing:0.08em; }
+    .card-header .badge { font-size:10px; color:var(--bone-dim); background:rgba(0,0,0,0.3); padding:4px 12px; border-radius:20px; border:1px solid var(--border-light); }
 
-  .panel-title{
-    display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--blood);
-    padding-bottom:10px;margin-bottom:24px;flex-wrap:wrap;gap:8px;
-  }
-  .panel-title h2{font-size:32px;margin:0;color:var(--bone);text-shadow:0 0 10px rgba(240,232,221,0.2);}
-  .panel-title .tag{font-size:11px;color:var(--bone-dim);letter-spacing:0.12em;text-transform:uppercase;}
+    /* ===== FORMS ===== */
+    .field { display:flex; flex-direction:column; gap:4px; margin-bottom:12px; }
+    .field label { font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--bone-dim); }
+    .field input, .field select {
+      background:rgba(0,0,0,0.3);
+      border:1px solid var(--border-light);
+      padding:10px 14px;
+      border-radius:8px;
+      font-size:13px;
+      color:var(--bone);
+      transition:border-color var(--transition), box-shadow var(--transition);
+    }
+    .field input:focus, .field select:focus { border-color:var(--blood-bright); box-shadow:0 0 0 3px var(--blood-glow); }
+    .field select option { background:var(--bg); color:var(--bone); }
+    .row { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; }
+    .row .field { flex:1; min-width:140px; }
 
-  .card{
-    background:linear-gradient(145deg, var(--panel), var(--panel-2));
-    border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:18px;
-    box-shadow:var(--shadow-card);transition:border-color .2s ease;
-  }
-  .card:hover{border-color:rgba(138,18,18,0.6);}
-  .card h4{margin:0 0 14px;font-size:15px;color:var(--sick-bright);text-transform:uppercase;letter-spacing:0.06em;display:flex;align-items:center;justify-content:space-between;}
-  
-  .row{display:flex;gap:14px;flex-wrap:wrap;}
-  .field{flex:1;min-width:160px;display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
-  .field label{font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--bone-dim);font-weight:600;}
-  .field input,.field select,.field textarea{
-    background:var(--bg-alt);border:1px solid var(--line);color:var(--bone);
-    padding:10px 12px;font-size:12.5px;border-radius:4px;outline:none;transition:border-color .2s;
-  }
-  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blood-bright);box-shadow:var(--glow-red);}
-  .field textarea{resize:vertical;min-height:50px;}
+    /* ===== AUTH ===== */
+    .auth-card {
+      max-width:420px; margin:40px auto;
+      background:var(--bg-card); backdrop-filter:blur(12px);
+      border:1px solid var(--border); border-radius:var(--radius);
+      padding:32px; box-shadow:var(--shadow);
+    }
+    .auth-logo { text-align:center; margin-bottom:24px; }
+    .auth-logo .logo { font-size:38px; }
+    .auth-tabs { display:flex; gap:8px; margin-bottom:24px; }
+    .auth-tabs button {
+      flex:1; padding:10px; border-radius:8px; font-weight:600; font-size:12px;
+      text-transform:uppercase; letter-spacing:0.06em;
+      background:rgba(0,0,0,0.3); border:1px solid var(--border-light);
+      color:var(--bone-dim); transition:var(--transition);
+    }
+    .auth-tabs button.active { background:var(--blood); border-color:var(--blood-bright); color:var(--bone); box-shadow:0 0 20px var(--blood-glow); }
+    .auth-tabs button:hover { color:var(--bone); }
+    .auth-form { display:none; }
+    .auth-form.active { display:block; animation:fadeUp 0.3s ease; }
+    .auth-form .btn { width:100%; margin-top:8px; }
 
-  .btn{
-    background:var(--blood);color:#fff;border:1px solid var(--blood-bright);padding:10px 18px;font-size:11.5px;
-    font-weight:600;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;transition:all .2s ease;
-    box-shadow:0 2px 8px rgba(0,0,0,0.4);
-  }
-  .btn:hover{background:var(--blood-bright);box-shadow:var(--glow-red);transform:translateY(-1px);}
-  .btn.ghost{background:transparent;color:var(--bone-dim);border-color:var(--line);box-shadow:none;}
-  .btn.ghost:hover{color:var(--bone);border-color:var(--bone-dim);}
-  .btn.sick{background:var(--sick);border-color:var(--sick-bright);color:#fff;} 
-  .btn.sick:hover{background:var(--sick-bright);color:#080504;box-shadow:var(--glow-green);}
-  .btn.small{padding:5px 11px;font-size:10px;}
-  .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+    /* ===== LOBBY ===== */
+    .lobby-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:20px; }
+    @media (max-width:700px) { .lobby-grid { grid-template-columns:1fr; } }
 
-  .empty{color:var(--bone-dim);font-size:12.5px;padding:24px;text-align:center;border:1px dashed var(--line);border-radius:6px;}
-  .meta{font-size:11.5px;color:var(--bone-dim);line-height:1.5;}
-  .pill{display:inline-block;background:var(--bg-alt);border:1px solid var(--line);padding:4px 10px;font-size:10.5px;border-radius:4px;margin:2px 4px 2px 0;color:var(--bone);}
+    /* ===== MISC ===== */
+    .meta { font-size:12px; color:var(--bone-dim); line-height:1.5; }
+    .toast-container {
+      position:fixed; top:20px; right:20px; z-index:500;
+      display:flex; flex-direction:column; gap:8px; pointer-events:none;
+      max-width:360px; width:100%;
+    }
+    .toast {
+      pointer-events:auto;
+      background:var(--bg-card); backdrop-filter:blur(12px);
+      border:1px solid var(--border); border-left:4px solid var(--blood-bright);
+      padding:14px 18px; border-radius:12px; font-size:13px; color:var(--bone);
+      box-shadow:var(--shadow);
+      animation:toastIn 0.3s ease;
+    }
+    .toast.sucesso { border-left-color:#88c05b; }
+    .toast.erro { border-left-color:var(--blood-bright); }
+    .toast.info { border-left-color:#c9833a; }
+    .toast.saindo { animation:toastOut 0.2s ease forwards; }
+    @keyframes toastIn { from { opacity:0; transform:translateX(20px) scale(0.95); } to { opacity:1; transform:translateX(0) scale(1); } }
+    @keyframes toastOut { to { opacity:0; transform:translateX(20px) scale(0.95); } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
-  .dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
-  .dot{width:22px;height:22px;border:2px solid var(--line);border-radius:3px;cursor:pointer;flex-shrink:0;transition:all .15s;}
-  .dot.ferida.on{background:var(--blood-bright);border-color:var(--blood-bright);box-shadow:var(--glow-red);}
-  .dot.sequela.on{background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px rgba(217,147,59,0.4);}
+    /* ===== RESPONSIVE ===== */
+    @media (max-width:600px) {
+      header { padding:8px 16px; }
+      .logo { font-size:22px; }
+      .auth-card { padding:20px; margin:20px 12px; }
+      .card { padding:16px; }
+      .row { flex-direction:column; align-items:stretch; }
+      .row .field { min-width:unset; }
+    }
+    /* ===== FUNDO DO SITE ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('img/fundo.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.18;
+  z-index: 0;
+  pointer-events: none;
+}
+body > * {
+  position: relative;
+  z-index: 1;
+}
 
-  .ability{
-    border:1px solid var(--line);padding:12px 14px;margin-bottom:8px;background:var(--bg-alt);border-radius:5px;
-    display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
-  }
-  .ability .txt b{color:var(--bone);font-size:13px;} 
-  .ability .txt p{margin:4px 0 0;font-size:11.5px;color:var(--bone-dim);line-height:1.5;}
-  .ability label{font-size:10.5px;color:var(--bone-dim);display:flex;gap:6px;align-items:center;white-space:nowrap;cursor:pointer;}
+/* ===== SCROLLBAR CUSTOMIZADA ===== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.35); border-radius: 10px; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--blood), var(--blood-bright));
+  border-radius: 10px;
+  border: 2px solid rgba(11, 8, 8, 0.9);
+  background-clip: padding-box;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--blood-bright), #ff5a3c);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner { background: transparent; }
+* { scrollbar-width: thin; scrollbar-color: var(--blood) rgba(0, 0, 0, 0.35); }
 
-  .dice-tray{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0;min-height:64px;align-items:center;}
-  .die{
-    width:54px;height:54px;display:flex;align-items:center;justify-content:center;background:var(--bg-alt);
-    border:2px solid var(--line);border-radius:8px;font-size:24px;font-weight:700;font-family:'Anton',sans-serif;
-    box-shadow:0 4px 10px rgba(0,0,0,0.5);
-  }
-  .die.rolling{animation:shake .12s infinite;border-color:var(--amber);color:var(--amber);}
-  @keyframes shake{0%{transform:rotate(-6deg);}50%{transform:rotate(6deg);}100%{transform:rotate(-6deg);}}
-  .die.success{border-color:var(--sick-bright);color:var(--sick-bright);box-shadow:var(--glow-green);}
-  .die.fail{border-color:var(--blood-bright);color:var(--blood-bright);box-shadow:var(--glow-red);opacity:.85;}
+/* ===== SELECT CUSTOMIZADO ===== */
+.field select,
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: rgba(0, 0, 0, 0.4);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23d43f34' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px 38px 10px 14px;
+  color: var(--bone);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-overflow: ellipsis;
+}
+.field select:hover,
+select:hover {
+  border-color: var(--blood);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.field select:focus,
+select:focus {
+  border-color: var(--blood-bright);
+  box-shadow: 0 0 0 3px var(--blood-glow);
+  outline: none;
+}
+.field select option,
+select option {
+  background: #1a1211;
+  color: var(--bone);
+  padding: 10px;
+  font-weight: 500;
+}
 
-  .stack-counter{font-family:'Anton',sans-serif;font-size:44px;color:var(--bone);line-height:1;}
-  .stack-counter span{font-size:11px;color:var(--bone-dim);text-transform:uppercase;letter-spacing:0.1em;display:block;font-family:'IBM Plex Mono',monospace;margin-bottom:4px;}
-  .banner-rolando{background:rgba(217,147,59,0.12);border-left:4px solid var(--amber);color:var(--amber);padding:10px 16px;font-size:12.5px;margin-bottom:16px;border-radius:0 4px 4px 0;}
-  .log-entry{font-size:12px;color:var(--bone-dim);border-bottom:1px dashed var(--line);padding:8px 0;}
-  .log-entry b{color:var(--bone);}
-
-  .note{font-size:12px;color:var(--amber);border-left:4px solid var(--amber);padding:10px 14px;background:rgba(217,147,59,0.08);margin-bottom:18px;border-radius:0 4px 4px 0;}
-  .note.locked{color:var(--blood-bright);border-color:var(--blood-bright);background:rgba(230,46,40,0.08);}
-
-  .initiative{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
-  .init-step{
-    border:1px solid var(--line);background:var(--bg-alt);padding:10px 16px;font-size:12px;
-    text-transform:uppercase;letter-spacing:.05em;color:var(--bone-dim);border-radius:4px;position:relative;
-  }
-  .init-step.current{border-color:var(--sick-bright);color:var(--sick-bright);background:rgba(163,217,121,0.08);box-shadow:var(--glow-green);}
-  .init-step.assassino{border-color:var(--blood-bright);}
-  .init-step.assassino.current{color:var(--blood-bright);border-color:var(--blood-bright);background:rgba(230,46,40,0.12);box-shadow:var(--glow-red);}
-
-  footer{text-align:center;padding:30px;color:var(--bone-dim);font-size:11px;border-top:1px solid var(--line);letter-spacing:.08em;}
-  .sound-toggle{
-    position:fixed;bottom:18px;right:18px;z-index:200;background:var(--panel);border:1px solid var(--line);
-    padding:9px 14px;font-size:11px;color:var(--bone-dim);border-radius:20px;box-shadow:var(--shadow-card);
-  }
-  .sound-toggle:hover{color:var(--bone);border-color:var(--blood-bright);}
-
-  /* status de sincronização */
-  .status-conexao{display:flex;align-items:center;gap:6px;font-size:10.5px;letter-spacing:.06em;color:var(--bone-dim);
-    background:var(--panel);border:1px solid var(--line);padding:6px 12px;border-radius:20px;white-space:nowrap;}
-  .status-conexao::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--bone-dim);flex-shrink:0;}
-  .status-conexao.ok{color:var(--sick-bright);}
-  .status-conexao.ok::before{background:var(--sick-bright);box-shadow:0 0 6px rgba(163,217,121,.7);}
-  .status-conexao.off{color:var(--amber);}
-  .status-conexao.off::before{background:var(--amber);box-shadow:0 0 6px rgba(217,147,59,.7);animation:pulse-amber 1.4s infinite;}
-  @keyframes pulse-amber{0%,100%{opacity:1;}50%{opacity:.35;}}
-
-  /* notificações */
-  .toast-container{position:fixed;top:16px;right:16px;left:16px;z-index:500;display:flex;flex-direction:column;
-    align-items:flex-end;gap:8px;pointer-events:none;}
-  .toast{pointer-events:auto;max-width:340px;background:var(--panel-2);border:1px solid var(--line);
-    border-left:4px solid var(--bone-dim);padding:12px 16px;border-radius:6px;font-size:12.5px;line-height:1.5;
-    color:var(--bone);box-shadow:var(--shadow-card);animation:toast-in .25s ease-out;}
-  .toast.sucesso{border-left-color:var(--sick-bright);}
-  .toast.erro{border-left-color:var(--blood-bright);}
-  .toast.info{border-left-color:var(--amber);}
-  .toast.saindo{animation:toast-out .2s ease-in forwards;}
-  @keyframes toast-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
-  @keyframes toast-out{to{opacity:0;transform:translateY(-6px);}}
-
-  .skeleton{border:1px dashed var(--line);border-radius:6px;padding:22px;text-align:center;color:var(--bone-dim);font-size:12px;}
-
-  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .tape:focus-visible{
-    outline:2px solid var(--sick-bright);outline-offset:2px;
-  }
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;}
-  }
-</style>
+/* ===== INPUTS COM HOVER ===== */
+.field input {
+  background-color: rgba(0, 0, 0, 0.4);
+  transition: all var(--transition);
+}
+.field input:hover {
+  border-color: var(--blood);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+  </style>
 </head>
 <body>
 
-<div class="toast-container" id="toast-container"></div>
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
 
-<header>
-  <div class="logo">BRUTAL<span>thriller de mesa</span></div>
-  <nav id="nav">
-    <button data-target="home" class="active">Início</button>
-    <button data-target="sobreviventes">Sobreviventes</button>
-    <button data-target="assassino">Assassino</button>
-    <button data-target="dados">Dados</button>
-    <button data-target="campanhas">Campanhas</button>
-  </nav>
-  <div class="status-conexao" id="status-conexao" style="display:none;">conectando…</div>
-</header>
-
-<main>
-
-  <section id="home" class="active">
-    <div class="hero">
-      <h1>Brutal</h1>
-      <p>Uma noite comum vira uma caçada. Monte suas Sobreviventes, prepare o Assassino, arrisque seus dados em tempo real com seu grupo e não durma até o fim do Thriller.</p>
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <div class="logo">BRUTAL<small>thriller de mesa</small></div>
     </div>
-    <div class="tapes">
-      <div class="tape" data-num="01" tabindex="0" role="button" onclick="goTo('sobreviventes')" onkeydown="if(event.key==='Enter')goTo('sobreviventes')"><h3>Sobreviventes</h3><p>Fichas completas: Arquétipo, habilidades, atributos, Feridas, Sequelas e Pontos de Tensão.</p></div>
-      <div class="tape" data-num="02" tabindex="0" role="button" onclick="goTo('assassino')" onkeydown="if(event.key==='Enter')goTo('assassino')"><h3>Assassino</h3><p>Monte a ameaça da mesa com as 13 Ameaças, ações e Pontos de Horror — exclusivo da Diretora.</p></div>
-      <div class="tape" data-num="03" tabindex="0" role="button" onclick="goTo('dados')" onkeydown="if(event.key==='Enter')goTo('dados')"><h3>Dados</h3><p>Arrisque sua pilha e veja o grupo inteiro acompanhar a tensão das rolagens em tempo real.</p></div>
-      <div class="tape" data-num="04" tabindex="0" role="button" onclick="goTo('campanhas')" onkeydown="if(event.key==='Enter')goTo('campanhas')"><h3>Campanhas</h3><p>Crie ou entre numa sala compartilhada via Firebase, com sincronização instantânea entre todos os jogadores.</p></div>
+    <div class="header-right">
+      <button class="btn ghost small" id="btn-logout" style="display:none;" onclick="fazerLogout()">Sair</button>
     </div>
-  </section>
+  </header>
 
-  <section id="sobreviventes">
-    <div class="panel-title"><h2>Sobreviventes</h2><span class="tag">fichas de personagem</span></div>
-    <div class="card">
-      <h4>Nova sobrevivente</h4>
-      <div class="row">
-        <div class="field"><label>Nome</label><input id="s-nome" placeholder="Nome da sobrevivente"></div>
-        <div class="field"><label>Arquétipo</label><select id="s-arquetipo" onchange="renderHabilidadesPreview()"></select></div>
+  <!-- MAIN -->
+  <main style="flex:1; max-width:1280px; margin:0 auto; padding:24px 20px 60px; width:100%;">
+
+    <!-- ===== AUTH ===== -->
+    <section id="tela-auth" class="active">
+      <div class="auth-card">
+        <div class="auth-logo"><div class="logo">BRUTAL<small>thriller de mesa</small></div></div>
+        <div class="auth-tabs">
+          <button class="active" data-auth="login" onclick="mudarAbaAuth('login')">Entrar</button>
+          <button data-auth="cadastro" onclick="mudarAbaAuth('cadastro')">Criar conta</button>
+        </div>
+        <div id="auth-form-login" class="auth-form active">
+          <div class="field"><label>Usuário</label><input id="login-usuario" placeholder="ex: duda_sobrevivente" autocomplete="username" /></div>
+          <div class="field"><label>Senha</label><input id="login-senha" type="password" placeholder="••••••" autocomplete="current-password" /></div>
+          <button class="btn" onclick="fazerLogin()">Entrar</button>
+        </div>
+        <div id="auth-form-cadastro" class="auth-form">
+          <div class="field"><label>Usuário</label><input id="cad-usuario" placeholder="ex: duda_sobrevivente" autocomplete="username" /></div>
+          <div class="field"><label>Senha (mínimo 6 caracteres)</label><input id="cad-senha" type="password" placeholder="••••••" autocomplete="new-password" /></div>
+          <button class="btn sick" onclick="fazerCadastro()">Criar conta</button>
+        </div>
+        <p class="meta" style="text-align:center;margin-top:16px;">Sua conta guarda suas fichas e campanhas no banco de dados.</p>
       </div>
-      <div class="row" id="s-especialidades"></div>
-      <div class="row">
-        <div class="field"><label>Item icônico</label><input id="s-item" placeholder="ex: isqueiro da sorte"></div>
-        <div class="field"><label>Relação afetiva</label><input id="s-relacao" placeholder="ex: melhor amiga, Duda"></div>
-        <div class="field"><label>Desejo obscuro</label><input id="s-desejo" placeholder="ex: expor um segredo do grupo"></div>
+    </section>
+
+    <!-- ===== LOBBY ===== -->
+    <section id="tela-lobby" style="display:none;">
+      <div class="card" style="margin-bottom:24px;">
+        <h1 style="font-family:'Anton',sans-serif; font-size:clamp(28px,5vw,44px); color:var(--blood-bright);">
+          Bem-vinda, <span id="lobby-nome"></span>
+        </h1>
+        <p class="meta">Crie uma mesa nova (você vira a Diretora) ou entre com o código de uma sala já existente.</p>
       </div>
-      <div id="s-hab-preview"></div>
-      <button class="btn" onclick="salvarSobrevivente()">Salvar sobrevivente</button>
-    </div>
-    <div id="lista-sobreviventes"></div>
-  </section>
-
-  <section id="assassino">
-    <div class="panel-title"><h2>Assassino</h2><span class="tag">ficha da diretora</span></div>
-    <div id="assassino-conteudo"></div>
-  </section>
-
-  <section id="dados">
-    <div class="panel-title"><h2>Dados</h2><span class="tag">rolador de testes</span></div>
-    <div id="banner-rolando"></div>
-    <div class="card row" style="align-items:center;">
-      <div class="stack-counter"><span>sua pilha atual</span><span id="pilha-atual">6</span></div>
-      <div class="field" style="max-width:170px;"><label>Ajustar pilha</label>
-        <div class="row" style="gap:6px;"><button class="btn ghost small" onclick="ajustarPilha(-1)">-1</button><button class="btn ghost small" onclick="ajustarPilha(1)">+1</button></div>
+      <div class="lobby-grid">
+        <div class="card">
+          <div class="card-header"><h4>Criar campanha</h4><span class="badge">Diretora</span></div>
+          <div class="field"><label>Nome da campanha</label><input id="c-nome" placeholder="ex: Acampamento Lago Negro" /></div>
+          <button class="btn" onclick="criarCampanha()">Criar sala</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><h4>Entrar como Intérprete</h4><span class="badge">Jogadora</span></div>
+          <div class="field"><label>Código da sala</label><input id="c-codigo" placeholder="ex: LAGO-NEGRO-42" /></div>
+          <button class="btn ghost" onclick="entrarCampanha()">Entrar</button>
+        </div>
       </div>
-      <div class="field" style="max-width:220px;"><label>Pilha de descarte da mesa</label>
-        <div class="stack-counter" style="font-size:28px;color:var(--amber);" id="descarte-atual">0</div>
-      </div>
-    </div>
-    <div class="card">
-      <h4>Fazer um teste</h4>
-      <div class="row" style="align-items:flex-end;">
-        <div class="field"><label>Seu nome (aparece pro grupo)</label><input id="d-jogador" placeholder="ex: Duda"></div>
-        <div class="field"><label>Dados a arriscar</label><input id="d-qtd" type="number" min="1" max="6" value="2"></div>
-        <div class="field"><label>Tipo de risco</label><select id="d-risco"><option value="1">Comum (1 sucesso)</option><option value="2">Complexo (2 sucessos)</option></select></div>
-        <div class="field" style="flex:0;"><button class="btn sick" onclick="rolarDados()">Rolar</button></div>
-      </div>
-      <div class="dice-tray" id="dice-tray"></div>
-      <div id="resultado-teste" style="font-size:13.5px;"></div>
-    </div>
-    <div class="card">
-      <h4>Histórico de rolagens (campanha atual)</h4>
-      <div id="dice-log"><p class="empty">Entre numa campanha pra compartilhar suas jogadas com o grupo em tempo real.</p></div>
-    </div>
-  </section>
+    </section>
 
-  <section id="campanhas">
-    <div class="panel-title"><h2>Campanhas</h2><span class="tag">salas compartilhadas</span></div>
-    <div class="note">O código da sala é único. Quem cria vira a Diretora; quem entra depois vira Intérprete. Tudo sincroniza em tempo real pelo Firebase — sem precisar dar refresh.</div>
-    <div class="card"><h4>Criar campanha (você vira a Diretora)</h4>
-      <div class="row">
-        <div class="field"><label>Nome da campanha</label><input id="c-nome" placeholder="ex: Acampamento Lago Negro"></div>
-        <div class="field"><label>Seu nome</label><input id="c-jogador" placeholder="ex: Ana"></div>
-      </div>
-      <button class="btn" onclick="criarCampanha()">Criar sala</button>
-    </div>
-    <div class="card"><h4>Entrar como Intérprete</h4>
-      <div class="row" style="align-items:flex-end;">
-        <div class="field"><label>Código da sala</label><input id="c-codigo" placeholder="ex: LAGO-NEGRO-42"></div>
-        <div class="field"><label>Seu nome</label><input id="c-jogador2" placeholder="ex: Bruno"></div>
-        <div class="field" style="flex:0;"><button class="btn ghost" onclick="entrarCampanha()">Entrar</button></div>
-      </div>
-    </div>
-    <div id="campanha-atual"></div>
-    <div id="campanha-iniciativa"></div>
-    <div id="campanha-membros"></div>
-  </section>
+  </main>
 
-</main>
+  <!-- Firebase (ES Module) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import {
+      getFirestore, doc, setDoc, getDoc, updateDoc,
+      collection, addDoc, getDocs, onSnapshot,
+      query, orderBy, limitToLast, enableIndexedDbPersistence
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import {
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      onAuthStateChanged, signOut, updateProfile
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
-<footer>BRUTAL — site de apoio não oficial, feito para uso pessoal na mesa.</footer>
-<button class="sound-toggle" id="som-toggle" onclick="toggleSom()">🔊 Som ligado</button>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-Hnv0ZsZxa3SHKuOdMvYdcU0MPg65umY",
+      authDomain: "brutal-52013.firebaseapp.com",
+      projectId: "brutal-52013",
+      storageBucket: "brutal-52013.firebasestorage.app",
+      messagingSenderId: "20777925820",
+      appId: "1:20777925820:web:497504355d0ca9da83a4b9"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    enableIndexedDbPersistence(db).catch(()=>{});
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-  import {
-    getFirestore, doc, setDoc, getDoc, deleteDoc,
-    collection, getDocs, onSnapshot,
-    query, orderBy, startAt, endAt, limitToLast, documentId,
-    enableIndexedDbPersistence
-  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    // Disponibilizar funções no escopo global (para onclick)
+    window.db = db;
+    window.auth = auth;
+    window.fsDoc = doc;
+    window.fsSetDoc = setDoc;
+    window.fsGetDoc = getDoc;
+    window.fsUpdateDoc = updateDoc;
+    window.fsCollection = collection;
+    window.fsAddDoc = addDoc;
+    window.fsGetDocs = getDocs;
+    window.fsOnSnapshot = onSnapshot;
+    window.fsQuery = query;
+    window.fsOrderBy = orderBy;
+    window.fsLimitToLast = limitToLast;
+    window.fsCreateUser = createUserWithEmailAndPassword;
+    window.fsSignIn = signInWithEmailAndPassword;
+    window.fsSignOut = signOut;
+    window.fsUpdateProfile = updateProfile;
+    window.fsOnAuthStateChanged = onAuthStateChanged;
+    window.dispatchEvent(new Event('firebase-pronto'));
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB-Hnv0ZsZxa3SHKuOdMvYdcU0MPg65umY",
-    authDomain: "brutal-52013.firebaseapp.com",
-    projectId: "brutal-52013",
-    storageBucket: "brutal-52013.firebasestorage.app",
-    messagingSenderId: "20777925820",
-    appId: "1:20777925820:web:497504355d0ca9da83a4b9",
-    measurementId: "G-3G4CZGBGXD"
-  };
+    // ===== UTILITÁRIOS =====
+    window.escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    window.toast = (msg, tipo='info') => {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = `toast ${tipo}`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => { el.classList.add('saindo'); setTimeout(() => el.remove(), 220); }, 4200);
+    };
+    window.mostrarTela = (id) => {
+      document.querySelectorAll('main > section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  enableIndexedDbPersistence(db).catch(()=>{ /* várias abas abertas ou navegador sem suporte: segue sem cache offline */ });
+    // ===== AUTENTICAÇÃO =====
+    let perfilAtual = null;
+    let campanhaAtiva = null;
 
-  window.db = db;
-  window.fsDoc = doc;
-  window.fsSetDoc = setDoc;
-  window.fsGetDoc = getDoc;
-  window.fsDeleteDoc = deleteDoc;
-  window.fsCollection = collection;
-  window.fsGetDocs = getDocs;
-  window.fsOnSnapshot = onSnapshot;
-  window.fsQuery = query;
-  window.fsOrderBy = orderBy;
-  window.fsStartAt = startAt;
-  window.fsEndAt = endAt;
-  window.fsLimitToLast = limitToLast;
-  window.fsDocumentId = documentId;
-  window.dispatchEvent(new Event('firebase-pronto'));
-</script>
-
-<script>
-/* =====================================================================
-   UTILITÁRIOS DE INTERFACE (notificações, status de conexão, escape)
-   ===================================================================== */
-function escapeHtml(str){
-  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function toast(mensagem, tipo = 'info'){
-  const container = document.getElementById('toast-container');
-  const el = document.createElement('div');
-  el.className = `toast ${tipo}`;
-  el.textContent = mensagem;
-  container.appendChild(el);
-  setTimeout(()=>{
-    el.classList.add('saindo');
-    setTimeout(()=> el.remove(), 220);
-  }, 4200);
-}
-window.toast = toast;
-
-let conectado = null;
-function marcarConectado(status){
-  if (conectado === status) return;
-  conectado = status;
-  const el = document.getElementById('status-conexao');
-  if (!el) return;
-  el.style.display = 'flex';
-  el.className = 'status-conexao ' + (status ? 'ok' : 'off');
-  el.textContent = status ? 'sincronizado com o grupo' : 'sem conexão — usando cache local';
-}
-window.addEventListener('offline', ()=> marcarConectado(false));
-
-/* =====================================================================
-   CAMADA DE ARMAZENAMENTO
-   - modo local: sempre grava/lê do localStorage (funciona sem internet)
-   - modo compartilhado (shared=true): sincroniza com o Firestore.
-     storageSet/storageGet/storageDelete continuam existindo para
-     leituras/escritas pontuais; watchDoc/watchPrefix abrem um listener
-     em tempo real (onSnapshot) e chamam o callback sempre que algo
-     mudar no Firestore — sem precisar dar refresh nem ficar perguntando
-     no braço a cada X segundos.
-   ===================================================================== */
-function cleanKey(key){ return key.replace(/[\/:]/g, "_"); }
-
-async function storageSet(key, value, shared = false) {
-  try {
-    if (shared && window.db) {
-      await window.fsSetDoc(window.fsDoc(window.db, "brutal_data", cleanKey(key)), { value: JSON.stringify(value) });
-      marcarConectado(true);
+    function usernameParaEmail(usuario) {
+      const limpo = usuario.trim().toLowerCase().replace(/[^a-z0-9_.-]/g,'');
+      return `${limpo}@brutal.local`;
     }
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch(e) {
-    console.error("Erro ao salvar:", e);
-    if (shared) { marcarConectado(false); toast('Não consegui sincronizar com o Firebase agora. Salvei só no seu aparelho.', 'erro'); }
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch(e2){}
-    return false;
-  }
-}
 
-async function storageGet(key, shared = false) {
-  try {
-    if (shared && window.db) {
-      const snap = await window.fsGetDoc(window.fsDoc(window.db, "brutal_data", cleanKey(key)));
-      marcarConectado(true);
-      if (snap.exists()) return JSON.parse(snap.data().value);
-      return null;
+    window.mudarAbaAuth = (qual) => {
+      document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.toggle('active', b.dataset.auth === qual));
+      document.getElementById('auth-form-login').classList.toggle('active', qual === 'login');
+      document.getElementById('auth-form-cadastro').classList.toggle('active', qual === 'cadastro');
+    };
+
+    window.fazerCadastro = async () => {
+      const usuario = document.getElementById('cad-usuario').value.trim();
+      const senha = document.getElementById('cad-senha').value;
+      if (!usuario || usuario.length < 3) { toast('Usuário precisa ter pelo menos 3 letras.', 'erro'); return; }
+      if (!senha || senha.length < 6) { toast('Senha precisa ter pelo menos 6 caracteres.', 'erro'); return; }
+      try {
+        const cred = await window.fsCreateUser(window.auth, usernameParaEmail(usuario), senha);
+        await window.fsUpdateProfile(cred.user, { displayName: usuario });
+        await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', cred.user.uid), { nomeUsuario: usuario, campanhaAtiva: null });
+        toast(`Conta criada. Bem-vinda, ${usuario}!`, 'sucesso');
+      } catch (e) {
+        console.error(e);
+        if (e.code === 'auth/email-already-in-use') toast('Esse nome de usuário já existe.', 'erro');
+        else if (e.code === 'auth/weak-password') toast('Senha muito fraca.', 'erro');
+        else toast('Erro ao criar conta.', 'erro');
+      }
+    };
+
+    window.fazerLogin = async () => {
+      const usuario = document.getElementById('login-usuario').value.trim();
+      const senha = document.getElementById('login-senha').value;
+      if (!usuario || !senha) { toast('Preencha usuário e senha.', 'erro'); return; }
+      try {
+        await window.fsSignIn(window.auth, usernameParaEmail(usuario), senha);
+      } catch (e) {
+        console.error(e);
+        toast('Usuário ou senha incorretos.', 'erro');
+      }
+    };
+
+    window.fazerLogout = async () => {
+      await window.fsSignOut(window.auth);
+      window.location.reload();
+    };
+
+    // ===== CAMPANHAS =====
+    function gerarCodigo(nome) {
+      return nome.toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-' + Math.floor(Math.random()*90+10);
     }
-    const local = localStorage.getItem(key);
-    return local ? JSON.parse(local) : null;
-  } catch(e) {
-    console.error("Erro ao buscar:", e);
-    if (shared) marcarConectado(false);
-    const local = localStorage.getItem(key);
-    return local ? JSON.parse(local) : null;
-  }
-}
 
-async function storageList(prefix, shared = false) {
-  try {
-    if (shared && window.db) {
-      const cp = cleanKey(prefix);
-      const q = window.fsQuery(
-        window.fsCollection(window.db, "brutal_data"),
-        window.fsOrderBy(window.fsDocumentId()),
-        window.fsStartAt(cp),
-        window.fsEndAt(cp + '\uf8ff')
-      );
-      const snap = await window.fsGetDocs(q);
-      marcarConectado(true);
-      const keys = []; snap.forEach(d => keys.push(d.id));
-      return keys;
-    }
-    return Object.keys(localStorage).filter(k => k.startsWith(prefix));
-  } catch(e) {
-    console.error("Erro ao listar:", e);
-    if (shared) marcarConectado(false);
-    return Object.keys(localStorage).filter(k => k.startsWith(prefix));
-  }
-}
+    window.criarCampanha = async () => {
+      if (!perfilAtual) return;
+      const nome = document.getElementById('c-nome').value.trim();
+      if (!nome) { toast('Dê um nome pra campanha.', 'erro'); return; }
+      const codigo = gerarCodigo(nome);
+      const membro = { uid: perfilAtual.uid, nomeUsuario: perfilAtual.nomeUsuario, papel: 'diretora' };
+      try {
+        await window.fsSetDoc(window.fsDoc(window.db, 'campanhas', codigo), {
+          nome, diretoraUid: perfilAtual.uid, membros: [membro], membrosUids: [perfilAtual.uid],
+          iniciativa: { indice: 0 }, descarte: { valor: 0 }, rolando: null, criadaEm: Date.now()
+        });
+        await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid), { nomeUsuario: perfilAtual.nomeUsuario, campanhaAtiva: codigo }, { merge: true });
+        toast(`Sala "${nome}" criada. Código: ${codigo}`, 'sucesso');
+        // Redirecionar para a página do mestre
+        window.location.href = `mestre.html?campanha=${codigo}`;
+      } catch (e) { console.error(e); toast('Erro ao criar sala.', 'erro'); }
+    };
 
-async function storageDelete(key, shared = false) {
-  try {
-    if (shared && window.db) {
-      await window.fsDeleteDoc(window.fsDoc(window.db, "brutal_data", cleanKey(key)));
-      marcarConectado(true);
-    }
-    localStorage.removeItem(key);
-  } catch(e) {
-    console.error("Erro ao deletar:", e);
-    if (shared) marcarConectado(false);
-  }
-}
+    window.entrarCampanha = async () => {
+      if (!perfilAtual) return;
+      const codigo = document.getElementById('c-codigo').value.trim().toUpperCase();
+      if (!codigo) { toast('Preencha o código.', 'erro'); return; }
+      try {
+        const ref = window.fsDoc(window.db, 'campanhas', codigo);
+        const snap = await window.fsGetDoc(ref);
+        if (!snap.exists()) { toast('Campanha não encontrada.', 'erro'); return; }
+        const info = snap.data();
+        if (!info.membrosUids.includes(perfilAtual.uid)) {
+          const membros = [...info.membros, { uid: perfilAtual.uid, nomeUsuario: perfilAtual.nomeUsuario, papel: 'jogador' }];
+          const membrosUids = [...info.membrosUids, perfilAtual.uid];
+          await window.fsUpdateDoc(ref, { membros, membrosUids });
+        }
+        await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid), { nomeUsuario: perfilAtual.nomeUsuario, campanhaAtiva: codigo }, { merge: true });
+        toast(`Entrou em "${info.nome}".`, 'sucesso');
+        // Redirecionar para a página do jogador
+        window.location.href = `jogador.html?campanha=${codigo}`;
+      } catch (e) { console.error(e); toast('Erro ao entrar.', 'erro'); }
+    };
 
-/** Observa um único documento em tempo real. Retorna a função pra cancelar a inscrição. */
-function watchDoc(key, shared, cb) {
-  if (shared && window.db) {
-    const ref = window.fsDoc(window.db, "brutal_data", cleanKey(key));
-    return window.fsOnSnapshot(ref, snap => {
-      marcarConectado(true);
-      cb(snap.exists() ? JSON.parse(snap.data().value) : null);
-    }, err => { console.error("Erro no listener:", err); marcarConectado(false); });
-  }
-  storageGet(key, false).then(cb);
-  return () => {};
-}
+    // ===== ESTADO DE AUTENTICAÇÃO =====
+    window.fsOnAuthStateChanged(window.auth, async (user) => {
+      if (!user) {
+        perfilAtual = null;
+        document.getElementById('btn-logout').style.display = 'none';
+        document.getElementById('tela-auth').classList.add('active');
+        document.getElementById('tela-lobby').style.display = 'none';
+        return;
+      }
+      let dadosUsuario;
+      try {
+        const snap = await window.fsGetDoc(window.fsDoc(window.db, 'usuarios', user.uid));
+        dadosUsuario = snap.exists() ? snap.data() : { nomeUsuario: user.displayName || 'Sobrevivente', campanhaAtiva: null };
+      } catch (e) {
+        console.error(e);
+        dadosUsuario = { nomeUsuario: user.displayName || 'Sobrevivente', campanhaAtiva: null };
+      }
+      perfilAtual = { uid: user.uid, nomeUsuario: dadosUsuario.nomeUsuario };
+      document.getElementById('btn-logout').style.display = 'inline-block';
+      document.getElementById('lobby-nome').textContent = perfilAtual.nomeUsuario;
+      document.getElementById('tela-auth').classList.remove('active');
+      document.getElementById('tela-auth').style.display = 'none';
+      document.getElementById('tela-lobby').style.display = 'block';
+      document.getElementById('tela-lobby').classList.add('active');
 
-/** Observa todos os documentos com um prefixo em tempo real (ex: sobreviventes de uma campanha). */
-function watchPrefix(prefix, shared, cb, limite) {
-  if (shared && window.db) {
-    const cp = cleanKey(prefix);
-    let q = window.fsQuery(
-      window.fsCollection(window.db, "brutal_data"),
-      window.fsOrderBy(window.fsDocumentId()),
-      window.fsStartAt(cp),
-      window.fsEndAt(cp + '\uf8ff')
-    );
-    if (limite) q = window.fsQuery(q, window.fsLimitToLast(limite));
-    return window.fsOnSnapshot(q, snap => {
-      marcarConectado(true);
-      const itens = []; snap.forEach(d => itens.push(JSON.parse(d.data().value)));
-      cb(itens);
-    }, err => { console.error("Erro no listener:", err); marcarConectado(false); });
-  }
-  storageList(prefix, false).then(async keys => {
-    const itens = [];
-    for (const k of keys) { const v = await storageGet(k, false); if (v) itens.push(v); }
-    cb(itens);
-  });
-  return () => {};
-}
-
-/* ================= DADOS DO SISTEMA ================= */
-const ATRIBUTOS = ["Agilidade","Vigor","Carisma","Força","Astúcia"];
-
-const ARQUETIPOS = {
-  "Atleta": [
-    {n:"Compra Extra", d:"Uma vez por encontro, adquire uma vantagem sem gastar a ação normalmente reservada pra isso."},
-    {n:"Aguento Tudo", d:"Uma vez por encontro, troca o resultado de um teste pelo valor do seu dado marcador atual."},
-    {n:"Não Foi Nada", d:"Uma vez por cena, ignora os efeitos de uma qualidade desfavorável do ambiente."},
-    {n:"Você Consegue", d:"Ao escapar de um encontro, dá um dado de fuga automático a outra sobrevivente."},
-    {n:"Sempre Superando", d:"Uma vez por encontro, recusa aumentar sua Sequela ao ser ferida."},
-    {n:"Hora da Revanche", d:"Uma vez por encontro, gasta um dado extra pra agir duas vezes no turno."}
-  ],
-  "Cética": [
-    {n:"Impossível!", d:"Pode re-rolar um teste de susto, uma vez."},
-    {n:"Deve Ter Explicação", d:"Fora de um encontro, uma vez por sessão, descobre quantos dados o Assassino tem."},
-    {n:"Talvez Eu Estivesse Errada", d:"Ao tirar o valor máximo num teste de susto, transforma um dado em dado de fuga no início do próximo encontro."},
-    {n:"Só Pode Ser Isso", d:"Uma vez por encontro, após cair numa armadilha, descobre quantas armadilhas restam no ambiente."},
-    {n:"Não É Tão Ruim", d:"As três primeiras falhas num ritual viram neutras, mas o dado ainda é descartado."},
-    {n:"Faz Direito", d:"Uma vez por encontro, cede sua ação a uma aliada; ambas ganham um dado extra."}
-  ],
-  "Esbelto": [
-    {n:"Sei Que Sou Demais", d:"Uma vez por encontro, gasta 4 PT pra dar +2 PT a todos os outros na mesa."},
-    {n:"Não Perco a Pose", d:"Uma vez por encontro, re-rola os dados ao tentar fugir."},
-    {n:"Eu Sou o Melhor", d:"Ganha 1 PT sempre que tirar o valor máximo (6) num dado."},
-    {n:"Tira Ele de Mim", d:"Uma vez por encontro, ao ser ajudada, recebe um dado extra da pilha de descarte."},
-    {n:"Olhos em Mim", d:"Uma vez por sessão, força o Assassino a mirar em você no próximo turno; se ele ferir, ganha PT igual ao resultado."},
-    {n:"Nasci Assim", d:"Tem um dado extra no Rito de Iniciação, sem sacrificar nada."}
-  ],
-  "Herói": [
-    {n:"Até o Fim", d:"Ao Arriscar Tudo por si mesmo, mantém um dado em vez de perder todos."},
-    {n:"Vai na Fé", d:"Uma vez por sessão, ao ajudar alguém, os dados doados viram dados de fuga."},
-    {n:"Tudo Por Você", d:"Ao Arriscar Tudo pra salvar outra sobrevivente, descarta só metade dos dados."},
-    {n:"Segue o Pai", d:"Aliados no mesmo caminho que você numa cena de suspense reduzem a dificuldade em 1."},
-    {n:"Eu Te Protejo", d:"Num encontro, cancela um efeito desfavorável de um aliado; enquanto isso, seus testes ficam complexos."},
-    {n:"Já Se Esqueceu de Mim?", d:"Pode continuar na iniciativa após escapar, doando dados de fuga a outra sobrevivente."}
-  ],
-  "Nerd": [
-    {n:"Deixa Comigo", d:"Uma vez por encontro, reduz em 1 o custo de uma vantagem de uma aliada."},
-    {n:"Eu Tenho uma Teoria", d:"Uma vez por sessão, força a Diretora a revelar a próxima ação do Assassino antes de ocorrer."},
-    {n:"Prevejo Tramoias", d:"Uma vez por cena de suspense, descobre o resultado de um caminho sem ativar armadilhas."},
-    {n:"Eu Sei um Atalho", d:"Uma vez por sessão, descobre quantos dados de fuga faltam pra escapar."},
-    {n:"Você Não Vai Querer Saber", d:"Uma vez por sessão, usa conhecimento oculto pra fazer uma oferenda extra."},
-    {n:"Eu Sei Seu Poder de Luta", d:"Uma vez por sessão, gasta um turno de encontro pra descobrir quantos dados o Assassino tem."}
-  ],
-  "Inocente": [
-    {n:"Me Ajudem!", d:"Uma vez por sessão, quem te ajuda não perde os dados doados."},
-    {n:"Eu Não Quero Morrer", d:"Se for a última numa cena de encontro, pode Arriscar Tudo e ainda manter seus dados."},
-    {n:"Não Mereço Isso", d:"Uma vez por sessão, ignora uma habilidade especial do Assassino direcionada a você."},
-    {n:"Se Fosse Uma Cobra", d:"A primeira armadilha que você ativa numa cena de suspense não tem efeito."},
-    {n:"Foi Sorte de Principiante", d:"Num ritual, pode re-rolar oferendas falhas até duas vezes."},
-    {n:"Pureza de Espírito", d:"Uma vez por sessão, descarta um dado marcador e ganha dados comuns iguais ao valor dele."}
-  ],
-  "Relaxado": [
-    {n:"Uh? Quê?", d:"Uma vez por encontro, ignora um teste de susto."},
-    {n:"Olé!", d:"Uma vez por encontro, ao ser ferida, re-rola o dado marcador e fica com o novo valor."},
-    {n:"Posso Até Tentar", d:"Compra uma vantagem fora da sua especialidade se passar num teste dela; falhando, perde o PT mesmo assim."},
-    {n:"Uni-Duni-Tê", d:"No primeiro turno de uma cena de suspense, segue dois caminhos ao mesmo tempo."},
-    {n:"Minha Nossa!", d:"Uma vez por sessão, força um teste de susto em si mesma pra ativar uma qualidade favorável."},
-    {n:"Já Estou Acostumado", d:"Choque de Realidade custa 1 PT a menos, permanentemente."}
-  ],
-  "Valentona": [
-    {n:"Daqui Ninguém Me Tira", d:"Uma vez por sessão, recusa sacrificar ou descartar dados numa rolagem."},
-    {n:"Eu Não Tenho Medo de Você", d:"Uma vez por encontro, descarta um dado de fuga pra remover um dado do Assassino."},
-    {n:"Me Passa o Que É Seu", d:"Uma vez por encontro, usa sua ação pra roubar um dado de fuga de outra sobrevivente."},
-    {n:"O Que Não Me Mata Me Fortalece", d:"Ao cair numa armadilha, ganha 2 PT."},
-    {n:"Nem Fodendo", d:"Uma vez por sessão, impede uma qualidade negativa de ativar pelo resto da cena."},
-    {n:"Vai Sentir Essa Amanhã", d:"Ao Partir Pra Cima, pode arriscar de forma complexa pra remover mais de um dado do Assassino."}
-  ]
-};
-
-const VANTAGENS_GERAIS = [
-  {n:"Cuidar de Feridas", custo:"quanto quiser", d:"Reduz suas Feridas (ou de uma aliada) no valor de PT gasto. Não cura abaixo do valor de Sequela. 1x por encontro."},
-  {n:"Tomar Jeito", custo:3, d:"Recupera uma especialidade incapacitada, sua ou de outra sobrevivente."},
-  {n:"Choque de Realidade", custo:6, d:"Compra um dado comum a mais pra sua pilha, puxado da pilha de descarte."}
-];
-const VANTAGENS_ESPECIALIDADE = [
-  {n:"Adrenalina", attr:"Vigor", custo:2, d:"Reduz sua próxima ferida em 1 automaticamente. 1x por encontro."},
-  {n:"Caçar Recursos", attr:"Astúcia", custo:3, d:"Recebe um Recurso novo que não estava na cena."},
-  {n:"Preparar pra Próxima", attr:"Agilidade", custo:3, d:"Garante um dado de fuga extra no próximo teste de Vazar Dali. 1x por encontro."},
-  {n:"Ele Não Espera Por Mim", attr:"Força", custo:3, d:"Garante sucesso automático no próximo Partir pra Cima. 1x por encontro."},
-  {n:"Ombro Amigo", attr:"Carisma", custo:"quanto quiser", d:"Dá a mesma quantidade de PT gasta a outra sobrevivente. 1x por encontro."}
-];
-
-const AMEACAS = {
-  "Amaldiçoado": {passiva:"Dados marcadores (exceto ferida) começam com +1.", intento:"+2 PH ao aplicar um dado marcador numa sobrevivente.", acoes:["Possuir","Amaldiçoar","Infectar","Acidentar"]},
-  "Assombração": {passiva:"Se uma sobrevivente falhar um teste de susto carregando um Recurso, ele se quebra.", intento:"PH igual ao número de sobreviventes que falharem um teste de susto.", acoes:["Possuir","Amaldiçoar","Acidentar","Incapacitar"]},
-  "Brutamontes": {passiva:"Ferir quem já tem Sequela dá +1 no valor da ferida.", intento:"+2 PH quando falharem um Partir Pra Cima.", acoes:["Segurar","Incapacitar","Destruir"]},
-  "Carniceira": {passiva:"Ao escapar de um encontro, ganha 1 dado extra por sobrevivente com ferimento maior que 3.", intento:"+1 PH quando usarem Cuidar de Feridas.", acoes:["Devorar","Segurar","Acidentar"]},
-  "Desconhecida": {passiva:"Partir Pra Cima contra você vira Risco Complexo.", intento:"+3 PH quando uma sobrevivente prejudicar outra ativamente.", acoes:["Possuir","Infectar","Devorar","Acidentar","Restringir"]},
-  "Descontrolada": {passiva:"Primeira vez que ferir cada sobrevivente na sessão, +1 no ferimento.", intento:"+1 PH por sobrevivente que entrar num encontro com 3 dados ou menos.", acoes:["Segurar","Destruir","Devorar"]},
-  "Estratégico": {passiva:"+1 armadilha grátis e no máximo em toda cena de suspense.", intento:"+1 PH por armadilha ativada em cena de suspense.", acoes:["Restringir","Acidentar","Devorar","Infectar","Incapacitar"]},
-  "Inato": {passiva:"Com 3+ PH ao iniciar um encontro ou suspense, ganha um dado extra.", intento:"+1 PH toda vez que um Intérprete passar de 6 PT.", acoes:["Acidentar","Destruir","Segurar","Amaldiçoar"]},
-  "Máquina": {passiva:"Partir Pra Cima contra você tem dificuldade +1.", intento:"Pode descartar um dado por 3 PH a cada encontro.", acoes:["Infectar","Destruir","Amaldiçoar","Restringir"]},
-  "Mestre": {passiva:"Sua segunda Ameaça vira 'Ameaça da Horda': um dado especial define quantas sobreviventes um Ferir afeta.", intento:"+1 PH toda vez que alguém pegar sua primeira Sequela.", acoes:["Segurar","Infectar","Possuir","Devorar","Incapacitar"]},
-  "Monstruosidade": {passiva:"1x por encontro, ao ferir, role 2 dados e distribua entre duas sobreviventes.", intento:"+2 PH quando uma sobrevivente morrer.", acoes:["Incapacitar","Devorar","Destruir"]},
-  "Obstinada": {passiva:"Escolhe uma sobrevivente como alvo fixo; dados que ela descartar em testes de susto vêm pra você.", intento:"+3 PH quando alguém escapa na primeira rodada de um encontro.", acoes:["Destruir","Segurar","Devorar","Restringir"]},
-  "Perseguidor": {passiva:"Sobrevivente com ferida maior que 3 tem dificuldade +1 pra fugir.", intento:"+1 PH quando alguém falhar todos os dados tentando fugir.", acoes:["Devorar","Segurar","Restringir","Acidentar"]}
-};
-const ACOES_UNICAS = {
-  "Acidentar":"4 PH — ao assustar fora de encontro, aplica Ferir em quem falhou o teste.",
-  "Amaldiçoar":"3 PH — amaldiçoa em segredo um Recurso; evolui a cada uso até debitar todo o PT da dona.",
-  "Destruir":"4 PH (grátis em suspense) — destrói um Recurso ou uma qualidade favorável.",
-  "Devorar":"Grátis — ganha 1 PH toda vez que uma sobrevivente tirar o valor máximo num dado.",
-  "Incapacitar":"4 PH (grátis em suspense) — desmarca uma especialidade da sobrevivente ferida.",
-  "Infectar":"4 PH — entrega uma infecção que evolui e incapacita especialidades com o tempo.",
-  "Possuir":"Grátis — entrega um dado marcador que sobe a cada falha; no valor máximo, você a controla pra matar.",
-  "Segurar":"5 PH — imobiliza a sobrevivente ferida; ela não conta dados de fuga e piora a cada turno.",
-  "Restringir":"Grátis — entrega um dado marcador que aumenta a dificuldade de todos os testes da sobrevivente."
-};
-const ACOES_GERAIS = [
-  {n:"Assustar", d:"Força um teste de susto. Pode ser usada (7 − Nível de Brutalidade) vezes por encontro."},
-  {n:"Matar", d:"Mata instantaneamente uma sobrevivente com menos dados que você; descarta 2 dos seus dados."},
-  {n:"Ferir", d:"Role 1 dado. No 6, mata na hora. Em outro valor, vira dado marcador de ferimento (soma se repetir)."},
-  {n:"Mutilar", d:"Ao tirar 6 num Ferir, pode escolher não matar: +3 de Sequela no alvo e você ganha 4 PH."},
-  {n:"Escapar", d:"Sai da cena, encerra o confronto e ganha 1 dado."},
-  {n:"Dificultar", d:"No início do encontro, aumenta as Etapas de Fuga em 1 por 4 PH gastos."}
-];
-const PODERES_ESPECIAIS = [
-  {n:"Você Já Sofreu o Suficiente", custo:2, d:"Ao matar quem tem menos de 3 dados, descarta só 1 dado da vítima."},
-  {n:"Eu Vejo Cada Passo Seu", custo:2, d:"1x por encontro, ao ver uma falha, obriga a sacrificar um dado pra você."},
-  {n:"Banho de Sangue", custo:"2 por jogador", d:"Na primeira morte do encontro, descarta 1 dado de todas as sobreviventes vivas."},
-  {n:"Corte Profundo", custo:2, d:"Ao ferir, adiciona +1 ao valor do dado marcador de ferida."},
-  {n:"Jumpscare", custo:2, d:"Ao começar um encontro, provoca teste de susto em todas sem gastar seus usos de Assustar."},
-  {n:"Trauma", custo:3, d:"Ao usar Escapar, incapacita todas as especialidades de uma sobrevivente ativa."},
-  {n:"Isso Vai Deixar Marca", custo:4, d:"1x por encontro, ao ferir, adiciona +1 Sequela extra."},
-  {n:"Ataque do Coração", custo:3, d:"1x por encontro, antes de um teste de susto, todas as falhas são sacrificadas pra você."},
-  {n:"Surpresa!", custo:6, d:"Move sua iniciativa pro primeiro lugar; não pode Matar no primeiro turno."},
-  {n:"Eu Voltarei", custo:3, d:"Usa Escapar fora do seu turno, entre turnos das sobreviventes."},
-  {n:"Sua Hora Chegou", custo:3, d:"Ao iniciar um encontro, aumenta um dado marcador da mesa em 1 (exceto Ferir)."},
-  {n:"Não Há Saída", custo:4, d:"No fim do turno, transforma um dado de fuga de volta em dado comum."},
-  {n:"Cansei de Brincar", custo:5, d:"Transforma um Caminho Armadilha em Caminho Mortal."},
-  {n:"Mudança de Planos", custo:5, d:"Troca uma ação única por outra da mesma Ameaça, entre cenas de encontro."},
-  {n:"Fim da Esperança", custo:5, d:"Mantém um passo da resolução oculto na primeira rodada de uma cena de suspense."},
-  {n:"Caiam na Teia", custo:5, d:"1x por sessão, ativa uma qualidade negativa no cenário durante um encontro."},
-  {n:"Indiferença Perturbadora", custo:2, d:"Ignora os efeitos de uma qualidade neutra por um turno, só pra você."}
-];
-const INICIATIVA_ORDEM = ["Herói","Atleta","Valentona","Esbelto","Inocente","Nerd","Relaxado","Cética","Assassino"];
-
-/* ================= NAVEGAÇÃO ================= */
-function goTo(target){
-  document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(target).classList.add('active');
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.target===target));
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(target==='assassino') renderAssassino();
-  if(target!=='campanhas') document.getElementById('status-conexao').style.display = campanhaAtiva ? 'flex' : 'none';
-}
-window.goTo = goTo;
-
-document.getElementById('nav').addEventListener('click', e=>{
-  const btn = e.target.closest('button[data-target]'); if(btn){ tocarClique(); goTo(btn.dataset.target); }
-});
-
-/* ================= SOM ================= */
-let somLigado = true;
-let audioCtx = null;
-function getCtx(){ if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); } return audioCtx; }
-function toggleSom(){ somLigado=!somLigado; document.getElementById('som-toggle').textContent = somLigado? '🔊 Som ligado':'🔇 Som desligado'; }
-window.toggleSom = toggleSom;
-
-function tocarClique(){
-  if(!somLigado) return;
-  try{ const ctx=getCtx(); const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type='square'; o.frequency.value=880; g.gain.value=0.03;
-    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.04);
-  }catch(e){}
-}
-function tocarDado(){
-  if(!somLigado) return;
-  try{ const ctx=getCtx(); const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type='triangle'; o.frequency.value=140+Math.random()*60; g.gain.value=0.05;
-    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.06);
-  }catch(e){}
-}
-document.addEventListener('click', e=>{ if(e.target.closest('button') && !e.target.closest('#nav')) tocarClique(); });
-
-/* ================= CAMPANHA ATIVA ================= */
-let campanhaAtiva = null;
-
-async function carregarContexto(){
-  campanhaAtiva = await storageGet('minha-campanha-ativa', false);
-  atualizarUIporPapel();
-}
-function atualizarUIporPapel(){
-  const navAssassino = document.querySelector('nav button[data-target="assassino"]');
-  if(campanhaAtiva && campanhaAtiva.papel !== 'diretora'){
-    navAssassino.classList.add('locked');
-  } else {
-    navAssassino.classList.remove('locked');
-  }
-}
-
-/* ================= SOBREVIVENTES ================= */
-function preencherSelectArquetipo(){
-  const sel = document.getElementById('s-arquetipo');
-  sel.innerHTML = Object.keys(ARQUETIPOS).map(a=>`<option>${a}</option>`).join('');
-  renderHabilidadesPreview();
-  renderEspecialidades();
-}
-function renderEspecialidades(){
-  const el = document.getElementById('s-especialidades');
-  el.innerHTML = ATRIBUTOS.map(a=>`<label class="pill" style="cursor:pointer;"><input type="checkbox" class="s-especialidade" value="${a}" style="margin-right:5px;">${a}</label>`).join('');
-}
-function renderHabilidadesPreview(){
-  const arq = document.getElementById('s-arquetipo').value;
-  const habs = ARQUETIPOS[arq] || [];
-  document.getElementById('s-hab-preview').innerHTML =
-    `<div class="field"><label>Habilidades de ${arq} (marque as que a sobrevivente já tem)</label></div>` +
-    habs.map((h,i)=>`<div class="ability"><div class="txt"><b>${h.n}</b><p>${h.d}</p></div>
-      <label><input type="checkbox" class="s-hab-check" data-idx="${i}"> tem</label></div>`).join('');
-}
-window.renderHabilidadesPreview = renderHabilidadesPreview;
-
-async function salvarSobrevivente(){
-  const nome = document.getElementById('s-nome').value.trim();
-  if(!nome){ toast('Dê um nome pra sobrevivente.', 'erro'); return; }
-  const arquetipo = document.getElementById('s-arquetipo').value;
-  const especialidades = Array.from(document.querySelectorAll('.s-especialidade:checked')).map(c=>c.value);
-  const habilidades = Array.from(document.querySelectorAll('.s-hab-check')).map((c,i)=>({idx:i, tem:c.checked, usado:false}));
-  const id = nome.toLowerCase().replace(/\s+/g,'-') + '-' + Date.now();
-  const dados = {
-    id, nome, arquetipo, especialidades, habilidades,
-    pilha:6, pt:0, ferida:0, sequela:0,
-    item: document.getElementById('s-item').value,
-    relacao: document.getElementById('s-relacao').value,
-    desejo: document.getElementById('s-desejo').value,
-    dono: (campanhaAtiva? campanhaAtiva.jogador : 'você')
-  };
-  const shared = !!campanhaAtiva;
-  const key = shared? `campanha:${campanhaAtiva.codigo}:sobrevivente:${id}` : `sobrevivente:${id}`;
-  await storageSet(key, dados, shared);
-  document.getElementById('s-nome').value=''; document.getElementById('s-item').value='';
-  document.getElementById('s-relacao').value=''; document.getElementById('s-desejo').value='';
-  toast(`${nome} entrou na mesa.`, 'sucesso');
-  if(!shared) carregarSobreviventes();
-  // em modo campanha o listener em tempo real (watchPrefix) já atualiza a lista sozinho
-}
-window.salvarSobrevivente = salvarSobrevivente;
-
-/** Modo solo: lê a lista uma vez do localStorage. Modo campanha usa o listener em tempo real (ver iniciarListenersCampanha). */
-async function carregarSobreviventes(){
-  if(campanhaAtiva) return; // a lista da campanha é mantida pelo listener em tempo real
-  const keys = await storageList('sobrevivente:', false);
-  const lista = [];
-  for(const k of keys){ const d = await storageGet(k, false); if(d) lista.push(d); }
-  renderListaSobreviventes(lista, false);
-}
-
-function renderListaSobreviventes(lista, shared){
-  const el = document.getElementById('lista-sobreviventes');
-  if(!lista.length){ el.innerHTML = '<div class="empty">Nenhuma sobrevivente criada ainda.</div>'; return; }
-  const codigo = campanhaAtiva ? campanhaAtiva.codigo : null;
-  el.innerHTML = lista
-    .map(d => renderFichaSobrevivente(d, shared ? `campanha:${codigo}:sobrevivente:${d.id}` : `sobrevivente:${d.id}`, shared))
-    .join('');
-}
-
-function renderFichaSobrevivente(d, key, shared){
-  const habs = ARQUETIPOS[d.arquetipo] || [];
-  const habHtml = (d.habilidades||[]).filter(h=>h.tem).map(h=>{
-    const info = habs[h.idx]; if(!info) return '';
-    return `<div class="ability"><div class="txt"><b>${escapeHtml(info.n)}</b><p>${escapeHtml(info.d)}</p></div>
-      <label><input type="checkbox" ${h.usado?'checked':''} onchange="marcarHabilidadeUsada('${key}',${shared},${h.idx},this.checked)"> usada</label></div>`;
-  }).join('') || '<p class="meta">Nenhuma habilidade marcada.</p>';
-
-  const feridaDots = Array.from({length:6}).map((_,i)=>`<div class="dot ferida ${i<d.ferida?'on':''}" onclick="ajustarStat('${key}',${shared},'ferida',${i+1})"></div>`).join('');
-  const sequelaDots = Array.from({length:5}).map((_,i)=>`<div class="dot sequela ${i<d.sequela?'on':''}" onclick="ajustarStat('${key}',${shared},'sequela',${i+1})"></div>`).join('');
-
-  return `<div class="card">
-    <h4>${escapeHtml(d.nome)} <span class="pill">${escapeHtml(d.arquetipo)}</span> ${(d.especialidades||[]).map(e=>`<span class="pill">${escapeHtml(e)}</span>`).join('')}</h4>
-    <div class="row">
-      <div class="field"><label>Pontos de Tensão</label><div class="row" style="align-items:center;gap:8px;">
-        <b style="font-size:20px;">${d.pt}</b>
-        <button class="btn ghost small" onclick="ajustarPT('${key}',${shared},1)">+1</button>
-        <button class="btn ghost small" onclick="ajustarPT('${key}',${shared},-1)">-1</button></div></div>
-      <div class="field"><label>Pilha de dados</label><b style="font-size:20px;">${d.pilha}</b></div>
-    </div>
-    <div class="row">
-      <div class="field"><label>Feridas</label><div class="dots">${feridaDots}</div></div>
-      <div class="field"><label>Sequelas</label><div class="dots">${sequelaDots}</div></div>
-    </div>
-    <p class="meta">${d.item?('Item icônico: '+escapeHtml(d.item)+'. '):''}${d.relacao?('Relação afetiva: '+escapeHtml(d.relacao)+'. '):''}${d.desejo?('Desejo obscuro: '+escapeHtml(d.desejo)+'.'):''}</p>
-    <details style="margin-top:10px;"><summary style="cursor:pointer;color:var(--sick-bright);font-size:12px;">Habilidades</summary>${habHtml}</details>
-    <details style="margin-top:8px;"><summary style="cursor:pointer;color:var(--sick-bright);font-size:12px;">Vantagens (gastar PT)</summary>
-      ${VANTAGENS_GERAIS.map(v=>`<div class="ability"><div class="txt"><b>${escapeHtml(v.n)} ${typeof v.custo==='number'?`(${v.custo} PT)`:''}</b><p>${escapeHtml(v.d)}</p></div>
-        <button class="btn small" onclick="usarVantagem('${key}',${shared},'${v.n}',${typeof v.custo==='number'?v.custo:0})">usar</button></div>`).join('')}
-      ${VANTAGENS_ESPECIALIDADE.filter(v=>(d.especialidades||[]).includes(v.attr)).map(v=>`<div class="ability"><div class="txt"><b>${escapeHtml(v.n)} (${v.attr}, ${typeof v.custo==='number'?v.custo+' PT':v.custo})</b><p>${escapeHtml(v.d)}</p></div>
-        <button class="btn small" onclick="usarVantagem('${key}',${shared},'${v.n}',${typeof v.custo==='number'?v.custo:0})">usar</button></div>`).join('')}
-    </details>
-  </div>`;
-}
-
-async function ajustarPT(key, shared, delta){
-  const d = await storageGet(key, shared); if(!d) return;
-  d.pt = Math.max(0, Math.min(10, d.pt + delta));
-  await storageSet(key, d, shared); if(!shared) carregarSobreviventes();
-}
-window.ajustarPT = ajustarPT;
-
-async function usarVantagem(key, shared, nome, custo){
-  const d = await storageGet(key, shared); if(!d) return;
-  if(custo > 0 && d.pt < custo){ toast(`${d.nome} não tem PT suficiente pra "${nome}" (precisa de ${custo}).`, 'erro'); return; }
-  if(custo > 0){ d.pt -= custo; await storageSet(key, d, shared); }
-  toast(`${d.nome} usou "${nome}"${custo>0?` (-${custo} PT)`:''}. Aplique o efeito na mesa.`, 'info');
-  if(!shared) carregarSobreviventes();
-}
-window.usarVantagem = usarVantagem;
-
-async function marcarHabilidadeUsada(key, shared, idx, usado){
-  const d = await storageGet(key, shared); if(!d) return;
-  const h = (d.habilidades||[]).find(x=>x.idx===idx); if(h) h.usado = usado;
-  await storageSet(key, d, shared); if(!shared) carregarSobreviventes();
-}
-window.marcarHabilidadeUsada = marcarHabilidadeUsada;
-
-async function ajustarStat(key, shared, campo, valorClicado){
-  const d = await storageGet(key, shared); if(!d) return;
-  d[campo] = (d[campo] === valorClicado) ? valorClicado - 1 : valorClicado;
-  await storageSet(key, d, shared);
-  if(!shared) carregarSobreviventes();
-}
-window.ajustarStat = ajustarStat;
-
-/* ================= ASSASSINO ================= */
-async function getAssassinoAtual(){
-  const key = campanhaAtiva? `campanha:${campanhaAtiva.codigo}:assassino` : 'assassino:local';
-  const shared = !!campanhaAtiva;
-  let d = await storageGet(key, shared);
-  if(!d){ d = {nome:'', ameaca1:'Amaldiçoado', ameaca2:'Assombração', nb1:2, nb2:2, ph:0,
-    escolhaAcao1:'', escolhaAcao2:'', passivaEscolhida:'principal', poderEscolhido:'', dados:0}; }
-  return {d, key, shared};
-}
-async function salvarAssassinoObj(d, key, shared){ await storageSet(key, d, shared); }
-
-async function renderAssassino(){
-  const el = document.getElementById('assassino-conteudo');
-  if(campanhaAtiva && campanhaAtiva.papel !== 'diretora'){
-    el.innerHTML = `<div class="note locked">Só a Diretora da campanha atual pode ver e editar a ficha do Assassino.</div>`;
-    return;
-  }
-  const {d,key,shared} = await getAssassinoAtual();
-  const nbSoma = Number(d.nb1)+Number(d.nb2);
-  const a1 = AMEACAS[d.ameaca1], a2 = AMEACAS[d.ameaca2];
-
-  el.innerHTML = `
-    ${campanhaAtiva? '' : '<div class="note">Ficha solo — crie ou entre numa campanha pra sincronizar com o grupo.</div>'}
-    <div class="card">
-      <h4>Identidade</h4>
-      <div class="row">
-        <div class="field"><label>Nome / apelido</label><input id="a-nome" value="${escapeHtml(d.nome)}" onchange="atualizarAssassinoCampo('nome',this.value)"></div>
-        <div class="field"><label>Pontos de Horror</label>
-          <div class="row" style="align-items:center;gap:8px;"><b style="font-size:22px;">${d.ph}</b>
-            <button class="btn ghost small" onclick="ajustarPH(1)">+1</button>
-            <button class="btn ghost small" onclick="ajustarPH(-1)">-1</button></div>
-        </div>
-        <div class="field"><label>Dados na pilha</label>
-          <div class="row" style="align-items:center;gap:8px;"><b style="font-size:22px;">${d.dados}</b>
-            <button class="btn ghost small" onclick="ajustarDadosAssassino(1)">+1</button>
-            <button class="btn ghost small" onclick="ajustarDadosAssassino(-1)">-1</button></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h4>Ameaças (Nível de Brutalidade somado: ${nbSoma})</h4>
-      <div class="row">
-        <div class="field"><label>Ameaça principal</label>
-          <select onchange="atualizarAssassinoCampo('ameaca1',this.value)">${Object.keys(AMEACAS).map(a=>`<option ${d.ameaca1===a?'selected':''}>${a}</option>`).join('')}</select>
-        </div>
-        <div class="field"><label>NB da principal (2-6)</label><input type="number" min="2" max="6" value="${d.nb1}" onchange="atualizarAssassinoCampo('nb1',Number(this.value))"></div>
-        <div class="field"><label>Ameaça secundária</label>
-          <select onchange="atualizarAssassinoCampo('ameaca2',this.value)">${Object.keys(AMEACAS).map(a=>`<option ${d.ameaca2===a?'selected':''}>${a}</option>`).join('')}</select>
-        </div>
-        <div class="field"><label>NB da secundária (2-6)</label><input type="number" min="2" max="6" value="${d.nb2}" onchange="atualizarAssassinoCampo('nb2',Number(this.value))"></div>
-      </div>
-      <div class="row">
-        <div class="card" style="flex:1;"><h4>${d.ameaca1} (principal)</h4><p class="meta">Passiva: ${a1.passiva}</p><p class="meta">Intento: ${a1.intento}</p>
-          <label class="pill"><input type="radio" name="passiva" ${d.passivaEscolhida==='principal'?'checked':''} onchange="atualizarAssassinoCampo('passivaEscolhida','principal')"> usar esta passiva</label>
-          <p class="meta" style="margin-top:8px;">Ação única disponível:</p>
-          ${a1.acoes.map(ac=>`<label class="pill" style="display:block;margin-bottom:4px;"><input type="radio" name="acao1" ${d.escolhaAcao1===ac?'checked':''} onchange="atualizarAssassinoCampo('escolhaAcao1','${ac}')"> ${ac} — ${ACOES_UNICAS[ac]}</label>`).join('')}
-        </div>
-        <div class="card" style="flex:1;"><h4>${d.ameaca2} (secundária)</h4><p class="meta">Passiva: ${a2.passiva}</p><p class="meta">Intento: ${a2.intento}</p>
-          <label class="pill"><input type="radio" name="passiva" ${d.passivaEscolhida==='secundaria'?'checked':''} onchange="atualizarAssassinoCampo('passivaEscolhida','secundaria')"> usar esta passiva</label>
-          <p class="meta" style="margin-top:8px;">Ação única disponível:</p>
-          ${a2.acoes.map(ac=>`<label class="pill" style="display:block;margin-bottom:4px;"><input type="radio" name="acao2" ${d.escolhaAcao2===ac?'checked':''} onchange="atualizarAssassinoCampo('escolhaAcao2','${ac}')"> ${ac} — ${ACOES_UNICAS[ac]}</label>`).join('')}
-        </div>
-      </div>
-    </div>
-
-    <div class="card"><h4>Ações gerais</h4>
-      ${ACOES_GERAIS.map(a=>`<div class="ability"><div class="txt"><b>${a.n}</b><p>${a.d}</p></div>
-        <button class="btn small" onclick="usarAcaoGeral('${a.n}')">usar</button></div>`).join('')}
-    </div>
-
-    <div class="card"><h4>Poderes especiais (gastam PH)</h4>
-      ${PODERES_ESPECIAIS.map(p=>`<div class="ability"><div class="txt"><b>${p.n} (${typeof p.custo==='number'?p.custo+' PH':p.custo})</b><p>${p.d}</p></div>
-        <label class="pill"><input type="radio" name="poder" ${d.poderEscolhido===p.n?'checked':''} onchange="atualizarAssassinoCampo('poderEscolhido','${p.n}')"> escolher</label></div>`).join('')}
-    </div>
-  `;
-}
-
-async function atualizarAssassinoCampo(campo, valor){
-  const {d,key,shared} = await getAssassinoAtual();
-  d[campo] = valor;
-  await salvarAssassinoObj(d,key,shared);
-  renderAssassino();
-}
-window.atualizarAssassinoCampo = atualizarAssassinoCampo;
-
-async function ajustarPH(delta){
-  const {d,key,shared} = await getAssassinoAtual();
-  d.ph = Math.max(0, d.ph + delta);
-  await salvarAssassinoObj(d,key,shared); renderAssassino();
-}
-window.ajustarPH = ajustarPH;
-
-async function ajustarDadosAssassino(delta){
-  const {d,key,shared} = await getAssassinoAtual();
-  d.dados = Math.max(0, d.dados + delta);
-  await salvarAssassinoObj(d,key,shared); renderAssassino();
-}
-window.ajustarDadosAssassino = ajustarDadosAssassino;
-
-async function usarAcaoGeral(nome){
-  if(nome === 'Ferir'){
-    const v = 1 + Math.floor(Math.random()*6);
-    tocarDado();
-    if(v===6) toast('Ferir: resultado 6 — a sobrevivente morre instantaneamente. Descarte o dado.', 'erro');
-    else toast(`Ferir: resultado ${v} — entregue como dado marcador de ferimento (some se ela já tiver outro).`, 'info');
-  } else {
-    toast(`Ação "${nome}" registrada — aplique o efeito na mesa.`, 'info');
-  }
-}
-window.usarAcaoGeral = usarAcaoGeral;
-
-/* ================= DADOS ================= */
-let pilhaAtual = 6;
-async function initPilha(){
-  const salvo = await storageGet('minha-pilha', false);
-  if(salvo && typeof salvo.valor === 'number') pilhaAtual = salvo.valor;
-  document.getElementById('pilha-atual').textContent = pilhaAtual;
-}
-async function ajustarPilha(delta){
-  pilhaAtual = Math.max(0, Math.min(6, pilhaAtual + delta));
-  document.getElementById('pilha-atual').textContent = pilhaAtual;
-  await storageSet('minha-pilha', {valor:pilhaAtual}, false);
-}
-window.ajustarPilha = ajustarPilha;
-
-async function incrementarDescarte(qtd){
-  if(!campanhaAtiva) return;
-  const key = `campanha:${campanhaAtiva.codigo}:descarte`;
-  const atual = (await storageGet(key, true)) || {valor:0};
-  atual.valor = Math.max(0, atual.valor + qtd);
-  await storageSet(key, atual, true);
-  document.getElementById('descarte-atual').textContent = atual.valor;
-}
-
-async function rolarDados(){
-  const qtd = Math.min(Number(document.getElementById('d-qtd').value)||1, pilhaAtual||6);
-  const necessarios = Number(document.getElementById('d-risco').value);
-  const jogador = document.getElementById('d-jogador').value.trim() || (campanhaAtiva? campanhaAtiva.jogador : 'você');
-  const tray = document.getElementById('dice-tray');
-  tray.innerHTML = '';
-  const diceEls = [];
-  for(let i=0;i<qtd;i++){ const die=document.createElement('div'); die.className='die rolling'; die.textContent='?'; tray.appendChild(die); diceEls.push(die); }
-
-  if(campanhaAtiva){
-    await storageSet(`campanha:${campanhaAtiva.codigo}:rolando`, {jogador, ts:Date.now()}, true);
-  }
-  document.getElementById('resultado-teste').innerHTML = '';
-
-  const rollInterval = setInterval(()=>{ diceEls.forEach(d=>{ d.textContent = 1+Math.floor(Math.random()*6); }); tocarDado(); }, 90);
-  await new Promise(r=>setTimeout(r, 800 + qtd*80));
-  clearInterval(rollInterval);
-
-  let sucessos=0, falhas=0; const valores=[];
-  diceEls.forEach(die=>{
-    const v = 1+Math.floor(Math.random()*6);
-    valores.push(v);
-    const ok = v>=4; if(ok) sucessos++; else falhas++;
-    die.className = 'die ' + (ok?'success':'fail'); die.textContent = v;
-  });
-  const passou = sucessos >= necessarios;
-  document.getElementById('resultado-teste').innerHTML =
-    `<b style="color:${passou?'var(--sick-bright)':'var(--blood-bright)'}">${passou?'SUCESSO':'FALHA'}</b> — ${sucessos} sucesso(s), ${falhas} falha(s). ${falhas>0?`Descarte ${falhas} dado(s) da pilha.`:''}`;
-
-  pilhaAtual = Math.max(0, pilhaAtual - falhas);
-  document.getElementById('pilha-atual').textContent = pilhaAtual;
-  await storageSet('minha-pilha', {valor:pilhaAtual}, false);
-
-  if(campanhaAtiva){
-    await storageDelete(`campanha:${campanhaAtiva.codigo}:rolando`, true);
-    const logKey = `campanha:${campanhaAtiva.codigo}:log:${Date.now()}`;
-    await storageSet(logKey, {jogador, valores, sucessos, falhas, necessarios, resultado:passou?'sucesso':'falha'}, true);
-    if(falhas>0) await incrementarDescarte(falhas);
-    // o histórico e o banner "rolando" atualizam sozinhos pros outros jogadores via listener em tempo real
-  }
-}
-window.rolarDados = rolarDados;
-
-/* =====================================================================
-   CAMPANHAS — salas compartilhadas em tempo real via Firestore
-   Ao entrar numa campanha, abrimos um listener (onSnapshot) pra cada
-   pedaço de dado da sala. Cada listener chama de volta sozinho sempre
-   que algo muda no Firebase — pra qualquer jogador, na hora. Guardamos
-   as funções de cancelamento em campanhaUnsubs pra fechá-las direito
-   se a pessoa recarregar a sala ou trocar de campanha.
-   ===================================================================== */
-function gerarCodigo(nome){ return nome.toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-' + Math.floor(Math.random()*90+10); }
-
-let campanhaUnsubs = [];
-let campanhaEstado = { info:null, iniciativa:{indice:0}, arquetiposNaMesa:new Set() };
-
-function pararListenersCampanha(){
-  campanhaUnsubs.forEach(unsub => { try{ unsub(); }catch(e){} });
-  campanhaUnsubs = [];
-  campanhaEstado = { info:null, iniciativa:{indice:0}, arquetiposNaMesa:new Set() };
-}
-
-async function criarCampanha(){
-  const nome = document.getElementById('c-nome').value.trim();
-  const jogador = document.getElementById('c-jogador').value.trim() || 'Diretora';
-  if(!nome){ toast('Dê um nome pra campanha.', 'erro'); return; }
-  const codigo = gerarCodigo(nome);
-  await storageSet(`campanha:${codigo}:info`, {nome, membros:[{nome:jogador, papel:'diretora'}]}, true);
-  await storageSet(`campanha:${codigo}:descarte`, {valor:0}, true);
-  await storageSet(`campanha:${codigo}:iniciativa`, {indice:0}, true);
-  await storageSet('minha-campanha-ativa', {codigo, jogador, papel:'diretora'}, false);
-  campanhaAtiva = {codigo, jogador, papel:'diretora'};
-  atualizarUIporPapel();
-  toast(`Sala "${nome}" criada. Código: ${codigo}`, 'sucesso');
-  mostrarCampanhaAtiva(codigo);
-}
-window.criarCampanha = criarCampanha;
-
-async function entrarCampanha(){
-  const codigo = document.getElementById('c-codigo').value.trim().toUpperCase();
-  const jogador = document.getElementById('c-jogador2').value.trim();
-  if(!codigo || !jogador){ toast('Preencha o código e seu nome.', 'erro'); return; }
-  const info = await storageGet(`campanha:${codigo}:info`, true);
-  if(!info){ toast('Não encontrei nenhuma campanha com esse código no Firebase.', 'erro'); return; }
-  if(!info.membros.find(m=>m.nome===jogador)) info.membros.push({nome:jogador, papel:'jogador'});
-  await storageSet(`campanha:${codigo}:info`, info, true);
-  await storageSet('minha-campanha-ativa', {codigo, jogador, papel:'jogador'}, false);
-  campanhaAtiva = {codigo, jogador, papel:'jogador'};
-  atualizarUIporPapel();
-  toast(`Você entrou em "${info.nome}".`, 'sucesso');
-  mostrarCampanhaAtiva(codigo);
-}
-window.entrarCampanha = entrarCampanha;
-
-function mostrarCampanhaAtiva(codigo){
-  pararListenersCampanha();
-  document.getElementById('status-conexao').style.display = 'flex';
-
-  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:info`, true, info => {
-    if(!info) return;
-    campanhaEstado.info = info;
-    document.getElementById('campanha-atual').innerHTML = `<div class="card">
-      <h4>Sala ativa: ${escapeHtml(info.nome)}</h4>
-      <p class="meta">Código: <b>${codigo}</b> — compartilhe com o grupo pra eles entrarem.</p>
-      <p class="meta">Você está como: <b>${escapeHtml(campanhaAtiva.jogador)}</b> (${campanhaAtiva.papel})</p>
-    </div>`;
-    renderMembros(info);
-    renderIniciativaCampanha(codigo);
-  }));
-
-  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:descarte`, true, desc => {
-    document.getElementById('descarte-atual').textContent = desc ? desc.valor : 0;
-  }));
-
-  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:iniciativa`, true, iniciativa => {
-    campanhaEstado.iniciativa = iniciativa || {indice:0};
-    renderIniciativaCampanha(codigo);
-  }));
-
-  campanhaUnsubs.push(watchDoc(`campanha:${codigo}:rolando`, true, rolando => {
-    document.getElementById('banner-rolando').innerHTML = rolando
-      ? `<div class="banner-rolando">🎲 ${escapeHtml(rolando.jogador)} está arriscando os dados...</div>` : '';
-  }));
-
-  campanhaUnsubs.push(watchPrefix(`campanha:${codigo}:log:`, true, entradas => {
-    const el = document.getElementById('dice-log');
-    if(!entradas.length){ el.innerHTML = '<p class="empty">Nenhuma rolagem registrada ainda nesta campanha.</p>'; return; }
-    el.innerHTML = entradas.slice().reverse().map(d =>
-      `<div class="log-entry"><b>${escapeHtml(d.jogador)}</b> rolou [${d.valores.join(', ')}] → ${d.sucessos} sucesso(s) / ${d.falhas} falha(s) — <b>${d.resultado.toUpperCase()}</b></div>`
-    ).join('');
-  }, 15));
-
-  campanhaUnsubs.push(watchPrefix(`campanha:${codigo}:sobrevivente:`, true, lista => {
-    campanhaEstado.arquetiposNaMesa = new Set(lista.map(s => s.arquetipo));
-    renderListaSobreviventes(lista, true);
-    renderIniciativaCampanha(codigo);
-  }));
-}
-
-function renderMembros(info){
-  document.getElementById('campanha-membros').innerHTML = `<div class="card"><h4>Membros da sala</h4>
-    ${info.membros.map(m=>`<span class="pill">${escapeHtml(m.nome)}${m.papel==='diretora'?' (Diretora)':''}</span>`).join('')}</div>`;
-}
-
-function renderIniciativaCampanha(codigo){
-  const ordem = INICIATIVA_ORDEM.filter(a => a==='Assassino' || campanhaEstado.arquetiposNaMesa.has(a));
-  const idx = campanhaEstado.iniciativa.indice % Math.max(ordem.length,1);
-  document.getElementById('campanha-iniciativa').innerHTML = `<div class="card">
-    <h4>Iniciativa</h4>
-    <div class="initiative">${ordem.map((a,i)=>`<div class="init-step ${a==='Assassino'?'assassino':''} ${i===idx?'current':''}">${a}</div>`).join('')}</div>
-    ${campanhaAtiva.papel==='diretora' ? `<button class="btn ghost small" onclick="avancarIniciativa('${codigo}', ${ordem.length})">Avançar turno</button>` : `<p class="meta">Só a Diretora avança a iniciativa.</p>`}
-  </div>`;
-}
-
-async function avancarIniciativa(codigo, total){
-  const key = `campanha:${codigo}:iniciativa`;
-  const atual = (await storageGet(key, true)) || {indice:0};
-  atual.indice = (atual.indice + 1) % Math.max(total,1);
-  await storageSet(key, atual, true);
-  // o listener de iniciativa já re-renderiza sozinho pra todo mundo na sala
-}
-window.avancarIniciativa = avancarIniciativa;
-
-/* ================= INICIALIZAÇÃO ================= */
-window.addEventListener('DOMContentLoaded', async () => {
-  preencherSelectArquetipo();
-  await initPilha();
-  await carregarContexto();
-  if(campanhaAtiva){ mostrarCampanhaAtiva(campanhaAtiva.codigo); }
-  else { carregarSobreviventes(); }
-});
-</script>
+      // Se já estiver em uma campanha, redirecionar automaticamente
+      if (dadosUsuario.campanhaAtiva) {
+        // Buscar a campanha para saber o papel
+        const snapCamp = await window.fsGetDoc(window.fsDoc(window.db, 'campanhas', dadosUsuario.campanhaAtiva));
+        if (snapCamp.exists()) {
+          const info = snapCamp.data();
+          const papel = info.diretoraUid === perfilAtual.uid ? 'mestre' : 'jogador';
+          window.location.href = `${papel}.html?campanha=${dadosUsuario.campanhaAtiva}`;
+        } else {
+          // Campanha não existe mais
+          await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid), { campanhaAtiva: null }, { merge: true });
+        }
+      }
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,3682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BRUTAL — Mestre</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Butcherman&family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: #0b0808;
+      --bg-elev-1: rgba(26,18,17,0.75);
+      --bg-elev-2: rgba(32,22,20,0.85);
+      --border: rgba(61,42,38,0.5);
+      --border-light: rgba(61,42,38,0.25);
+      --blood: #a02020;
+      --blood-bright: #d43f34;
+      --blood-glow: rgba(212,63,52,0.25);
+      --blood-soft: rgba(212,63,52,0.08);
+      --bone: #f0ede8;
+      --bone-dim: #9a8c82;
+      --bone-faint: rgba(154,140,130,0.5);
+      --sick: #88c05b;
+      --sick-glow: rgba(136,192,91,0.25);
+      --amber: #c9833a;
+      --amber-glow: rgba(201,131,58,0.2);
+      --sky: #38bdf8;
+      --violet: #a78bfa;
+      --pink: #f472b6;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.6);
+      --shadow-deep: 0 20px 60px rgba(0,0,0,0.75);
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+      --transition-slow: 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    html { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--bone);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      letter-spacing: 0.005em;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    button { font:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+    input, select, textarea { font:inherit; color:inherit; background:transparent; border:none; outline:none; }
+    img { max-width: 100%; display: block; }
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url('img/fundo.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.28;                 /* era 0.12 → agora 0.28 */
+  z-index: 0;
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(212,63,52,0.08), transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(201,131,58,0.05), transparent 45%),
+    radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.35) 100%); /* era 0.55 → 0.35 */
+  pointer-events: none;
+  z-index: 0;
+}
+    body > * { position: relative; z-index: 1; }
+
+    h1, h2, h3, h4, .display {
+      font-family: 'Anton', sans-serif;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1.15;
+    }
+    .logo {
+      font-family: 'Butcherman', cursive;
+      font-size: 30px;
+      background: linear-gradient(135deg, var(--blood-bright), var(--blood));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 16px var(--blood-glow));
+      line-height: 1;
+      letter-spacing: 0.04em;
+    }
+    .logo small {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--bone-dim);
+      -webkit-text-fill-color: var(--bone-dim);
+      text-transform: uppercase;
+      margin-top: -2px;
+      font-weight: 600;
+    }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(180deg, rgba(11,8,8,0.96) 0%, rgba(11,8,8,0.85) 100%);
+      backdrop-filter: blur(14px);
+      padding: 14px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    header::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--blood-bright) 50%, transparent 100%);
+      opacity: 0.5;
+    }
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .hero {
+      padding: 32px 36px;
+      margin-bottom: 28px;
+      border-radius: 6px 24px 24px 6px;
+      background:
+        radial-gradient(circle at 0% 50%, rgba(212,63,52,0.18), transparent 55%),
+        linear-gradient(135deg, rgba(139,0,0,0.15) 0%, rgba(0,0,0,0.35) 100%);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--blood-bright);
+      box-shadow: var(--shadow), inset 0 0 60px rgba(139,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(212,63,52,0.2), transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: 0; right: 0;
+      width: 180px; height: 180px;
+      background-image:
+        linear-gradient(45deg, transparent 45%, rgba(212,63,52,0.06) 50%, transparent 55%);
+      background-size: 20px 20px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .hero-top {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 12px;
+      font-family: 'Anton', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--blood-bright);
+      position: relative; z-index: 1;
+    }
+    .hero-top::before {
+      content: '';
+      width: 30px; height: 2px;
+      background: var(--blood-bright);
+      box-shadow: 0 0 12px var(--blood-glow);
+    }
+    .hero-titulo {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(32px, 4.5vw, 48px);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1;
+      color: var(--bone);
+      margin-bottom: 16px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+      position: relative; z-index: 1;
+    }
+    .hero-titulo span {
+      color: var(--blood-bright);
+      text-shadow: 0 0 24px var(--blood-glow);
+    }
+    .hero-meta {
+      display: flex; gap: 24px; flex-wrap: wrap;
+      align-items: center;
+      position: relative; z-index: 1;
+    }
+    .hero-meta-item {
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .hero-meta-item .lbl {
+      font-family: 'Anton', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bone-dim);
+    }
+    .hero-meta-item .val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--bone);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .hero-codigo {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-light);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--bone);
+      letter-spacing: 0.06em;
+    }
+    .hero-codigo button {
+      color: var(--blood-bright);
+      font-size: 14px;
+      padding: 0;
+      transition: transform var(--transition);
+    }
+    .hero-codigo button:hover { transform: scale(1.2); }
+
+    .master-tabs {
+      display: flex; gap: 6px;
+      border-bottom: 2px solid var(--border-light);
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .master-tab {
+      padding: 14px 24px 16px;
+      font-family: 'Anton', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bone-dim);
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      background: transparent;
+    }
+    .master-tab::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0; width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
+      transform: scaleX(0);
+      transition: transform var(--transition);
+    }
+    .master-tab:hover { color: var(--bone); }
+    .master-tab.active {
+      color: var(--bone);
+      background: linear-gradient(180deg, var(--blood-soft) 0%, transparent 100%);
+    }
+    .master-tab.active::after { transform: scaleX(1); }
+
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: border-color var(--transition);
+  margin-bottom: 20px;
+  position: relative;             /* ⬅️ NOVO */
+  overflow: hidden;               /* ⬅️ NOVO */
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('img/fundo.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.14;                  /* ajuste fino aqui */
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 0;
+}
+.card > * { position: relative; z-index: 1; }
+    .card:hover {
+      border-color: rgba(212,63,52,0.35);
+      transform: translateY(-2px);
+    }
+    .card::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg,
+        transparent 0%,
+        var(--blood-bright) 20%,
+        var(--blood-bright) 80%,
+        transparent 100%);
+      opacity: 0.55;
+      transition: opacity var(--transition);
+    }
+    .card:hover::before { opacity: 1; }
+    .card::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 80px; height: 80px;
+      background: linear-gradient(225deg, rgba(212,63,52,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .card .card {
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      box-shadow: none;
+      background: rgba(0,0,0,0.25);
+      animation: none;
+    }
+    .card .card::before,
+    .card .card::after { display: none; }
+    .card .card:hover { transform: none; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card:nth-child(1) { animation-delay: 0.02s; }
+    .card:nth-child(2) { animation-delay: 0.06s; }
+    .card:nth-child(3) { animation-delay: 0.10s; }
+    .card:nth-child(4) { animation-delay: 0.14s; }
+    .card:nth-child(5) { animation-delay: 0.18s; }
+    .card:nth-child(6) { animation-delay: 0.22s; }
+
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-light);
+      position: relative;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .card-header::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0;
+      width: 42px; height: 2px;
+      background: var(--blood-bright);
+      box-shadow: 0 0 12px var(--blood-glow);
+    }
+    .card-header h2 {
+      font-size: 30px; color: var(--bone);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .card-header h4 {
+      font-size: 17px; color: var(--bone);
+      display: flex; align-items: center; gap: 12px;
+      letter-spacing: 0.08em;
+    }
+    .card-header .header-icon {
+      font-size: 20px;
+      filter: drop-shadow(0 0 8px var(--blood-glow));
+      flex-shrink: 0;
+    }
+    .card-header .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      padding: 6px 14px;
+      background: var(--blood-soft);
+      border: 1px solid rgba(212,63,52,0.3);
+      color: var(--blood-bright);
+      text-transform: uppercase;
+      font-weight: 700;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      background: rgba(26,18,17,0.7);
+      color: var(--bone);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      width: 0; height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      transform: translate(-50%, -50%);
+      transition: width 0.45s ease, height 0.45s ease;
+      pointer-events: none;
+    }
+    .btn:hover::after { width: 320px; height: 320px; }
+    .btn:hover {
+      background: var(--blood);
+      border-color: var(--blood-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--blood-glow);
+    }
+    .btn.ghost { background: transparent; border-color: var(--border-light); }
+    .btn.ghost:hover {
+      background: var(--blood-soft);
+      border-color: var(--blood-bright);
+      transform: none;
+      box-shadow: none;
+    }
+    .btn.small { padding: 7px 14px; font-size: 10.5px; border-radius: 6px; }
+    .btn.sick {
+      background: rgba(136,192,91,0.1);
+      border-color: var(--sick);
+      color: var(--sick);
+    }
+    .btn.sick:hover { background: var(--sick); color: var(--bg); }
+    .btn:disabled {
+      opacity: 0.35; pointer-events: none; transform: none !important;
+    }
+
+    /* Botão de cena ativo */
+    .btn.cena-ativo {
+      background: var(--blood) !important;
+      border-color: var(--blood-bright) !important;
+      color: #fff !important;
+      box-shadow: 0 0 12px var(--blood-glow);
+    }
+
+    .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+    .field {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 14px; flex: 1; min-width: 140px;
+    }
+    .field label {
+      font-family: 'Anton', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--bone-dim);
+    }
+    .field input, .field select {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border-light);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--bone);
+      transition: var(--transition);
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--blood-bright);
+      box-shadow: 0 0 0 3px var(--blood-glow);
+      background: rgba(0,0,0,0.5);
+    }
+    .field input:hover, .field select:hover {
+      border-color: var(--blood);
+      background: rgba(0,0,0,0.5);
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: rgba(0, 0, 0, 0.4);
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23d43f34' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 12px;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 12px 40px 12px 16px;
+      color: var(--bone);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    select:hover { border-color: var(--blood); background-color: rgba(0, 0, 0, 0.5); }
+    select:focus { border-color: var(--blood-bright); box-shadow: 0 0 0 3px var(--blood-glow); outline: none; }
+    select option { background: #1a1211; color: var(--bone); padding: 10px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border-light);
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--bone-dim);
+      margin: 3px 4px 3px 0;
+      transition: var(--transition);
+      flex-wrap: wrap;
+    }
+    .pill:hover {
+      border-color: var(--blood-bright);
+      background: var(--blood-soft);
+      color: var(--bone);
+    }
+    .pill b { color: var(--bone); font-weight: 700; }
+    .pill.active { border-color: var(--blood-bright); color: var(--bone); }
+
+    .meta { font-size: 13px; color: var(--bone-dim); line-height: 1.65; }
+    .meta b { color: var(--bone); font-weight: 600; }
+
+    .empty {
+      color: var(--bone-dim);
+      padding: 32px 24px;
+      text-align: center;
+      border: 1px dashed var(--border-light);
+      border-radius: 12px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .empty::before {
+      content: '◌';
+      font-size: 28px;
+      color: var(--bone-faint);
+      display: block;
+    }
+
+    .initiative {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin: 16px 0;
+    }
+    .init-step {
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border-light);
+      font-size: 12.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--bone-dim);
+      transition: var(--transition);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .init-step::before {
+      content: '◇';
+      color: var(--bone-faint);
+      font-size: 10px;
+    }
+    .init-step.current {
+      border-color: var(--sick);
+      color: var(--sick);
+      background: var(--sick-glow);
+      box-shadow: 0 0 16px rgba(136,192,91,0.15);
+    }
+    .init-step.current::before { content: '◆'; color: var(--sick); }
+    .init-step.assassino {
+      border-color: var(--blood-bright);
+      color: var(--blood-bright);
+    }
+    .init-step.assassino::before { content: '☠'; color: var(--blood-bright); }
+    .init-step.assassino.current {
+      background: var(--blood-glow);
+      box-shadow: 0 0 20px var(--blood-glow);
+    }
+
+    .ability {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border-light);
+      border-left: 3px solid transparent;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 16px;
+      transition: var(--transition);
+    }
+    .ability:hover {
+      border-left-color: var(--blood-bright);
+      background: var(--blood-soft);
+      transform: translateX(3px);
+    }
+    .ability .txt { flex: 1; }
+    .ability .txt b {
+      color: var(--bone);
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .ability .txt p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--bone-dim);
+      line-height: 1.6;
+    }
+
+    .toast-container {
+      position: fixed; top: 20px; right: 20px;
+      z-index: 500;
+      display: flex; flex-direction: column; gap: 10px;
+      pointer-events: none;
+      max-width: 380px; width: 100%;
+    }
+    .toast {
+      pointer-events: auto;
+      background: var(--bg-elev-2);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--blood-bright);
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      color: var(--bone);
+      box-shadow: var(--shadow-deep);
+      animation: toastIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      line-height: 1.5;
+    }
+    .toast.sucesso { border-left-color: var(--sick); }
+    .toast.erro { border-left-color: var(--blood-bright); }
+    .toast.info { border-left-color: var(--amber); }
+    .toast.saindo { animation: toastOut 0.2s ease forwards; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(24px) scale(0.95); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    @keyframes toastOut {
+      to { opacity: 0; transform: translateX(24px) scale(0.95); }
+    }
+
+    .stack-counter {
+      font-family: 'Anton', sans-serif;
+      font-size: 56px;
+      color: var(--amber);
+      line-height: 1;
+      text-shadow: 0 0 24px var(--amber-glow);
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .stack-counter small {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--bone-dim);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .ameaca-topo {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 24px;
+      align-items: center;
+      background:
+        radial-gradient(circle at 15% 50%, rgba(212,63,52,0.12), transparent 60%),
+        linear-gradient(135deg, rgba(139,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%);
+      border: 2px solid var(--blood);
+      border-radius: 6px 20px 20px 6px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: inset 0 0 60px rgba(139,0,0,0.12), var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .ameaca-topo::before {
+      content: '';
+      position: absolute; top: 0; left: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, transparent, var(--blood-bright), transparent);
+    }
+    .ameaca-retrato {
+      position: relative;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--blood-bright);
+      box-shadow: 0 0 30px var(--blood-glow), inset 0 0 20px rgba(0,0,0,0.6);
+      background: radial-gradient(circle at 30% 30%, #2a0808, #0b0505);
+      cursor: pointer;
+      z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .ameaca-retrato img { width: 100%; height: 100%; object-fit: cover; }
+    .ameaca-retrato .placeholder {
+      font-family: 'Anton', sans-serif;
+      font-size: 48px;
+      color: rgba(212,63,52,0.55);
+      user-select: none;
+    }
+    .ameaca-retrato:hover { transform: scale(1.05); }
+    .ameaca-topo-info { position: relative; z-index: 1; }
+    .ameaca-topo-info .nome-input {
+      width: 100%;
+      font-family: 'Anton', sans-serif;
+      font-size: 34px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: transparent;
+      border: none;
+      color: var(--bone);
+      padding: 0;
+      margin-bottom: 6px;
+      border-bottom: 1px dashed transparent;
+      transition: var(--transition);
+      line-height: 1.1;
+    }
+    .ameaca-topo-info .nome-input:hover,
+    .ameaca-topo-info .nome-input:focus {
+      border-bottom-color: var(--border-light);
+      outline: none;
+    }
+    .ameaca-stats {
+      display: flex; gap: 28px; flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .ameaca-stat { display: flex; flex-direction: column; gap: 2px; }
+    .ameaca-stat .stat-lbl {
+      font-family: 'Anton', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--bone-dim);
+    }
+    .ameaca-stat .stat-val {
+      font-family: 'Anton', sans-serif;
+      font-size: 24px;
+      line-height: 1.1;
+      color: var(--blood-bright);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ameaca-stat .stat-val small {
+      font-size: 10px;
+      color: var(--bone-dim);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ameaca-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .ameaca-grid { grid-template-columns: 1fr; } }
+
+    .ameaca-bloco {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ameaca-bloco.principal { border-color: rgba(212,63,52,0.4); }
+    .ameaca-bloco.secundaria { border-color: rgba(201,131,58,0.4); }
+    .ameaca-bloco.principal::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
+      opacity: 0.7;
+    }
+    .ameaca-bloco.secundaria::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--amber), transparent);
+      opacity: 0.7;
+    }
+    .ameaca-bloco-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .ameaca-bloco-tag {
+      font-family: 'Anton', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+    .ameaca-bloco.principal .ameaca-bloco-tag {
+      background: rgba(212,63,52,0.15);
+      color: var(--blood-bright);
+      border: 1px solid rgba(212,63,52,0.4);
+    }
+    .ameaca-bloco.secundaria .ameaca-bloco-tag {
+      background: rgba(201,131,58,0.15);
+      color: var(--amber);
+      border: 1px solid rgba(201,131,58,0.4);
+    }
+    .ameaca-bloco-titulo {
+      font-family: 'Anton', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: var(--bone);
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      flex: 1;
+      padding: 0;
+    }
+    .ameaca-bloco-titulo:hover { color: var(--blood-bright); }
+
+    .ameaca-info-linha {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 13px; line-height: 1.55;
+    }
+    .ameaca-info-linha .lbl {
+      font-family: 'Anton', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bone-dim);
+      flex-shrink: 0;
+      min-width: 70px;
+      padding-top: 2px;
+    }
+    .ameaca-info-linha .val { color: var(--bone); flex: 1; }
+
+    .ameaca-acoes-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+    .ameaca-acao-opcao {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex; align-items: flex-start; gap: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .ameaca-acao-opcao:hover {
+      border-color: var(--blood-bright);
+      background: var(--blood-soft);
+      transform: translateX(3px);
+    }
+    .ameaca-acao-opcao.selected {
+      border-color: var(--blood-bright);
+      background: rgba(212,63,52,0.15);
+      box-shadow: 0 0 14px var(--blood-glow);
+    }
+    .ameaca-acao-opcao input[type="radio"] { margin-top: 3px; }
+    .ameaca-acao-opcao .acao-txt { flex: 1; }
+    .ameaca-acao-opcao .acao-txt b {
+      color: var(--bone);
+      font-size: 13px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .ameaca-acao-opcao .acao-txt p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--bone-dim);
+      line-height: 1.5;
+    }
+
+    .intentos-lista { display: flex; flex-direction: column; gap: 8px; }
+    .intento-row {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 12px 16px;
+      transition: var(--transition);
+    }
+    .intento-row:hover {
+      border-color: rgba(212,63,52,0.45);
+      background: var(--blood-soft);
+      transform: translateX(3px);
+    }
+    .intento-row .ph-badge {
+      font-family: 'Anton', sans-serif;
+      font-size: 15px;
+      color: var(--amber);
+      min-width: 44px;
+      background: rgba(201,131,58,0.12);
+      border: 1px solid rgba(201,131,58,0.35);
+      border-radius: 8px;
+      padding: 4px 8px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .intento-row .intento-txt {
+      flex: 1;
+      font-size: 13.5px;
+      color: var(--bone);
+      line-height: 1.5;
+    }
+    .intento-row .intento-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      background: var(--blood);
+      color: #fff;
+      border: 1px solid var(--blood-bright);
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .intento-row .intento-btn:hover {
+      background: var(--blood-bright);
+      box-shadow: 0 0 12px var(--blood-glow);
+      transform: scale(1.05);
+    }
+
+    details.regra-grupo {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    details.regra-grupo[open] {
+      border-color: rgba(212,63,52,0.4);
+      background: rgba(0,0,0,0.35);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    details.regra-grupo > summary {
+      cursor: pointer;
+      padding: 16px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: 'Anton', sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bone);
+      user-select: none;
+      transition: var(--transition);
+      list-style: none;
+    }
+    details.regra-grupo > summary::-webkit-details-marker { display: none; }
+    details.regra-grupo > summary:hover {
+      background: var(--blood-soft);
+      color: var(--blood-bright);
+    }
+    details.regra-grupo > summary::after {
+      content: '▾';
+      font-size: 14px;
+      color: var(--bone-dim);
+      transition: transform var(--transition);
+    }
+    details.regra-grupo[open] > summary::after { transform: rotate(180deg); }
+    details.regra-grupo > summary .summary-icon {
+      font-size: 20px;
+      margin-right: 14px;
+      filter: drop-shadow(0 0 6px var(--blood-glow));
+    }
+    .regra-body {
+      padding: 20px 24px 24px;
+      border-top: 1px solid var(--border-light);
+      font-size: 13.5px;
+      color: var(--bone);
+      line-height: 1.7;
+    }
+    .regra-body p { margin-bottom: 12px; }
+    .regra-body p:last-child { margin-bottom: 0; }
+    .regra-body strong { color: var(--bone); font-weight: 700; }
+    .regra-body em { color: var(--amber); font-style: normal; font-weight: 600; }
+    .regra-body code {
+      background: rgba(212,63,52,0.15);
+      color: var(--blood-bright);
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .regra-body ul, .regra-body ol {
+      margin: 10px 0 14px 24px;
+    }
+    .regra-body li { margin-bottom: 6px; }
+    .regra-body .table-mini {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .regra-body .table-mini th {
+      background: var(--blood-soft);
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'Anton', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bone);
+      font-weight: 400;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .regra-body .table-mini td {
+      padding: 10px 14px;
+      font-size: 12.5px;
+      border-bottom: 1px solid rgba(61,42,38,0.15);
+      color: var(--bone);
+      line-height: 1.5;
+    }
+    .regra-body .table-mini tr:last-child td { border-bottom: none; }
+    .regra-body .table-mini tr:hover td { background: var(--blood-soft); }
+    .regra-body .destaque {
+      background: var(--amber-glow);
+      border-left: 3px solid var(--amber);
+      padding: 12px 16px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+      color: var(--bone);
+      line-height: 1.6;
+    }
+    .regra-body .destaque b { color: var(--amber); }
+    .regra-body .destaque-sangue {
+      background: var(--blood-glow);
+      border-left: 3px solid var(--blood-bright);
+      padding: 12px 16px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+      color: var(--bone);
+      line-height: 1.6;
+    }
+    .regra-body .destaque-sangue b { color: var(--blood-bright); }
+
+    .assassino-status {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 22px;
+      margin-bottom: 24px;
+      background: rgba(136, 192, 91, 0.08);
+      border: 1px solid rgba(136, 192, 91, 0.35);
+      border-radius: 12px;
+      font-family: 'Anton', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--sick);
+    }
+    .assassino-status::before {
+      content: '✓';
+      font-size: 16px;
+      color: var(--sick);
+      background: rgba(136, 192, 91, 0.2);
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(136, 192, 91, 0.4);
+      flex-shrink: 0;
+    }
+    .assassino-status .assassino-status-nome {
+      flex: 1;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--bone);
+    }
+
+    .ameaca-salva-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .ameaca-salva-grid { grid-template-columns: 1fr; } }
+
+    .ameaca-salva-bloco {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-light);
+      border-radius: 4px 14px 14px 4px;
+      padding: 22px;
+      display: flex; flex-direction: column; gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ameaca-salva-bloco.principal {
+      border-color: rgba(212,63,52,0.5);
+      box-shadow: inset 0 0 40px rgba(212,63,52,0.08);
+    }
+    .ameaca-salva-bloco.secundaria {
+      border-color: rgba(201,131,58,0.5);
+      box-shadow: inset 0 0 40px rgba(201,131,58,0.08);
+    }
+    .ameaca-salva-bloco::before {
+      content: '';
+      position: absolute; top: 0; left: 0; bottom: 0;
+      width: 4px;
+    }
+    .ameaca-salva-bloco.principal::before {
+      background: linear-gradient(180deg, transparent, var(--blood-bright), transparent);
+    }
+    .ameaca-salva-bloco.secundaria::before {
+      background: linear-gradient(180deg, transparent, var(--amber), transparent);
+    }
+    .ameaca-salva-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 12px;
+    }
+    .ameaca-salva-nome {
+      font-family: 'Anton', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--bone);
+      line-height: 1.1;
+    }
+    .ameaca-salva-bloco.principal .ameaca-salva-nome { color: var(--blood-bright); }
+    .ameaca-salva-bloco.secundaria .ameaca-salva-nome { color: var(--amber); }
+
+    .ameaca-salva-nb {
+      font-family: 'Anton', sans-serif;
+      font-size: 34px;
+      line-height: 1;
+      padding: 8px 16px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid var(--border-light);
+      color: var(--bone);
+      text-align: center;
+    }
+    .ameaca-salva-nb small {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      color: var(--bone-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .ameaca-salva-secao {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .ameaca-salva-secao .lbl {
+      font-family: 'Anton', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--bone-dim);
+      margin-bottom: 3px;
+    }
+    .ameaca-salva-secao .txt {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--bone);
+    }
+    .ameaca-salva-acao {
+      background: rgba(212,63,52,0.12);
+      border: 1px solid rgba(212,63,52,0.4);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .ameaca-salva-bloco.secundaria .ameaca-salva-acao {
+      background: rgba(201,131,58,0.12);
+      border-color: rgba(201,131,58,0.4);
+    }
+    .ameaca-salva-acao .nome {
+      font-family: 'Anton', sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--bone);
+      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ameaca-salva-acao .nome::before {
+      content: '⚔';
+      color: var(--blood-bright);
+    }
+    .ameaca-salva-bloco.secundaria .ameaca-salva-acao .nome::before {
+      color: var(--amber);
+    }
+
+    .assassino-saved-acoes {
+      display: flex; gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-light);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-montar-assassino {
+      padding: 16px 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--blood-bright), var(--blood));
+      border: 2px solid var(--blood-bright);
+      color: #fff;
+      font-family: 'Anton', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--blood-glow);
+      transition: var(--transition);
+    }
+    .btn-montar-assassino:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px var(--blood-glow);
+      filter: brightness(1.12);
+    }
+    .btn-reabrir-assassino {
+      padding: 14px 26px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid var(--border-light);
+      color: var(--bone-dim);
+      font-family: 'Anton', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-reabrir-assassino:hover {
+      border-color: var(--blood-bright);
+      color: var(--blood-bright);
+      background: var(--blood-soft);
+    }
+
+    .poder-salvo {
+      background: linear-gradient(135deg, rgba(212,63,52,0.15), rgba(0,0,0,0.3));
+      border: 1px solid rgba(212,63,52,0.5);
+      border-left: 4px solid var(--blood-bright);
+      border-radius: 4px 12px 12px 4px;
+      padding: 20px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .poder-salvo::before {
+      content: '★';
+      position: absolute;
+      top: 16px; right: 22px;
+      font-size: 32px;
+      color: rgba(212,63,52,0.4);
+      pointer-events: none;
+    }
+    .poder-salvo .nome {
+      font-family: 'Anton', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--bone);
+      margin-bottom: 8px;
+    }
+    .poder-salvo .custo {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      padding: 3px 12px;
+      border-radius: 999px;
+      background: rgba(201,131,58,0.15);
+      border: 1px solid rgba(201,131,58,0.4);
+      color: var(--amber);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .poder-salvo p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--bone-dim);
+      margin: 0;
+    }
+
+    input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 2px solid var(--border-light);
+      background: rgba(0,0,0,0.4);
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+      margin: 0;
+      vertical-align: middle;
+    }
+    input[type="radio"]:hover:not(:disabled) {
+      border-color: var(--blood-bright);
+      background: var(--blood-soft);
+      box-shadow: 0 0 10px var(--blood-glow);
+    }
+    input[type="radio"]:checked {
+      border-color: var(--blood-bright);
+      background: rgba(212, 63, 52, 0.15);
+    }
+    input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blood-bright), var(--blood));
+      box-shadow: 0 0 8px var(--blood-glow);
+      animation: radioPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes radioPop {
+      0% { transform: scale(0.3); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.35); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--blood), var(--blood-bright));
+      border-radius: 10px;
+      border: 2px solid rgba(11,8,8,0.9);
+      background-clip: padding-box;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+      transition: background 0.2s;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--blood-bright), #ff5a3c);
+      background-clip: padding-box;
+    }
+    ::-webkit-scrollbar-corner { background: transparent; }
+    * { scrollbar-width: thin; scrollbar-color: var(--blood) rgba(0,0,0,0.35); }
+
+    ::selection { background: var(--blood); color: #fff; }
+
+    /* ⬇️ PATCH 1.7 - sobrevivente morta */
+    .pill.sobrevivente-morta {
+      background: rgba(212,63,52,0.12) !important;
+      border-color: var(--blood-bright) !important;
+      opacity: 0.85;
+    }
+    .pill.sobrevivente-morta b,
+    .pill.sobrevivente-morta span {
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+    }
+    .badge-morta {
+      font-family: 'Anton', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--blood-bright);
+      padding: 3px 10px;
+      border: 1px solid var(--blood-bright);
+      border-radius: 999px;
+      background: rgba(212,63,52,0.15);
+      animation: pulseMorrendo 2s infinite;
+    }
+    @keyframes pulseMorrendo {
+      0%, 100% { box-shadow: 0 0 8px rgba(212,63,52,0.4); }
+      50%      { box-shadow: 0 0 20px rgba(212,63,52,0.7); }
+    }
+
+    /* ===== CONTADORES DO ENCONTRO ===== */
+.encontro-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  padding: 20px 22px;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(212,63,52,0.12), transparent 60%),
+    linear-gradient(135deg, rgba(139,0,0,0.15) 0%, rgba(0,0,0,0.35) 100%);
+  border: 2px solid var(--blood);
+  border-left: 4px solid var(--blood-bright);
+  border-radius: 4px 16px 16px 4px;
+  margin-bottom: 24px;
+}
+.encontro-contador {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.encontro-contador .lbl {
+  font-family: 'Anton', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+.encontro-contador .valor-linha {
+  display: flex; align-items: center; gap: 10px;
+}
+.encontro-contador .valor {
+  font-family: 'Anton', sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--blood-bright);
+  min-width: 70px;
+}
+.encontro-contador .valor small {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--bone-dim);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.encontro-contador.cheio .valor { color: var(--amber); }
+.encontro-contador.cheio .valor small { color: var(--amber); }
+
+/* ===== DADO DA HORDA (Ameaça Mestre) ===== */
+.horda-card {
+  background:
+    radial-gradient(circle at 10% 50%, rgba(212,63,52,0.18), transparent 60%),
+    linear-gradient(135deg, rgba(139,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  border: 2px solid var(--blood);
+  border-left: 4px solid var(--blood-bright);
+  border-radius: 4px 16px 16px 4px;
+  padding: 22px 26px;
+  margin-bottom: 24px;
+  display: flex; gap: 24px; align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+.horda-card::before {
+  content: '☠';
+  position: absolute; top: 12px; right: 18px;
+  font-size: 40px; opacity: 0.15;
+  color: var(--blood-bright);
+}
+.horda-die {
+  width: 92px; height: 92px;
+  position: relative; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.horda-die img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.horda-die .val {
+  position: relative; z-index: 2;
+  font-family: 'Anton', sans-serif; font-size: 38px;
+  color: var(--bone); line-height: 1;
+  text-shadow: 0 2px 6px #000, 0 0 10px #000;
+}
+.horda-die.passiva-ativa .val { color: var(--amber); text-shadow: 0 0 14px var(--amber-glow), 0 2px 4px #000; }
+.horda-die.passiva-ativa img { filter: drop-shadow(0 0 16px var(--amber-glow)); }
+
+.horda-info { flex: 1; min-width: 200px; }
+.horda-info .titulo {
+  font-family: 'Anton', sans-serif; font-size: 18px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--blood-bright); margin-bottom: 4px;
+}
+.horda-info .meta-horda {
+  font-size: 12px; color: var(--bone-dim); line-height: 1.55;
+  margin-bottom: 12px;
+}
+.horda-botoes { display: flex; gap: 8px; flex-wrap: wrap; }
+.horda-passiva-tag {
+  display: inline-block;
+  font-family: 'Anton', sans-serif; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 999px;
+  background: rgba(201,131,58,0.15);
+  border: 1px solid rgba(201,131,58,0.5);
+  color: var(--amber); margin-top: 6px;
+}
+
+/* ===== CLAMORES ===== */
+.clamores-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 700px) { .clamores-grid { grid-template-columns: 1fr; } }
+
+.clamor-box {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.clamor-box.mestre { border-left: 3px solid var(--blood-bright); }
+.clamor-box.grupo { border-left: 3px solid var(--sky); }
+.clamor-box .titulo-clamor {
+  font-family: 'Anton', sans-serif;
+  font-size: 13px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.clamor-box.mestre .titulo-clamor { color: var(--blood-bright); }
+.clamor-box.grupo .titulo-clamor { color: var(--sky); }
+.clamor-box .controle-clamor {
+  display: flex; align-items: center; gap: 10px;
+}
+.clamor-box .controle-clamor .num {
+  font-family: 'Anton', sans-serif;
+  font-size: 32px; line-height: 1; min-width: 44px;
+}
+.clamor-box.mestre .num { color: var(--blood-bright); }
+.clamor-box.grupo .num { color: var(--sky); }
+.clamor-box .hint {
+  font-size: 11px; color: var(--bone-dim); line-height: 1.5;
+}
+
+.qualidade-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px; margin-bottom: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  border-left: 3px solid;
+}
+.qualidade-item.favoravel { border-left-color: var(--sick); background: rgba(136,192,91,0.06); }
+.qualidade-item.neutra { border-left-color: var(--amber); background: rgba(201,131,58,0.06); }
+.qualidade-item.desfavoravel { border-left-color: var(--blood-bright); background: rgba(212,63,52,0.06); }
+.qualidade-item .q-nome {
+  font-family: 'Anton', sans-serif;
+  font-size: 14px; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--bone);
+  margin-bottom: 3px;
+}
+.qualidade-item .q-tipo {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.15em;
+  text-transform: uppercase; padding: 2px 8px;
+  border-radius: 999px; margin-left: 8px;
+  border: 1px solid;
+}
+.qualidade-item.favoravel .q-tipo { color: var(--sick); border-color: var(--sick); }
+.qualidade-item.neutra .q-tipo { color: var(--amber); border-color: var(--amber); }
+.qualidade-item.desfavoravel .q-tipo { color: var(--blood-bright); border-color: var(--blood-bright); }
+.qualidade-item .q-desc {
+  font-size: 12px; color: var(--bone-dim); line-height: 1.55;
+}
+
+/* ===== CENA DE SUSPENSE (MESTRE) ===== */
+.suspense-card {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(56,189,248,0.10), transparent 55%),
+    linear-gradient(135deg, rgba(20,60,90,0.25) 0%, rgba(0,0,0,0.4) 100%);
+  border: 2px solid #1e3a5f;
+  border-left: 4px solid var(--sky);
+  border-radius: 4px 16px 16px 4px;
+  padding: 22px 26px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.suspense-card::before {
+  content: '🕯️';
+  position: absolute; top: 14px; right: 20px;
+  font-size: 32px; opacity: 0.2;
+}
+.suspense-titulo {
+  font-family: 'Anton', sans-serif;
+  font-size: 20px; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sky); margin-bottom: 8px;
+}
+.suspense-resolucao {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--sky);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+}
+.suspense-resolucao .tit {
+  font-family: 'Anton', sans-serif;
+  font-size: 15px; color: var(--bone);
+  letter-spacing: 0.05em; margin-bottom: 4px;
+}
+.suspense-resolucao .desc {
+  font-size: 12.5px; color: var(--bone-dim); line-height: 1.6;
+}
+.suspense-progresso {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: var(--bone-dim); margin-bottom: 14px;
+}
+.suspense-progresso b { color: var(--sky); font-size: 18px; }
+
+.suspense-caminho {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  transition: var(--transition);
+}
+.suspense-caminho:hover { border-color: rgba(56,189,248,0.4); }
+.suspense-caminho .nome {
+  font-family: 'Anton', sans-serif;
+  font-size: 14px; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--bone);
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.suspense-caminho .desc {
+  font-size: 12px; color: var(--bone-dim); line-height: 1.55;
+}
+.suspense-caminho .chips {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+}
+.chip-passo, .chip-armadilha {
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px;
+  border-radius: 999px; border: 1px solid;
+}
+.chip-passo {
+  color: var(--sky); border-color: rgba(56,189,248,0.4);
+  background: rgba(56,189,248,0.08);
+}
+.chip-passo.encontrado {
+  color: var(--sick); border-color: rgba(136,192,91,0.5);
+  background: rgba(136,192,91,0.1);
+  text-decoration: line-through;
+}
+.chip-armadilha {
+  color: var(--blood-bright); border-color: rgba(212,63,52,0.4);
+  background: rgba(212,63,52,0.08);
+}
+.chip-armadilha.ativada {
+  opacity: 0.5; text-decoration: line-through;
+}
+
+.suspense-add-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+.suspense-add-grid .field { margin-bottom: 0; }
+@media (max-width: 900px) { .suspense-add-grid { grid-template-columns: 1fr; } }
+
+    @media (max-width: 700px) {
+      header { padding: 12px 20px; }
+      .logo { font-size: 24px; }
+      .hero { padding: 24px 22px; }
+      .hero-titulo { font-size: 28px; }
+      .hero-meta { gap: 16px; }
+      .card { padding: 20px 18px; }
+      .card-header h2 { font-size: 24px; }
+      .ameaca-topo { grid-template-columns: 1fr; text-align: center; }
+      .ameaca-retrato { margin: 0 auto; }
+      .ameaca-stats { justify-content: center; gap: 18px; }
+      .master-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .master-tab { white-space: nowrap; }
+      .assassino-saved-acoes { justify-content: stretch; }
+      .btn-montar-assassino { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <header>
+    <div class="header-left">
+      <div class="logo">BRUTAL<small>thriller de mesa</small></div>
+    </div>
+    <div class="header-right">
+      <button class="btn ghost small" onclick="sairDaCampanha()">Sair da mesa</button>
+      <button class="btn ghost small" onclick="fazerLogout()">Sair</button>
+    </div>
+  </header>
+
+  <main style="flex:1; max-width:1280px; margin:0 auto; padding:28px 24px 80px; width:100%;">
+
+    <div class="hero" id="mestre-hero" style="display:none;">
+      <div class="hero-top">Mesa da Diretora</div>
+      <div class="hero-titulo" id="hero-nome">—</div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="lbl">Diretora</span>
+          <span class="val" id="hero-diretora">—</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="lbl">Código da Sala</span>
+          <span class="hero-codigo">
+            <span id="hero-codigo">—</span>
+            <button onclick="copiarCodigo()" title="Copiar código">📋</button>
+          </span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="lbl">Sobreviventes</span>
+          <span class="val" id="hero-count">0</span>
+        </div>
+        <div class="hero-meta-item" id="hero-cena"></div>
+      </div>
+    </div>
+
+    <nav class="master-tabs">
+      <button class="master-tab active" data-tab="mesa" onclick="setMasterTab('mesa')">🩸 Mesa</button>
+      <button class="master-tab" data-tab="assassino" onclick="setMasterTab('assassino')">☠ Assassino</button>
+      <button class="master-tab" data-tab="regras" onclick="setMasterTab('regras')">📖 Regras</button>
+    </nav>
+
+    <div id="mestre-content"></div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import {
+      getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
+      collection, addDoc, getDocs, onSnapshot,
+      query, orderBy, limitToLast, enableIndexedDbPersistence
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-Hnv0ZsZxa3SHKuOdMvYdcU0MPg65umY",
+      authDomain: "brutal-52013.firebaseapp.com",
+      projectId: "brutal-52013",
+      storageBucket: "brutal-52013.firebasestorage.app",
+      messagingSenderId: "20777925820",
+      appId: "1:20777925820:web:497504355d0ca9da83a4b9"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    enableIndexedDbPersistence(db).catch(()=>{});
+
+    window.db = db; window.auth = auth;
+    window.fsDoc = doc; window.fsSetDoc = setDoc; window.fsGetDoc = getDoc;
+    window.fsUpdateDoc = updateDoc; window.fsDeleteDoc = deleteDoc;
+    window.fsCollection = collection; window.fsAddDoc = addDoc;
+    window.fsGetDocs = getDocs; window.fsOnSnapshot = onSnapshot;
+    window.fsQuery = query; window.fsOrderBy = orderBy; window.fsLimitToLast = limitToLast;
+
+    window.escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    window.toast = (msg, tipo='info') => {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = `toast ${tipo}`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => { el.classList.add('saindo'); setTimeout(() => el.remove(), 220); }, 4200);
+    };
+
+    // ===== SONS (Web Audio API — sem arquivos externos) =====
+    let _audioCtx = null;
+    function getAudioCtx() {
+      if (!_audioCtx) {
+        try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+      }
+      if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume().catch(()=>{});
+      return _audioCtx;
+    }
+    function tocarTom(freq, dur, tipo = 'sine', vol = 0.15, atraso = 0) {
+      const ctx = getAudioCtx(); if (!ctx) return;
+      const t0 = ctx.currentTime + atraso;
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = tipo;
+      osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.02);
+    }
+    window.somDado    = () => { tocarTom(180,0.05,'square',0.07,0);    tocarTom(230,0.05,'square',0.07,0.06); tocarTom(280,0.07,'square',0.07,0.12); };
+    window.somCritico = () => { tocarTom(523,0.11,'triangle',0.18,0);  tocarTom(659,0.11,'triangle',0.18,0.09); tocarTom(784,0.18,'triangle',0.20,0.18); };
+    window.somFalha   = () => { tocarTom(220,0.14,'sawtooth',0.11,0);  tocarTom(160,0.20,'sawtooth',0.11,0.11); };
+    window.somFerida  = () => { tocarTom(120,0.28,'sine',0.20,0);      tocarTom(80,0.40,'sine',0.18,0.05); };
+    window.somSusto   = () => { tocarTom(880,0.08,'square',0.14,0);    tocarTom(1250,0.13,'square',0.14,0.08); };
+    window.somMorte   = () => { tocarTom(110,0.55,'sawtooth',0.20,0);  tocarTom(70,1.10,'sine',0.22,0.14); tocarTom(55,1.40,'sine',0.20,0.28); };
+    window.somAviso   = () => { tocarTom(440,0.10,'triangle',0.14,0);  tocarTom(587,0.14,'triangle',0.14,0.10); };
+
+    // Libera o AudioContext no primeiro clique do usuário (política dos browsers)
+    document.addEventListener('click', () => getAudioCtx(), { once: true });
+
+    const AMEACAS = {
+      "Amaldiçoado": { nb:2, passiva:"Dados marcadores (exceto ferida) começam com +1.", intento:"+2 PH ao aplicar um dado marcador numa sobrevivente.", acoes:["Possuir","Amaldiçoar","Infectar","Acidentar"] },
+      "Assombração": { nb:2, passiva:"Se uma sobrevivente falhar um teste de susto carregando um Recurso, ele se quebra.", intento:"PH igual ao número de sobreviventes que falharem um teste de susto.", acoes:["Possuir","Amaldiçoar","Acidentar","Incapacitar"] },
+      "Brutamontes": { nb:3, passiva:"Ferir quem já tem Sequela dá +1 no valor da ferida.", intento:"+2 PH quando falharem um Partir Pra Cima.", acoes:["Segurar","Incapacitar","Destruir"] },
+      "Carniceira": { nb:3, passiva:"Ao escapar de um encontro, ganha 1 dado extra por sobrevivente com ferimento maior que 3.", intento:"+1 PH quando usarem Cuidar de Feridas.", acoes:["Devorar","Segurar","Acidentar"] },
+      "Desconhecida": { nb:1, passiva:"Partir Pra Cima contra você vira Risco Complexo.", intento:"+3 PH quando uma sobrevivente prejudicar outra ativamente.", acoes:["Possuir","Infectar","Devorar","Acidentar","Restringir"] },
+      "Descontrolada": { nb:3, passiva:"Primeira vez que ferir cada sobrevivente na sessão, +1 no ferimento.", intento:"+1 PH por sobrevivente que entrar num encontro com 3 dados ou menos.", acoes:["Segurar","Destruir","Devorar"] },
+      "Estratégico": { nb:1, passiva:"+1 armadilha grátis e no máximo em toda cena de suspense.", intento:"+1 PH por armadilha ativada em cena de suspense.", acoes:["Restringir","Acidentar","Devorar","Infectar","Incapacitar"] },
+      "Inato": { nb:2, passiva:"Com 3+ PH ao iniciar um encontro ou suspense, ganha um dado extra.", intento:"+1 PH toda vez que um Intérprete passar de 6 PT.", acoes:["Acidentar","Destruir","Segurar","Amaldiçoar"] },
+      "Máquina": { nb:2, passiva:"Partir Pra Cima contra você tem dificuldade +1.", intento:"Pode descartar um dado por 3 PH a cada encontro.", acoes:["Infectar","Destruir","Amaldiçoar","Restringir"] },
+      "Mestre": { nb:1, passiva:"Sua segunda Ameaça vira 'Ameaça da Horda': um dado especial define quantas sobreviventes um Ferir afeta.", intento:"+1 PH toda vez que alguém pegar sua primeira Sequela.", acoes:["Segurar","Infectar","Possuir","Devorar","Incapacitar"] },
+      "Monstruosidade": { nb:3, passiva:"1x por encontro, ao ferir, role 2 dados e distribua entre duas sobreviventes.", intento:"+2 PH quando uma sobrevivente morrer.", acoes:["Incapacitar","Devorar","Destruir"] },
+      "Obstinada": { nb:2, passiva:"Escolhe uma sobrevivente como alvo fixo; dados que ela descartar em testes de susto vêm pra você.", intento:"+3 PH quando alguém escapa na primeira rodada de um encontro.", acoes:["Destruir","Segurar","Devorar","Restringir"] },
+      "Perseguidor": { nb:2, passiva:"Sobrevivente com ferida maior que 3 tem dificuldade +1 pra fugir.", intento:"+1 PH quando alguém falhar todos os dados tentando fugir.", acoes:["Devorar","Segurar","Restringir","Acidentar"] }
+    };
+
+    const ACOES_UNICAS = {
+      "Acidentar":"4 PH — ao assustar fora de encontro, aplica Ferir em quem falhou o teste.",
+      "Amaldiçoar":"3 PH — amaldiçoa em segredo um Recurso; evolui a cada uso até debitar todo o PT da dona.",
+      "Destruir":"4 PH (grátis em suspense) — destrói um Recurso ou uma qualidade favorável.",
+      "Devorar":"Grátis — ganha 1 PH toda vez que uma sobrevivente tirar o valor máximo num dado.",
+      "Incapacitar":"4 PH (grátis em suspense) — desmarca uma especialidade da sobrevivente ferida.",
+      "Infectar":"4 PH — entrega uma infecção que evolui e incapacita especialidades com o tempo.",
+      "Possuir":"Grátis — entrega um dado marcador que sobe a cada falha; no valor máximo, você a controla pra matar.",
+      "Segurar":"5 PH — imobiliza a sobrevivente ferida; ela não conta dados de fuga e piora a cada turno.",
+      "Restringir":"Grátis — entrega um dado marcador que aumenta a dificuldade de todos os testes da sobrevivente."
+    };
+
+    const ACOES_GERAIS = [
+      { n:"Assustar", d:"Força um teste de susto. Pode ser usada (7 − NB) vezes por encontro." },
+      { n:"Matar", d:"Mata instantaneamente uma sobrevivente com menos dados que você; descarta 2 dos seus dados." },
+      { n:"Ferir", d:"Role 1 dado. No 6, mata na hora. Em outro valor, vira dado marcador de ferimento (soma se repetir)." },
+      { n:"Mutilar", d:"Ao tirar 6 num Ferir, pode escolher não matar: +3 de Sequela no alvo e você ganha 4 PH." },
+      { n:"Escapar", d:"Sai da cena, encerra o confronto e ganha 1 dado." },
+      { n:"Dificultar", d:"No início do encontro, aumenta as Etapas de Fuga em 1 por 4 PH gastos." }
+    ];
+
+    const PODERES_ESPECIAIS = [
+      { n:"Você Já Sofreu o Suficiente", custo:2, d:"Ao matar quem tem menos de 3 dados, descarta só 1 dado da vítima." },
+      { n:"Eu Vejo Cada Passo Seu", custo:2, d:"1x por encontro, ao ver uma falha, obriga a sacrificar um dado pra você." },
+      { n:"Banho de Sangue", custo:"2 por jogador", d:"Na primeira morte do encontro, descarta 1 dado de todas as sobreviventes vivas." },
+      { n:"Corte Profundo", custo:2, d:"Ao ferir, adiciona +1 ao valor do dado marcador de ferida." },
+      { n:"Jumpscare", custo:2, d:"Ao começar um encontro, provoca teste de susto em todas sem gastar seus usos de Assustar." },
+      { n:"Trauma", custo:3, d:"Ao usar Escapar, incapacita todas as especialidades de uma sobrevivente ativa." },
+      { n:"Isso Vai Deixar Marca", custo:4, d:"1x por encontro, ao ferir, adiciona +1 Sequela extra." },
+      { n:"Ataque do Coração", custo:3, d:"1x por encontro, antes de um teste de susto, todas as falhas são sacrificadas pra você." },
+      { n:"Surpresa!", custo:6, d:"Move sua iniciativa pro primeiro lugar; não pode Matar no primeiro turno." },
+      { n:"Eu Voltarei", custo:3, d:"Usa Escapar fora do seu turno, entre turnos das sobreviventes." },
+      { n:"Sua Hora Chegou", custo:3, d:"Ao iniciar um encontro, aumenta um dado marcador da mesa em 1 (exceto Ferir)." },
+      { n:"Não Há Saída", custo:4, d:"No fim do turno, transforma um dado de fuga de volta em dado comum." },
+      { n:"Cansei de Brincar", custo:5, d:"Transforma um Caminho Armadilha em Caminho Mortal." },
+      { n:"Mudança de Planos", custo:5, d:"Troca uma ação única por outra da mesma Ameaça, entre cenas de encontro." },
+      { n:"Fim da Esperança", custo:5, d:"Mantém um passo da resolução oculto na primeira rodada de uma cena de suspense." },
+      { n:"Caiam na Teia", custo:5, d:"1x por sessão, ativa uma qualidade negativa no cenário durante um encontro." },
+      { n:"Indiferença Perturbadora", custo:2, d:"Ignora os efeitos de uma qualidade neutra por um turno, só pra você." }
+    ];
+
+    const INTENTOS_HORRIVEIS = [
+      { ph: 5, d: "Uma sobrevivente morre durante uma Cena de Suspense" },
+      { ph: 4, d: "Todas as sobreviventes tentam escapar no primeiro turno de um encontro" },
+      { ph: 2, d: "Uma sobrevivente cai em uma armadilha" },
+      { ph: 1, d: "Pelo menos uma sobrevivente falha em um Teste de Susto" },
+      { ph: 1, d: "Um Intérprete usa a vantagem Choque de Realidade" },
+      { ph: 1, d: "Cada sobrevivente que saiu ferida de um encontro" },
+      { ph: 1, d: "Uma sobrevivente morre durante um encontro" },
+      { ph: 1, d: "Sobreviventes se beijam" }
+    ];
+
+    const INICIATIVA_ORDEM = ["Herói","Atleta","Valentona","Esbelto","Inocente","Nerd","Relaxado","Cética","Assassino"];
+
+    const ARQ_CORES = {
+      "Atleta":    "#60a5fa",
+      "Cética":    "#a1a1aa",
+      "Esbelto":   "#f472b6",
+      "Herói":     "#fbbf24",
+      "Nerd":      "#a78bfa",
+      "Inocente":  "#2dd4bf",
+      "Relaxado":  "#4ade80",
+      "Valentona": "#ef4444"
+    };
+
+    const REGRAS = [
+      {
+        id: 'cenas', icon: '🎬', titulo: 'Tipos de Cena',
+        body: `
+          <p>Uma jogatina de BRUTAL é composta por três tipos de cena. Cada uma tem suas próprias regras, definidas pra colocar ordem nos momentos necessários.</p>
+          <p><strong>🎭 Cena Livre</strong> — As Sobreviventes exploram o cenário, conversam, constroem relações. Não há ordem de ações nem limite. Momento de respiro e preparação para os terrores iminentes.</p>
+          <p><strong>🔍 Cena de Suspense</strong> — A tensão se apresenta. As Sobreviventes adentram um covil, sala de tortura, casa abandonada. Um leque de caminhos é mostrado e um conflito deve ser solucionado. Riscos nesse tipo de cena fazem os dados falhos irem <strong>SACRIFICADOS</strong> (pro Assassino).</p>
+          <p><strong>⚔️ Cena de Encontro</strong> — Enfrentamento direto contra a ameaça. Escolhas e ações são tomadas rapidamente, seguindo uma ordem de iniciativa. Falhas aqui são <strong>DESCARTADAS</strong> (pro centro da mesa).</p>
+          <div class="destaque-sangue">
+            <b>Lembre-se:</b> Só em Encontros e Testes de Susto as falhas vão pra Pilha de Descarte. Nas outras cenas, as falhas são Sacrificadas ao Assassino.
+          </div>
+        `
+      },
+      {
+        id: 'testes', icon: '🎲', titulo: 'Testes e Riscos',
+        body: `
+          <p>Antes de rolar, o Intérprete <strong>anuncia quantos dados vai arriscar</strong> (não pode voltar atrás). Depois rola todos. Cada dado <code>4, 5 ou 6</code> é um Sucesso; <code>1, 2 ou 3</code> é uma Falha.</p>
+          <p><strong>Risco Comum:</strong> 1 sucesso é o bastante.</p>
+          <p><strong>Risco Complexo:</strong> precisa de 2 sucessos.</p>
+          <div class="destaque">
+            <b>Dificuldade padrão é 4.</b> Especialidade no atributo reduz a dificuldade em 1 (então <code>3+</code> já é sucesso). Usar um Recurso também reduz em 1. Recursos transformam Riscos Complexos em Comuns automaticamente.
+          </div>
+          <p>Toda falha na rolagem implica em perda do dado — seja Descartado (Encontro/Susto) ou Sacrificado (Suspense/Livre). Se perder o último dado, a Ação vira um <em>desastre</em>.</p>
+        `
+      },
+      {
+        id: 'dados', icon: '🎯', titulo: 'Sobre Dados',
+        body: `
+          <p>Cada Sobrevivente começa com <strong>6 dados D6</strong>. Essa é a sua pilha comum — sua capacidade de encarar os horrores. Se ela zerar, você está morto (ou à mercê do Assassino).</p>
+          <p><strong>Sacrificar um dado:</strong> o dado sai da mão da sobrevivente e vai pro Assassino. Ocorre em <em>Cenas Livres e de Suspense</em>.</p>
+          <p><strong>Descartar um dado:</strong> o dado vai pra Pilha de Descarte, no centro da mesa. Não pertence a ninguém. Ocorre em <em>Encontros e Testes de Susto</em>.</p>
+          <p><strong>Recuperar dados:</strong> duas formas — gastar <code>6 PT</code> no Choque de Realidade (puxa da Descarte), ou usar Recuperar o Fôlego no Encontro (+1 dado comum).</p>
+          <div class="destaque-sangue">
+            <b>Recursos:</b> Itens ou elementos do ambiente que reduzem a dificuldade em 1 OU transformam um Risco Complexo em Comum. Cada recurso tem 1 a 3 usos, definidos pela Diretora.
+          </div>
+        `
+      },
+      {
+        id: 'marcadores', icon: '💀', titulo: 'Dados Marcadores (Ferida e Sequela)',
+        body: `
+          <p>Dados Marcadores são especiais — funcionam como lembretes de condições que evoluem. <strong>Não contam na pilha comum e não podem ser usados em testes.</strong></p>
+          <p><strong>Ferida:</strong> Um corte, hematoma, sangramento. Quando recebe mais de uma, os valores se <strong>somam</strong>. Ao chegar em <code>6</code>, a Sobrevivente morre. Pode ser tratada com Cuidar de Feridas (fora do Encontro).</p>
+          <p><strong>Sequela:</strong> Um ferimento mais profundo — osso quebrado, sangramento grave. Você ganha 1 Sequela sempre que sofrer a ação Ferir do Assassino. Sequelas se acumulam até <code>5</code>.</p>
+          <p><strong>Regra crítica:</strong> Você nunca consegue reduzir sua Ferida abaixo do valor atual de Sequela.</p>
+          <p><strong>Outros marcadores comuns:</strong> Infecção (sobe a cada cena), Possessão (sobe a cada falha), Restrição (aumenta dificuldade).</p>
+        `
+      },
+      {
+        id: 'pt', icon: '🔥', titulo: 'Pontos de Tensão (PT)',
+        body: `
+          <p>PT é a moeda gasta em Vantagens durante a jogatina. Começa em <strong>0</strong> e acumula até <strong>10</strong>.</p>
+          <p><strong>Como ganhar PT:</strong></p>
+          <ul>
+            <li>Tomar shots (desafio clássico de BRUTAL) — quantidade negociável</li>
+            <li>Boa interpretação, estratégia ou piada memorável (a critério da Diretora)</li>
+            <li>Ações clichês de slasher intencionalmente estúpidas</li>
+            <li>Trazer o Item Icônico em cena: <code>+1 PT</code></li>
+            <li>Passar um momento com a Relação Afetiva: <code>+2 PT</code></li>
+            <li>Revelar um Desejo Obscuro: <code>+3 PT</code></li>
+          </ul>
+          <p><strong>Como gastar:</strong> nas <strong>Vantagens</strong> — só fora de Encontros (exceto se o cenário permitir).</p>
+        `
+      },
+      {
+        id: 'vantagens', icon: '⚡', titulo: 'Vantagens',
+        body: `
+          <p><strong>Vantagens Gerais (qualquer um pode comprar):</strong></p>
+          <table class="table-mini">
+            <thead><tr><th>Vantagem</th><th>Custo</th><th>Efeito</th></tr></thead>
+            <tbody>
+              <tr><td>Cuidar de Feridas</td><td>quanto quiser</td><td>Reduz Ferida (sua ou de aliada) pelo valor em PT. Não cura abaixo da Sequela. 1x/encontro.</td></tr>
+              <tr><td>Tomar Jeito</td><td>3 PT</td><td>Recupera uma especialidade incapacitada.</td></tr>
+              <tr><td>Choque de Realidade</td><td>6 PT</td><td>+1 dado comum à sua pilha (puxado da Descarte).</td></tr>
+            </tbody>
+          </table>
+          <p><strong>Vantagens de Especialidade (só quem tem a especialidade):</strong></p>
+          <table class="table-mini">
+            <thead><tr><th>Especialidade</th><th>Vantagem</th><th>Custo</th><th>Efeito</th></tr></thead>
+            <tbody>
+              <tr><td>Vigor</td><td>Adrenalina</td><td>2 PT</td><td>Reduz a próxima ferida em 1. 1x/encontro.</td></tr>
+              <tr><td>Astúcia</td><td>Caçar Recursos</td><td>3 PT</td><td>Recebe um Recurso que não estava na cena.</td></tr>
+              <tr><td>Agilidade</td><td>Preparar pra Próxima</td><td>3 PT</td><td>+1 dado de fuga no próximo Vazar Dali. 1x/encontro.</td></tr>
+              <tr><td>Força</td><td>Ele Não Espera Por Mim</td><td>3 PT</td><td>Sucesso automático no próximo Partir Pra Cima. 1x/encontro.</td></tr>
+              <tr><td>Carisma</td><td>Ombro Amigo</td><td>variável</td><td>Transfere PT pra outra sobrevivente. 1x/encontro.</td></tr>
+            </tbody>
+          </table>
+        `
+      },
+      {
+        id: 'apegos', icon: '❤️', titulo: 'Apegos',
+        body: `
+          <p>Toda Sobrevivente tem três Apegos, que servem como combustível pro desejo de viver e conectam ela ao mundo quando tudo parece perdido.</p>
+          <p><strong>Item Icônico (+1 PT)</strong> — Um objeto que acompanha a sobrevivente. Trazer em cena te recompensa com 1 PT.</p>
+          <p><strong>Relação Afetiva (+2 PT)</strong> — Uma pessoa (ou pet) de extrema importância. Passar um momento com ela rende 2 PT.</p>
+          <p><strong>Desejo Obscuro (+3 PT)</strong> — Uma vontade secreta que a sobrevivente cultiva. Revelar partes dele em cena rende 3 PT.</p>
+          <div class="destaque-sangue">
+            <b>Funções Ocultas:</b> Em sessões avançadas, um dos jogadores pode ser o Traidor, a Possuída ou o Vulto Entre Nós. Apegos revelados de Sobreviventes vivas rendem PH ao Traidor (Item = 1 PH, Relação = 3 PH, Desejo = 6 PH).
+          </div>
+        `
+      },
+      {
+        id: 'encontro', icon: '🔪', titulo: 'Encontro — Regras Detalhadas',
+        body: `
+          <p>O Assassino pode aparecer a partir do momento em que tem mais dados que qualquer sobrevivente. Os jogadores agem primeiro, na ordem de iniciativa.</p>
+          <p><strong>Etapas de Fuga:</strong> número misterioso (varia por ameaça) de dados de fuga que a sobrevivente precisa ter na pilha pra escapar. Fórmula: <code>Maior NB entre as duas Ameaças + 1</code>.</p>
+          <p><strong>Comprar Vantagens é PROIBIDO durante Encontros</strong>, exceto se alguma qualidade permitir.</p>
+          <p><strong>Ações das Sobreviventes:</strong></p>
+          <ul>
+            <li><strong>Vazar Dali (Agilidade):</strong> cada sucesso vira 1 dado de fuga. Tirar 6 = 2 dados (Fuga Vantajosa).</li>
+            <li><strong>Recuperar o Fôlego:</strong> gasta a ação, +1 dado comum.</li>
+            <li><strong>Partir Pra Cima (Força):</strong> sucesso faz o Assassino descartar 1 dado dele (independente de quantos sucessos).</li>
+            <li><strong>Arriscar Tudo:</strong> descarta TODOS os dados pra fugir automaticamente. 1x por sessão. Não pode ser a última na cena.</li>
+            <li><strong>Ajudar Alguém:</strong> sucessos doados, falhas não descartadas.</li>
+            <li><strong>Distrair (Inteligência, complexo):</strong> Assassino gasta +1 dado extra se usar Matar nesse turno.</li>
+          </ul>
+          <p><strong>Iniciativa:</strong> Herói → Atleta → Valentona → Esbelto → Inocente → Nerd → Relaxado → Cética → Assassino.</p>
+          <p><strong>Fim do Encontro:</strong> 4 situações — Assassino abandona em seu turno, Assassino fica sem dados, todos escapam, ou o último personagem morre.</p>
+        `
+      },
+      {
+        id: 'assassino', icon: '☠️', titulo: 'Ações e Poderes do Assassino',
+        body: `
+          <p><strong>Ações Gerais (todos têm acesso):</strong> Assustar, Matar, Ferir, Mutilar, Escapar, Dificultar.</p>
+          <p><strong>Ações Únicas:</strong> escolhidas uma de cada Ameaça — Acidentar, Amaldiçoar, Destruir, Devorar, Incapacitar, Infectar, Possuir, Segurar, Restringir.</p>
+          <p><strong>Poderes Especiais:</strong> grandes habilidades que customizam o Assassino, todas com custo em PH.</p>
+          <p><strong>Intentos Horríveis (fonte de PH):</strong></p>
+          <table class="table-mini">
+            <thead><tr><th>PH</th><th>Situação</th></tr></thead>
+            <tbody>
+              ${INTENTOS_HORRIVEIS.map(i => `<tr><td><code>+${i.ph}</code></td><td>${i.d}</td></tr>`).join('')}
+            </tbody>
+          </table>
+          <p>Além disso, cada Ameaça tem um <strong>Intento Único</strong> que adiciona uma forma exclusiva de receber PH.</p>
+        `
+      },
+      {
+        id: 'formulas', icon: '🧮', titulo: 'Fórmulas e Referência Rápida',
+        body: `
+          <p><strong>Fórmula de Nível de Brutalidade:</strong></p>
+          <ul>
+            <li><code>NB Total</code> = NB Principal + NB Secundária</li>
+            <li><code>Dados iniciais</code> do Assassino = NB Total</li>
+            <li><code>PH inicial</code> = NB da Ameaça Principal</li>
+            <li><code>Etapa de Fuga</code> = Maior NB + 1</li>
+            <li><code>Passos pra resolver Suspense</code> = 4 − Maior NB</li>
+          </ul>
+          <p><strong>Tabela do Nível de Brutalidade:</strong></p>
+          <table class="table-mini">
+            <thead><tr><th>NB</th><th>Dados Iniciais</th><th>Sustos / Encontro</th><th>Armadilhas Grátis</th></tr></thead>
+            <tbody>
+              <tr><td>2</td><td>2</td><td>5</td><td>5</td></tr>
+              <tr><td>3</td><td>3</td><td>4</td><td>4</td></tr>
+              <tr><td>4</td><td>4</td><td>3</td><td>3</td></tr>
+              <tr><td>5</td><td>5</td><td>2</td><td>2</td></tr>
+              <tr><td>6</td><td>6</td><td>1</td><td>1</td></tr>
+            </tbody>
+          </table>
+          <div class="destaque">
+            <b>Dificuldade padrão:</b> 4 · <b>Especialidade:</b> −1 · <b>Risco Complexo:</b> 2 sucessos · <b>Máximo PT:</b> 10 · <b>Máximo Dados na pilha:</b> 6 · <b>Ferida Máx:</b> 6 (morte) · <b>Sequela Máx:</b> 5
+          </div>
+        `
+      },
+      {
+        id: 'suspense', icon: '🕯️', titulo: 'Cena de Suspense — Caminhos, Passos e Armadilhas',
+        body: `
+          <p><strong>Resolução:</strong> a Diretora define o objetivo da cena (ex: "realizar o ritual pra enfraquecer a criatura"). Isso é a Resolução.</p>
+          <p><strong>Passos:</strong> quantos elementos as Sobreviventes precisam descobrir pra atingir a Resolução. Fórmula: <code>4 − Maior NB do Assassino</code>.</p>
+          <p><strong>Caminhos:</strong> os lugares/objetos investigáveis. Cada Caminho pode esconder Passos, Armadilhas, ou ambos.</p>
+          <p><strong>Armadilhas:</strong> obstáculos nos Caminhos, definidos por Ações do Assassino. A primeira Sobrevivente que seguir um Caminho Armadilhado sofre o efeito. Exceção: Assustar afeta todas que seguirem o mesmo Caminho na rodada.</p>
+          <p><strong>Abordagens ao escolher um Caminho:</strong></p>
+          <ul>
+            <li><strong>Direta:</strong> pula sem cautela. Fica vulnerável a armadilhas.</li>
+            <li><strong>Investigativa:</strong> gasta a ação num teste complexo de Astúcia ou Carisma. Sucesso = descobre um Passo.</li>
+            <li><strong>Cautelosa:</strong> desativa Armadilhas com teste (não descobre Passos).</li>
+          </ul>
+          <div class="destaque-sangue">
+            <b>Limite de armadilhas por rodada:</b> 6. A Diretora pode gastar dados pra adicionar Armadilhas extras (1 dado = 1 armadilha extra).
+          </div>
+        `
+      },
+      {
+        id: 'ameacas', icon: '👁️', titulo: 'Todas as Ameaças',
+        body: Object.keys(AMEACAS).map(nome => {
+          const a = AMEACAS[nome];
+          return `
+            <details class="regra-grupo" style="margin-top:8px;background:rgba(0,0,0,0.15);">
+              <summary style="padding:12px 16px; font-size:13px;">
+                <span>
+                  <span class="summary-icon" style="font-size:14px;">◈</span>
+                  ${nome}
+                  <span style="color:var(--bone-dim); font-size:10px; margin-left:10px; letter-spacing:0.1em;">NB ${a.nb}</span>
+                </span>
+              </summary>
+              <div class="regra-body" style="padding:14px 18px 18px;">
+                <p><strong>Passiva:</strong> ${a.passiva}</p>
+                <p><strong>Intento Único:</strong> ${a.intento}</p>
+                <p><strong>Ações Únicas disponíveis:</strong> ${a.acoes.map(ac => `<code>${ac}</code>`).join(' ')}</p>
+              </div>
+            </details>
+          `;
+        }).join('')
+      },
+      {
+        id: 'comoMestrar', icon: '🎬', titulo: 'Como Dirigir um Thriller',
+        body: `
+          <p><strong>Estrutura de uma cena:</strong></p>
+          <ol>
+            <li>A Diretora descreve a cena — ambiente, personagens, ameaças, objetivos.</li>
+            <li>Cada Intérprete descreve sua ação e como interage.</li>
+            <li>A Diretora descreve as consequências e pede testes se houver risco.</li>
+          </ol>
+          <p><strong>Segredo é poder.</strong> O Nível de Brutalidade do Assassino e suas duas Ameaças devem ser mantidos em segredo. Os Intérpretes não sabem o que virão enfrentar.</p>
+          <p><strong>Ritmo:</strong> para evitar que Cenas de Suspense virem tediosas, defina tempo limite pras decisões (toda decisão é final).</p>
+          <p><strong>Armadilhas disfarçadas:</strong> descreva as armadilhas na narração sem revelar mecanicamente. "As gavetas carcomidas por cupins" pode esconder um Assustar. "Uma telha solta" pode esconder um Incapacitar.</p>
+          <p><strong>Quando o Assassino aparece:</strong> quando ele tem mais dados que qualquer sobrevivente na mesa.</p>
+          <div class="destaque">
+            <b>Vitória das Sobreviventes:</b> se elas zeram a pilha do Assassino, ele é derrotado momentaneamente e o grupo ganha uma <strong>Pista</strong> — um conhecimento especial sobre uma fraqueza dele, que conta como Recurso ilimitado.
+          </div>
+        `
+      }
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const campanhaCodigo = urlParams.get('campanha');
+    if (!campanhaCodigo) window.location.href = 'index.html';
+
+    let perfilAtual = null;
+    let campanhaEstado = { info: null, sobreviventes: [], assassino: null };
+    let campanhaUnsubs = [];
+    let masterTab = 'mesa';
+    let regraAberta = null;
+    let mestreLog = [];
+
+    // ⬇️ ITEM 14/17/19/20 — estado dos filtros e alertas
+    let ultimoLogTs = 0;
+    let filtroTipo = 'todas';
+    let filtroSob = 'todas';
+    const mortasVistas = new Set();
+    let primeiraCargaLog = true;
+    let primeiraCargaSob = true;
+
+    window.fazerLogout = async () => {
+      pararListeners();
+      await signOut(auth);
+      window.location.href = 'index.html';
+    };
+    window.sairDaCampanha = async () => {
+      if (!perfilAtual) return;
+      pararListeners();
+      await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid), { campanhaAtiva: null }, { merge: true });
+      window.location.href = 'index.html';
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'index.html'; return; }
+      let dadosUsuario;
+      try {
+        const snap = await window.fsGetDoc(window.fsDoc(window.db, 'usuarios', user.uid));
+        dadosUsuario = snap.exists() ? snap.data() : { nomeUsuario: user.displayName || 'Sobrevivente', campanhaAtiva: null };
+      } catch (e) {
+        console.error(e);
+        dadosUsuario = { nomeUsuario: user.displayName || 'Sobrevivente', campanhaAtiva: null };
+      }
+      perfilAtual = { uid: user.uid, nomeUsuario: dadosUsuario.nomeUsuario };
+
+      const snapCamp = await window.fsGetDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo));
+      if (!snapCamp.exists()) {
+        toast('Campanha não encontrada.', 'erro');
+        window.location.href = 'index.html';
+        return;
+      }
+      const info = snapCamp.data();
+      if (info.diretoraUid !== perfilAtual.uid) {
+        toast('Você não é a Diretora desta campanha.', 'erro');
+        window.location.href = 'jogador.html?campanha=' + campanhaCodigo;
+        return;
+      }
+      iniciarListeners(campanhaCodigo);
+    });
+
+    function pararListeners() {
+      campanhaUnsubs.forEach(u => { try { u(); } catch (e) {} });
+      campanhaUnsubs = [];
+    }
+
+    function iniciarListeners(codigo) {
+      const unsubInfo = window.fsOnSnapshot(window.fsDoc(window.db, 'campanhas', codigo), snap => {
+        if (!snap.exists()) return;
+        campanhaEstado.info = snap.data();
+        renderMestre();
+      }, err => console.error(err));
+
+      // ⬇️ ITEM 17 — detecção de morte
+      const unsubSob = window.fsOnSnapshot(window.fsCollection(window.db, 'campanhas', codigo, 'sobreviventes'), snap => {
+        const lista = [];
+        snap.forEach(d => lista.push({ id: d.id, ...d.data() }));
+        campanhaEstado.sobreviventes = lista;
+
+        lista.forEach(s => {
+          const ferida = s.ferida || 0;
+          if (ferida >= 6 && !mortasVistas.has(s.id)) {
+            mortasVistas.add(s.id);
+            if (!primeiraCargaSob) {
+              window.toast(`☠ ${s.nome} MORREU (Ferida 6)!`, 'erro');
+              window.somMorte();
+            }
+          } else if (ferida < 6 && mortasVistas.has(s.id)) {
+            mortasVistas.delete(s.id);   // reviveu — permite alertar de novo
+          }
+        });
+        primeiraCargaSob = false;
+        renderMestre();
+      }, err => console.error(err));
+
+      const unsubAssassino = window.fsOnSnapshot(window.fsDoc(window.db, 'campanhas', codigo, 'assassino', 'ficha'), snap => {
+        campanhaEstado.assassino = snap.exists() ? snap.data() : null;
+        renderMestre();
+      }, err => console.error(err));
+
+      // ⬇️ ITEM 14/19/20 — listener do log com toasts e som
+      const qLog = window.fsQuery(
+        window.fsCollection(window.db, 'campanhas', codigo, 'log'),
+        window.fsOrderBy('ts'),
+        window.fsLimitToLast(30)
+      );
+      const unsubLog = window.fsOnSnapshot(qLog, snap => {
+        const entradas = [];
+        snap.forEach(d => entradas.push(d.data()));
+        mestreLog = entradas;
+
+        if (!primeiraCargaLog) {
+          const novas = entradas.filter(e => (e.ts || 0) > ultimoLogTs);
+          novas.forEach(e => {
+            const passou = e.resultado === 'sucesso';
+            const quem = e.sobrevivente || e.nomeUsuario || '?';
+            const cena = e.cena ? ` · ${e.cena}` : '';
+            window.toast(`🎲 ${quem}: ${passou ? 'SUCESSO' : 'FALHA'} (${e.sucessos}/${e.necessarios}${cena})`, passou ? 'sucesso' : 'erro');
+            if (e.tipo === 'susto') window.somSusto();
+            else if (passou) window.somCritico();
+            else window.somFalha();
+          });
+        }
+        if (entradas.length) {
+          ultimoLogTs = Math.max(ultimoLogTs, ...entradas.map(e => e.ts || 0));
+        }
+        primeiraCargaLog = false;
+        renderMestre();
+      }, err => console.error(err));
+
+      campanhaUnsubs = [unsubInfo, unsubSob, unsubAssassino, unsubLog];
+    }
+
+    window.setMasterTab = (tab) => {
+      masterTab = tab;
+      document.querySelectorAll('.master-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      renderMestre();
+    };
+
+    window.toggleRegra = (id) => {
+      regraAberta = (regraAberta === id) ? null : id;
+      renderMestre();
+    };
+
+    window.copiarCodigo = () => {
+      navigator.clipboard.writeText(campanhaCodigo).then(() => {
+        toast('Código copiado!', 'sucesso');
+      }).catch(() => toast('Não consegui copiar. Copie manualmente.', 'erro'));
+    };
+
+    // ⬇️ PATCH 1.6 - seletor de cena no hero
+    function renderHero(info) {
+      const heroEl = document.getElementById('mestre-hero');
+      if (!heroEl || !info) return;
+      heroEl.style.display = 'block';
+      document.getElementById('hero-nome').innerHTML = window.escapeHtml(info.nome).split(' ').map((w, i) => i === 0 ? `<span>${w}</span>` : w).join(' ');
+      document.getElementById('hero-diretora').textContent = perfilAtual?.nomeUsuario || '—';
+      document.getElementById('hero-codigo').textContent = campanhaCodigo;
+      document.getElementById('hero-count').textContent = (campanhaEstado.sobreviventes || []).length;
+
+      const cenaAtual = info.cena || 'encontro';
+      const cenaEl = document.getElementById('hero-cena');
+      if (cenaEl) {
+        cenaEl.innerHTML = `
+          <span class="lbl">Cena atual</span>
+          <div style="display:flex;gap:6px;margin-top:4px;">
+            ${['livre', 'suspense', 'encontro'].map(c => `
+              <button class="btn small ${cenaAtual === c ? 'cena-ativo' : 'ghost'}" onclick="setCenaAtual('${c}')">
+                ${c === 'livre' ? '🎭 Livre' : c === 'suspense' ? '🔍 Suspense' : '⚔️ Encontro'}
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    window.setCenaAtual = async (cena) => {
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { cena });
+      const label = cena === 'livre' ? 'Livre' : cena === 'suspense' ? 'Suspense' : 'Encontro';
+      const aviso = cena === 'encontro' ? 'Falhas → Descarte.' : 'Falhas → Assassino.';
+      toast(`Cena: ${label}. ${aviso}`, 'info');
+    };
+
+    function renderMestre() {
+      const el = document.getElementById('mestre-content');
+      if (!el) return;
+      const info = campanhaEstado.info;
+      if (!info) return;
+
+      renderHero(info);
+
+      if (masterTab === 'mesa') el.innerHTML = renderMesaTab(info);
+      else if (masterTab === 'assassino') el.innerHTML = renderAssassinoTab();
+      else if (masterTab === 'regras') el.innerHTML = renderRegrasTab();
+    }
+
+    function renderMesaTab(info) {
+      const membrosHtml = info.membros.map(m => `<span class="pill">${window.escapeHtml(m.nomeUsuario)}${m.papel === 'diretora' ? ' · D' : ''}</span>`).join('');
+
+      const arquetipos = new Set((campanhaEstado.sobreviventes || []).map(s => s.arquetipo));
+      const ordem = INICIATIVA_ORDEM.filter(a => a === 'Assassino' || arquetipos.has(a));
+      const iniciativa = info.iniciativa || { indice: 0 };
+      const idx = iniciativa.indice % Math.max(ordem.length, 1);
+      const initHtml = ordem.map((a,i) => `<div class="init-step ${a === 'Assassino' ? 'assassino' : ''} ${i === idx ? 'current' : ''}">${a}</div>`).join('');
+
+      const sobreviventes = campanhaEstado.sobreviventes || [];
+      const cenaAtual = info.cena || 'encontro';
+      const cenaLabel = cenaAtual === 'livre' ? 'Livre' : cenaAtual === 'suspense' ? 'Suspense' : 'Encontro';
+
+      // ⬇️ ITEM 19/20 — filtros do histórico
+      const sobsUnicos = Array.from(new Set(
+        mestreLog.map(e => e.sobrevivente).filter(Boolean)
+      )).sort();
+
+      const logFiltrado = mestreLog.filter(e => {
+        if (filtroTipo !== 'todas' && (e.cena || '') !== filtroTipo) return false;
+        if (filtroSob !== 'todas' && (e.sobrevivente || '') !== filtroSob) return false;
+        return true;
+      });
+
+      return `
+
+              ${(() => {
+          const enc = info.encontro || { sustosUsados: 0, armadilhas: 0, phGasto: 0 };
+          const assassinoAtual = campanhaEstado.assassino || {};
+          const nbSoma = (Number(assassinoAtual.nb1) || 2) + (Number(assassinoAtual.nb2) || 2);
+          const maxSustos = Math.max(1, 7 - nbSoma);
+          const sustosCheio = enc.sustosUsados >= maxSustos;
+          const armadilhasCheio = enc.armadilhas >= 6;
+          return `
+            <div class="encontro-bar">
+              <div class="encontro-contador ${sustosCheio ? 'cheio' : ''}">
+                <span class="lbl">😱 Sustos usados</span>
+                <div class="valor-linha">
+                  <button class="btn ghost small" onclick="ajustarContadorEncontro('sustosUsados', -1)">−</button>
+                  <span class="valor">${enc.sustosUsados}<small> / ${maxSustos}</small></span>
+                  <button class="btn ghost small" onclick="ajustarContadorEncontro('sustosUsados', 1)">+</button>
+                </div>
+              </div>
+              <div class="encontro-contador ${armadilhasCheio ? 'cheio' : ''}">
+                <span class="lbl">🪤 Armadilhas na cena</span>
+                <div class="valor-linha">
+                  <button class="btn ghost small" onclick="ajustarContadorEncontro('armadilhas', -1)">−</button>
+                  <span class="valor">${enc.armadilhas}<small> / 6</small></span>
+                  <button class="btn ghost small" onclick="ajustarContadorEncontro('armadilhas', 1)">+</button>
+                </div>
+              </div>
+              <div class="encontro-contador">
+                <span class="lbl">💀 PH gasto no encontro</span>
+                <div class="valor-linha">
+                  <button class="btn ghost small" onclick="ajustarContadorEncontro('phGasto', -1)">−</button>
+                  <span class="valor">${enc.phGasto}</span>
+                  <button class="btn ghost small" onclick="ajustarContadorEncontro('phGasto', 1)">+</button>
+                </div>
+              </div>
+              <div class="encontro-contador" style="justify-content:flex-end;">
+                <button class="btn ghost small" onclick="resetarEncontro()">↻ Resetar Encontro</button>
+              </div>
+            </div>
+          `;
+        })()}
+                       
+        <div class="card">
+          <div class="card-header">
+            <h4><span class="header-icon">⚔️</span>Iniciativa</h4>
+            <span class="badge">cena ${cenaLabel.toLowerCase()}</span>
+          </div>
+          <div class="initiative">${initHtml}</div>
+          <button class="btn ghost small" onclick="avancarIniciativa()">Avançar turno →</button>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h4><span class="header-icon">🎲</span>Recursos do Grupo</h4>
+          </div>
+                  <div class="card">
+          <div class="card-header">
+            <h4><span class="header-icon">🗝️</span>Pistas</h4>
+            <span class="badge">${(info.pistas || []).length}</span>
+          </div>
+          <p class="meta" style="margin-bottom:14px;">Conhecimentos especiais sobre fraquezas do Assassino. Contam como Recurso ilimitado enquanto fizerem sentido na cena.</p>
+          ${(info.pistas || []).length === 0
+            ? '<p class="empty">Nenhuma pista registrada ainda.</p>'
+            : `<div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">${(info.pistas || []).map((p, i) => `
+                <div style="display:flex; align-items:flex-start; gap:12px; padding:12px 16px; background:rgba(201,131,58,0.08); border:1px solid rgba(201,131,58,0.35); border-left:3px solid var(--amber); border-radius:8px;">
+                  <div style="flex:1;">
+                    <div style="font-family:'Anton',sans-serif; font-size:14px; letter-spacing:0.06em; text-transform:uppercase; color:var(--amber);">${window.escapeHtml(p.nome)}</div>
+                    ${p.desc ? `<div style="font-size:13px; color:var(--bone); margin-top:4px; line-height:1.55;">${window.escapeHtml(p.desc)}</div>` : ''}
+                  </div>
+                  <button class="btn ghost small" onclick="removerPista(${i})" title="Remover">×</button>
+                </div>
+              `).join('')}</div>`
+          }
+          <div class="row" style="align-items:flex-end;">
+            <div class="field" style="margin-bottom:0;"><label>Nome</label><input id="nova-pista-nome" placeholder="ex: não suporta ver o próprio reflexo"></div>
+            <div class="field" style="margin-bottom:0;"><label>Descrição</label><input id="nova-pista-desc" placeholder="como isso pode ser usado"></div>
+            <div class="field" style="flex:0; margin-bottom:0;"><button class="btn ghost small" onclick="adicionarPista()">+ Adicionar</button></div>
+          </div>
+        </div>
+          <div class="stack-counter">
+            ${info.descarte?.valor ?? 0}
+            <small>dados no centro</small>
+          </div>
+          <p class="meta" style="margin-top:12px;">Dados descartados pelas Sobreviventes em Encontros e Testes de Susto.</p>
+        </div>
+
+                ${(() => {
+          const info = campanhaEstado.info || {};
+          const clamores = info.clamores || { mestre: 0, grupo: 0 };
+          const qualidades = info.qualidades || [];
+          return `
+            <div class="card">
+              <div class="card-header">
+                <h4><span class="header-icon">🌀</span>Clamores & Qualidades</h4>
+                <span class="badge">${qualidades.length} ativa(s)</span>
+              </div>
+
+              <div class="clamores-grid">
+                <div class="clamor-box mestre">
+                  <div class="titulo-clamor">☠ Clamores da Diretora</div>
+                  <div class="controle-clamor">
+                    <button class="btn ghost small" onclick="ajustarClamor('mestre',-1)">−</button>
+                    <span class="num">${clamores.mestre || 0}</span>
+                    <button class="btn ghost small" onclick="ajustarClamor('mestre',1)">+</button>
+                  </div>
+                  <div class="hint">Use pra invocar Qualidades Desfavoráveis.</div>
+                </div>
+                <div class="clamor-box grupo">
+                  <div class="titulo-clamor">✦ Clamores do Grupo</div>
+                  <div class="controle-clamor">
+                    <button class="btn ghost small" onclick="ajustarClamor('grupo',-1)">−</button>
+                    <span class="num">${clamores.grupo || 0}</span>
+                    <button class="btn ghost small" onclick="ajustarClamor('grupo',1)">+</button>
+                  </div>
+                  <div class="hint">Use pra invocar Qualidades Favoráveis ou Neutras.</div>
+                </div>
+              </div>
+
+              ${qualidades.length === 0
+                ? '<p class="empty">Nenhuma qualidade invocada ainda.</p>'
+                : `<div style="margin-bottom:16px;">${qualidades.map(q => `
+                    <div class="qualidade-item ${q.tipo}">
+                      <div style="flex:1;">
+                        <div class="q-nome">${window.escapeHtml(q.nome)}<span class="q-tipo">${q.tipo === 'favoravel' ? 'Favorável' : q.tipo === 'neutra' ? 'Neutra' : 'Desfavorável'}</span></div>
+                        ${q.desc ? `<div class="q-desc">${window.escapeHtml(q.desc)}</div>` : ''}
+                      </div>
+                      <button class="btn ghost small" onclick="removerQualidade('${q.id}')" title="Expirar">×</button>
+                    </div>
+                  `).join('')}</div>`
+              }
+
+              <div class="row" style="align-items:flex-end; margin-bottom:14px;">
+                <div class="field" style="margin-bottom:0;"><label>Nome</label><input id="nova-qualidade-nome" placeholder="ex: esconderijo no sótão"></div>
+                <div class="field" style="margin-bottom:0;"><label>Descrição</label><input id="nova-qualidade-desc" placeholder="efeito na cena"></div>
+                <div class="field" style="margin-bottom:0; flex:0 0 140px;"><label>Tipo</label>
+                  <select id="nova-qualidade-tipo">
+                    <option value="favoravel">Favorável</option>
+                    <option value="neutra" selected>Neutra</option>
+                    <option value="desfavoravel">Desfavorável</option>
+                  </select>
+                </div>
+                <div class="field" style="flex:0; margin-bottom:0;"><button class="btn ghost small" onclick="adicionarQualidadeManual()">+ Criar</button></div>
+              </div>
+
+              <details class="regra-grupo">
+                <summary style="padding:10px 14px; font-size:12px;">
+                  <span><span class="summary-icon" style="font-size:14px;">⚡</span>Sugestões rápidas (clique pra invocar, consome 1 Clamor)</span>
+                </summary>
+                <div style="padding:12px 14px 14px; display:flex; flex-wrap:wrap; gap:6px;">
+                  ${QUALIDADES_SUGERIDAS.map((q, i) => `
+                    <button class="btn ghost small" onclick="usarQualidadeSugerida(${i})" title="${window.escapeHtml(q.desc)}">
+                      ${q.tipo === 'favoravel' ? '✦' : q.tipo === 'neutra' ? '◈' : '☠'} ${window.escapeHtml(q.nome)}
+                    </button>
+                  `).join('')}
+                </div>
+              </details>
+            </div>
+          `;
+        })()}
+
+        ${renderSuspenseCard()}
+
+        <div class="card">
+          <div class="card-header">
+            <h4><span class="header-icon">💀</span>Sobreviventes em Jogo</h4>
+            <span class="badge">${sobreviventes.length} ${sobreviventes.length === 1 ? 'viva' : 'vivas'}</span>
+          </div>
+          ${sobreviventes.length === 0
+            ? '<p class="empty">Nenhuma sobrevivente criada ainda.<br>As sobreviventes aparecem aqui assim que as jogadoras as criarem.</p>'
+            : sobreviventes.map(s => {
+                const cor = ARQ_CORES[s.arquetipo] || 'var(--bone-dim)';
+                const ferida = s.ferida || 0;
+                const morta = ferida >= 6;
+                return `
+                  <div class="pill ${morta ? 'sobrevivente-morta' : ''}" style="border-left: 3px solid ${cor}; padding: 10px 14px; gap: 10px;">
+                    ${morta ? '<span class="badge-morta">☠ MORTA</span>' : ''}
+                    <b>${window.escapeHtml(s.nome)}</b>
+                    <span style="color:${cor}; font-weight: 700;">${s.arquetipo}</span>
+                    <span style="opacity:0.7;">·</span>
+                    <span>PT <b>${s.pt}</b></span>
+                    <span>·</span>
+                    <span>Pilha <b>${s.pilha}</b></span>
+                    <span>·</span>
+                    <span>Fuga <b style="color:var(--sky);">${s.pilhaFuga || 0}</b></span>
+                    <span>·</span>
+                    <span>Ferida <b style="color:var(--blood-bright);">${ferida}</b></span>
+                    <span>·</span>
+                    <span>Sequela <b style="color:var(--amber);">${s.sequela}</b></span>
+                    ${!morta ? `
+                      <span style="opacity:0.4;">|</span>
+                      <button class="btn small ghost" onclick="event.stopPropagation(); ferirSobrevivente('${s.id}','${s.nome.replace(/'/g,"\\'")}')" title="Rola 1 dado. Se 6, mata. Senão, soma ferida.">⚔ Ferir</button>
+                      <button class="btn small ghost" onclick="event.stopPropagation(); matarSobrevivente('${s.id}','${s.nome.replace(/'/g,"\\'")}')" title="Marca como morta.">☠ Matar</button>
+                      ${s.arriscouTudo ? `
+                        <button class="btn small ghost"
+                          onclick="event.stopPropagation(); resetarArriscarTudoDe('${s.id}','${s.nome.replace(/'/g,"\\'")}')"
+                          title="Liberar Arriscar Tudo pra esta sobrevivente"
+                          style="border-color:var(--amber);color:var(--amber);">↻ Arriscar</button>
+                      ` : ''}
+                    ` : `
+                      <button class="btn small ghost" onclick="event.stopPropagation(); reviverSobrevivente('${s.id}','${s.nome.replace(/'/g,"\\'")}')" title="Desfaz a morte.">↻ Reviver</button>
+                    `}
+                  </div>
+                `;
+              }).join('')
+          }
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><h4><span class="header-icon">👥</span>Membros</h4></div>
+          ${membrosHtml}
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h4><span class="header-icon">📜</span>Histórico de Rolagens</h4>
+            <span class="badge">${logFiltrado.length} / ${mestreLog.length}</span>
+          </div>
+
+          <div class="row" style="margin-bottom:14px; gap:10px;">
+            <div class="field" style="margin-bottom:0;">
+              <label>Filtrar por cena</label>
+              <select onchange="setFiltroTipo(this.value)">
+                <option value="todas"     ${filtroTipo==='todas'    ?'selected':''}>Todas as cenas</option>
+                <option value="encontro"  ${filtroTipo==='encontro' ?'selected':''}>⚔️ Encontro</option>
+                <option value="suspense"  ${filtroTipo==='suspense' ?'selected':''}>🔍 Suspense</option>
+                <option value="livre"     ${filtroTipo==='livre'    ?'selected':''}>🎭 Cena Livre</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Filtrar por sobrevivente</label>
+              <select onchange="setFiltroSob(this.value)">
+                <option value="todas" ${filtroSob==='todas'?'selected':''}>Todos</option>
+                ${sobsUnicos.map(n => `<option value="${window.escapeHtml(n)}" ${filtroSob===n?'selected':''}>${window.escapeHtml(n)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field" style="flex:0; margin-bottom:0;">
+              <button class="btn ghost small" onclick="novaSessao()" title="Apaga histórico e zera PH do Assassino">🔄 Nova sessão</button>
+            </div>
+          </div>
+
+          ${logFiltrado.length === 0
+            ? '<p class="empty">Nenhuma rolagem registrada (ou nenhuma bate com os filtros).</p>'
+            : `<div style="display:flex; flex-direction:column; gap:8px;">${logFiltrado.slice().reverse().map(entrada => {
+                const passou = entrada.resultado === 'sucesso';
+                const cor = passou ? 'var(--sick)' : 'var(--blood-bright)';
+                const cenaTag = entrada.cena ? `<span class="badge" style="margin-left:6px;font-size:9px;">${entrada.cena}</span>` : '';
+                const tipoTag = entrada.tipo === 'susto' ? `<span class="badge" style="margin-left:6px;font-size:9px;">susto</span>` : '';
+                return `
+                  <div style="display:flex; align-items:center; gap:14px; padding:12px 16px; background:rgba(0,0,0,0.25); border:1px solid var(--border-light); border-left:3px solid ${cor}; border-radius:8px;">
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--bone-dim); min-width:52px; flex-shrink:0;">
+                      ${new Date(entrada.ts).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                      <div style="font-weight:600; font-size:13px; color:var(--bone);">
+                        ${window.escapeHtml(entrada.sobrevivente || entrada.nomeUsuario || '?')}
+                        ${cenaTag}${tipoTag}
+                      </div>
+                      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--bone-dim); margin-top:2px;">
+                        [${(entrada.valores || []).join(', ')}] · ${entrada.sucessos} sucesso(s) · precisava ${entrada.necessarios}
+                      </div>
+                    </div>
+                    <div style="font-family:'Anton',sans-serif; font-size:13px; letter-spacing:0.08em; color:${cor}; flex-shrink:0;">
+                      ${passou ? 'SUCESSO' : 'FALHA'}
+                    </div>
+                  </div>
+                `;
+              }).join('')}</div>`
+          }
+        </div>
+        
+        <div class="card" style="text-align:center;">
+          <h4 style="font-family:'Anton',sans-serif; font-size:18px; color:var(--bone); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px;">💀 Encerrar o Thriller</h4>
+          <p class="meta" style="margin-bottom:16px;">Ao fim da sessão, quem sobreviveu ganha uma Cicatriz — uma nova habilidade.</p>
+          <button class="btn" style="background:linear-gradient(135deg,var(--blood-bright),var(--blood));border-color:var(--blood-bright);color:#fff;font-family:'Anton',sans-serif;font-size:14px;letter-spacing:0.14em;padding:14px 28px;" onclick="abrirCicatrizesModal()">
+            💀 Aplicar Cicatrizes
+          </button>
+        </div>
+              `;
+    }
+
+    // ===== ITEM 15 — Nova sessão =====
+    window.novaSessao = async () => {
+      if (!confirm('Nova sessão?\n\nIsso vai:\n• Apagar TODO o histórico de rolagens\n• Zerar PH, dados e Dado da Horda do Assassino\n• Resetar Arriscou Tudo de todas as sobreviventes\n• Zerar contadores do encontro')) return;
+
+      try {
+        const snap = await window.fsGetDocs(window.fsCollection(window.db, 'campanhas', campanhaCodigo, 'log'));
+        await Promise.all(snap.docs.map(d => window.fsDeleteDoc(d.ref)));
+      } catch(e) { console.warn(e); }
+
+      const aRef = window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'assassino', 'ficha');
+      const aSnap = await window.fsGetDoc(aRef);
+      if (aSnap.exists()) {
+        await window.fsSetDoc(aRef, { ...aSnap.data(), ph: 0, dados: 0, dadoHorda: 0 });
+      }
+
+      const sobs = campanhaEstado.sobreviventes || [];
+      await Promise.all(sobs.map(s =>
+        window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', s.id),
+          { arriscouTudo: false })
+      ));
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), {
+        encontro: { sustosUsados: 0, armadilhas: 0, phGasto: 0 }
+      });
+
+      ultimoLogTs = 0;
+      toast('Nova sessão iniciada. Tudo zerado.', 'sucesso');
+      window.somAviso();
+    };
+
+    // ===== ITEM 16 — Resetar Arriscar Tudo de uma sobrevivente =====
+    window.resetarArriscarTudoDe = async (id, nome) => {
+      if (!confirm(`Resetar "Arriscou Tudo" de ${nome}?`)) return;
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', id),
+        { arriscouTudo: false });
+      toast(`${nome} pode Arriscar Tudo de novo.`, 'sucesso');
+    };
+
+    // ===== ITEM 19/20 — Filtros =====
+    window.setFiltroTipo = (v) => { filtroTipo = v; renderMestre(); };
+    window.setFiltroSob  = (v) => { filtroSob  = v; renderMestre(); };
+
+    // ⬇️ PATCH 1.7 - Ferir / Matar / Reviver direto do mestre
+    window.ferirSobrevivente = async (id, nome) => {
+      const valor = 1 + Math.floor(Math.random() * 6);
+
+      if (valor === 6) {
+        if (confirm(`Ferir ${nome}: rolou 6 — morte instantânea. Confirmar?`)) {
+          mortasVistas.add(id);                     // evita toast duplicado do listener
+          await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', id), { ferida: 6 });
+          window.somMorte();                        // ⬅️ ITEM 18
+          toast(`${nome} morreu — Ferir 6.`, 'erro');
+        } else {
+          toast(`Ferir ${nome}: 6 ignorado.`, 'info');
+        }
+        return;
+      }
+
+      const snap = await window.fsGetDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', id));
+      if (!snap.exists()) return;
+      const atual = snap.data();
+      const nova = Math.min(6, (atual.ferida || 0) + valor);
+
+      if (nova >= 6) mortasVistas.add(id);          // evita toast duplicado
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', id), { ferida: nova });
+      window.somFerida();                           // ⬅️ ITEM 18
+      if (nova >= 6) window.somMorte();
+      toast(`Ferir ${nome}: rolou ${valor}. Ferida ${atual.ferida || 0} → ${nova}.${nova >= 6 ? ' MORTA.' : ''}`, nova >= 6 ? 'erro' : 'info');
+    };
+
+    window.matarSobrevivente = async (id, nome) => {
+      if (!confirm(`Matar ${nome}? Isso vai marcar como morta.`)) return;
+      mortasVistas.add(id);                         // evita toast duplicado do listener
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', id), { ferida: 6 });
+      window.somMorte();                            // ⬅️ ITEM 18
+      toast(`${nome} foi morta.`, 'erro');
+    };
+
+    window.reviverSobrevivente = async (id, nome) => {
+      if (!confirm(`Reviver ${nome}? (volta pra Ferida 5)`)) return;
+      mortasVistas.delete(id);                      // permite novo alerta se morrer de novo
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', id), { ferida: 5 });
+      toast(`${nome} revivida com Ferida 5.`, 'info');
+    };
+
+    function assassinoRef() {
+      return window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'assassino', 'ficha');
+    }
+
+    const ASSASSINO_PADRAO = {
+      nome: '', retratoURL: '',
+      ameaca1: 'Amaldiçoado', ameaca2: 'Assombração',
+      nb1: 2, nb2: 2, ph: 0,
+      escolhaAcao1: '', escolhaAcao2: '',
+      passivaEscolhida: 'principal',
+      poderEscolhido: '', dados: 0,
+      montado: false
+    };
+
+    function getAssassinoAtual() {
+      return { ...ASSASSINO_PADRAO, ...(campanhaEstado.assassino || {}) };
+    }
+
+    function renderAssassinoTab() {
+      const d = getAssassinoAtual();
+      if (d.montado) return renderAssassinoMontado(d);
+      return renderAssassinoBuilder(d);
+    }
+
+    function renderAssassinoMontado(d) {
+      const nbSoma = Number(d.nb1) + Number(d.nb2);
+      const maiorNB = Math.max(Number(d.nb1), Number(d.nb2));
+      const etapaFuga = maiorNB + 1;
+      const a1 = AMEACAS[d.ameaca1] || AMEACAS['Amaldiçoado'];
+      const a2 = AMEACAS[d.ameaca2] || AMEACAS['Assombração'];
+      const poder = PODERES_ESPECIAIS.find(p => p.n === d.poderEscolhido);
+      const temRetrato = !!d.retratoURL;
+
+      return `
+        <div class="ameaca-topo">
+          <div class="ameaca-retrato" title="Retrato do Assassino">
+            ${temRetrato
+              ? `<img src="${d.retratoURL}" alt="Retrato">`
+              : `<span class="placeholder">☠</span>`}
+          </div>
+          <div class="ameaca-topo-info">
+            <div class="nome-input" style="cursor:default;">${window.escapeHtml(d.nome) || 'Assassino sem nome'}</div>
+            <div class="ameaca-stats">
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Nível de Brutalidade</span>
+                <span class="stat-val">${nbSoma} <small>total</small></span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Pontos de Horror</span>
+                <span class="stat-val">
+                  ${d.ph} 
+                  <button class="btn ghost small" onclick="ajustarPH(-1)">−</button>
+                  <button class="btn ghost small" onclick="ajustarPH(1)">+</button>
+                </span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Dados na Pilha</span>
+                <span class="stat-val">
+                  ${d.dados} 
+                  <button class="btn ghost small" onclick="ajustarDadosAssassino(-1)">−</button>
+                  <button class="btn ghost small" onclick="ajustarDadosAssassino(1)">+</button>
+                </span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Etapa de Fuga</span>
+                <span class="stat-val">${etapaFuga}</span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Sustos / Encontro</span>
+                <span class="stat-val">${Math.max(1, 7 - nbSoma)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${renderDadoHordaCard(d)}
+
+        <div class="assassino-status">
+          <span class="assassino-status-nome">Assassino montado e pronto pra jogar</span>
+        </div>
+
+        <div class="ameaca-salva-grid">
+          ${renderAmeacaSalva('principal', a1, d.nb1, d.escolhaAcao1, (d.passivaEscolhida === 'principal'))}
+          ${renderAmeacaSalva('secundaria', a2, d.nb2, d.escolhaAcao2, (d.passivaEscolhida === 'secundaria'))}
+        </div>
+
+        ${poder ? `
+          <div class="card">
+            <div class="card-header"><h4><span class="header-icon">★</span>Poder Especial</h4></div>
+            <div class="poder-salvo">
+              <div class="nome">${window.escapeHtml(poder.n)}</div>
+              <div class="custo">${typeof poder.custo === 'number' ? poder.custo + ' PH' : poder.custo}</div>
+              <p>${window.escapeHtml(poder.d)}</p>
+            </div>
+          </div>
+        ` : `
+          <div class="card">
+            <div class="card-header"><h4><span class="header-icon">★</span>Poder Especial</h4></div>
+            <p class="empty">Nenhum poder especial escolhido.</p>
+          </div>
+        `}
+
+        <div class="card">
+          <div class="card-header"><h4><span class="header-icon">⚔️</span>Ações Gerais</h4><span class="badge">sempre disponíveis</span></div>
+          ${ACOES_GERAIS.map(a => `
+            <div class="ability">
+              <div class="txt"><b>${window.escapeHtml(a.n)}</b><p>${window.escapeHtml(a.d)}</p></div>
+              <button class="btn small" onclick="usarAcaoGeral('${a.n.replace(/'/g, "\\'")}')">usar</button>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h4><span class="header-icon">🔥</span>Intentos Horríveis</h4><span class="badge">ganhar PH</span></div>
+          <p class="meta" style="margin-bottom:14px;">Clique em <b>+PH</b> quando o intento ocorrer na mesa.</p>
+          <div class="intentos-lista">
+            ${INTENTOS_HORRIVEIS.map((intento) => `
+              <div class="intento-row">
+                <div class="ph-badge">+${intento.ph}</div>
+                <div class="intento-txt">${window.escapeHtml(intento.d)}</div>
+                <button class="intento-btn" onclick="creditarPH(${intento.ph})">+PH</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="assassino-saved-acoes">
+          <button class="btn-reabrir-assassino" onclick="reabrirAssassinoEdicao()">↻ Reabrir Edição</button>
+        </div>
+      `;
+    }
+
+    function renderAmeacaSalva(tipo, ameaca, nb, acaoEscolhida, passivaAtiva) {
+      const isPrincipal = tipo === 'principal';
+      const titulo = isPrincipal ? 'Principal' : 'Secundária';
+      const acaoTxt = acaoEscolhida ? ACOES_UNICAS[acaoEscolhida] : '';
+
+      return `
+        <div class="ameaca-salva-bloco ${tipo}">
+          <div class="ameaca-salva-header">
+            <div>
+              <div style="font-family:'Anton',sans-serif; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:${isPrincipal ? 'var(--blood-bright)' : 'var(--amber)'}; margin-bottom:6px;">Ameaça ${titulo}</div>
+              <div class="ameaca-salva-nome">${window.escapeHtml(ameaca ? AMEACAS[ameaca] ? ameaca : ameaca : '—')}</div>
+            </div>
+            <div class="ameaca-salva-nb"><small>NB</small>${nb}</div>
+          </div>
+
+          ${passivaAtiva ? `
+            <div class="ameaca-salva-secao">
+              <span class="lbl">◈ Passiva Ativa</span>
+              <div class="txt">${window.escapeHtml(ameaca.passiva)}</div>
+            </div>
+          ` : ''}
+
+          <div class="ameaca-salva-secao">
+            <span class="lbl">⊘ Intento Único</span>
+            <div class="txt">${window.escapeHtml(ameaca.intento)}</div>
+          </div>
+
+          ${acaoEscolhida ? `
+            <div class="ameaca-salva-acao">
+              <div class="nome">${window.escapeHtml(acaoEscolhida)}</div>
+              <div class="txt">${window.escapeHtml(acaoTxt)}</div>
+            </div>
+          ` : `
+            <div class="ameaca-salva-secao">
+              <span class="lbl">Ação Única</span>
+              <div class="txt" style="opacity:0.5;">Nenhuma escolhida</div>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderAssassinoBuilder(d) {
+      const nbSoma = Number(d.nb1) + Number(d.nb2);
+      const a1 = AMEACAS[d.ameaca1] || AMEACAS['Amaldiçoado'];
+      const a2 = AMEACAS[d.ameaca2] || AMEACAS['Assombração'];
+      const maiorNB = Math.max(Number(d.nb1), Number(d.nb2));
+      const etapaFuga = maiorNB + 1;
+      const phInicial = Number(d.nb1);
+      const temRetrato = !!d.retratoURL;
+      const prontoParaSalvar = !!(d.nome && d.escolhaAcao1 && d.escolhaAcao2 && d.poderEscolhido);
+
+      return `
+        <div class="ameaca-topo">
+          <div class="ameaca-retrato" onclick="document.getElementById('assassino-retrato-input').click()" title="Clique pra escolher um retrato">
+            ${temRetrato
+              ? `<img src="${d.retratoURL}" alt="Retrato">`
+              : `<span class="placeholder">☠</span>`}
+          </div>
+          <input type="file" id="assassino-retrato-input" accept="image/*" style="display:none" onchange="uploadRetratoAssassino(this.files[0])">
+          <div class="ameaca-topo-info">
+            <input class="nome-input" value="${window.escapeHtml(d.nome)}" placeholder="Nome do Assassino..." onchange="atualizarAssassinoCampo('nome', this.value)">
+            <div class="ameaca-stats">
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Nível de Brutalidade</span>
+                <span class="stat-val">${nbSoma} <small>total</small></span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Pontos de Horror</span>
+                <span class="stat-val">
+                  ${d.ph} 
+                  <button class="btn ghost small" onclick="ajustarPH(-1)">−</button>
+                  <button class="btn ghost small" onclick="ajustarPH(1)">+</button>
+                </span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Dados na Pilha</span>
+                <span class="stat-val">
+                  ${d.dados} 
+                  <button class="btn ghost small" onclick="ajustarDadosAssassino(-1)">−</button>
+                  <button class="btn ghost small" onclick="ajustarDadosAssassino(1)">+</button>
+                </span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Etapa de Fuga</span>
+                <span class="stat-val">${etapaFuga}</span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">PH Inicial</span>
+                <span class="stat-val">${phInicial}</span>
+              </div>
+              <div class="ameaca-stat">
+                <span class="stat-lbl">Sustos / Encontro</span>
+                <span class="stat-val">${Math.max(1, 7 - nbSoma)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ameaca-grid">
+          ${renderBlocoAmeaca('principal', d, a1, d.nb1, 'ameaca1', 'nb1', 'escolhaAcao1')}
+          ${renderBlocoAmeaca('secundaria', d, a2, d.nb2, 'ameaca2', 'nb2', 'escolhaAcao2')}
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h4><span class="header-icon">★</span>Poder Especial</h4><span class="badge">escolha 1</span></div>
+          <p class="meta" style="margin-bottom:14px;">Grandes habilidades que customizam seu Assassino. Todas custam PH.</p>
+          ${PODERES_ESPECIAIS.map(p => `
+            <label class="ameaca-acao-opcao ${d.poderEscolhido === p.n ? 'selected' : ''}">
+              <input type="radio" name="poder" ${d.poderEscolhido === p.n ? 'checked' : ''} onchange="atualizarAssassinoCampo('poderEscolhido','${p.n.replace(/'/g, "\\'")}')">
+              <div class="acao-txt">
+                <b>${window.escapeHtml(p.n)} · <span style="color:var(--amber);">${typeof p.custo === 'number' ? p.custo + ' PH' : p.custo}</span></b>
+                <p>${window.escapeHtml(p.d)}</p>
+              </div>
+            </label>
+          `).join('')}
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h4><span class="header-icon">⚔️</span>Ações Gerais</h4><span class="badge">todos têm acesso</span></div>
+          ${ACOES_GERAIS.map(a => `
+            <div class="ability">
+              <div class="txt"><b>${window.escapeHtml(a.n)}</b><p>${window.escapeHtml(a.d)}</p></div>
+              <button class="btn small" onclick="usarAcaoGeral('${a.n.replace(/'/g, "\\'")}')">usar</button>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h4><span class="header-icon">🔥</span>Intentos Horríveis</h4><span class="badge">ganhar PH</span></div>
+          <p class="meta" style="margin-bottom:14px;">Quando um intento ocorre na mesa, clica em <b>+PH</b> pra creditar.</p>
+          <div class="intentos-lista">
+            ${INTENTOS_HORRIVEIS.map((intento) => `
+              <div class="intento-row">
+                <div class="ph-badge">+${intento.ph}</div>
+                <div class="intento-txt">${window.escapeHtml(intento.d)}</div>
+                <button class="intento-btn" onclick="creditarPH(${intento.ph})">+PH</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="assassino-saved-acoes">
+          ${!prontoParaSalvar ? `
+            <p class="meta" style="flex:1; text-align:left; color:var(--amber);">
+              ⚠ Pra salvar: defina um nome, escolha uma Ação Única de cada Ameaça e um Poder Especial.
+            </p>
+          ` : ''}
+          <button class="btn-montar-assassino" ${prontoParaSalvar ? '' : 'disabled style="opacity:0.4; pointer-events:none; cursor:not-allowed;"'} onclick="salvarAssassino()">
+            🩸 Salvar Assassino
+          </button>
+        </div>
+      `;
+    }
+
+    function renderBlocoAmeaca(tipo, d, ameaca, nb, campoSelect, campoNB, campoAcao) {
+      const titulo = tipo === 'principal' ? 'Principal' : 'Secundária';
+      const isPrincipal = tipo === 'principal';
+      const passivaSelecionada = (isPrincipal && d.passivaEscolhida === 'principal') || (!isPrincipal && d.passivaEscolhida === 'secundaria');
+
+      return `
+        <div class="ameaca-bloco ${tipo}">
+          <div class="ameaca-bloco-header">
+            <select class="ameaca-bloco-titulo" onchange="atualizarAssassinoCampo('${campoSelect}', this.value)">
+              ${Object.keys(AMEACAS).map(a => `<option value="${a}" ${d[campoSelect] === a ? 'selected' : ''}>${a}</option>`).join('')}
+            </select>
+            <span class="ameaca-bloco-tag">${titulo}</span>
+          </div>
+
+          <div class="ameaca-info-linha">
+            <span class="lbl">NB</span>
+            <input type="number" min="1" max="6" value="${nb}" onchange="atualizarAssassinoCampo('${campoNB}', Number(this.value))" style="width:80px; background:rgba(0,0,0,0.35); border:1px solid var(--border-light); border-radius:8px; padding:8px 12px; color:var(--bone); font-weight: 700; text-align: center;">
+          </div>
+
+          <div class="ameaca-info-linha">
+            <span class="lbl">Passiva</span>
+            <span class="val">${window.escapeHtml(ameaca.passiva)}</span>
+          </div>
+
+          <label class="ameaca-acao-opcao ${passivaSelecionada ? 'selected' : ''}" style="cursor:pointer;">
+            <input type="radio" name="passiva" ${passivaSelecionada ? 'checked' : ''} onchange="atualizarAssassinoCampo('passivaEscolhida','${tipo === 'principal' ? 'principal' : 'secundaria'}')">
+            <div class="acao-txt"><b>Usar esta passiva</b></div>
+          </label>
+
+          <div class="ameaca-info-linha" style="margin-top:10px;">
+            <span class="lbl">Intento</span>
+            <span class="val">${window.escapeHtml(ameaca.intento)}</span>
+          </div>
+
+          <div style="margin-top:12px;">
+            <span class="lbl" style="font-family:'Anton',sans-serif; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--bone-dim); display:block; margin-bottom:8px;">Ação Única (escolha 1)</span>
+            <div class="ameaca-acoes-lista">
+              ${ameaca.acoes.map(ac => {
+                const sel = d[campoAcao] === ac;
+                return `
+                  <label class="ameaca-acao-opcao ${sel ? 'selected' : ''}">
+                    <input type="radio" name="${campoAcao}" ${sel ? 'checked' : ''} onchange="atualizarAssassinoCampo('${campoAcao}','${ac.replace(/'/g, "\\'")}')">
+                    <div class="acao-txt">
+                      <b>${window.escapeHtml(ac)}</b>
+                      <p>${window.escapeHtml(ACOES_UNICAS[ac])}</p>
+                    </div>
+                  </label>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    window.atualizarAssassinoCampo = async (campo, valor) => {
+      const atual = getAssassinoAtual();
+      atual[campo] = valor;
+      await window.fsSetDoc(assassinoRef(), atual);
+    };
+
+    window.ajustarPH = async (delta) => {
+      const atual = getAssassinoAtual();
+      atual.ph = Math.max(0, atual.ph + delta);
+      await window.fsSetDoc(assassinoRef(), atual);
+    };
+
+    window.ajustarDadosAssassino = async (delta) => {
+      const atual = getAssassinoAtual();
+      atual.dados = Math.max(0, atual.dados + delta);
+      await window.fsSetDoc(assassinoRef(), atual);
+    };
+
+    window.creditarPH = async (qtd) => {
+      const atual = getAssassinoAtual();
+      atual.ph = Math.max(0, atual.ph + qtd);
+      await window.fsSetDoc(assassinoRef(), atual);
+      toast(`+${qtd} PH creditado ao Assassino.`, 'sucesso');
+    };
+
+    window.usarAcaoGeral = (nome) => {
+      if (nome === 'Ferir') {
+        const v = 1 + Math.floor(Math.random()*6);
+        if (v === 6) toast('Ferir: resultado 6 — a sobrevivente morre instantaneamente.', 'erro');
+        else toast(`Ferir: resultado ${v} — entregue como dado marcador de ferimento.`, 'info');
+      } else {
+        toast(`Ação "${nome}" registrada — aplique o efeito na mesa.`, 'info');
+      }
+    };
+
+    window.salvarAssassino = async () => {
+      const atual = getAssassinoAtual();
+      if (!atual.nome || !atual.escolhaAcao1 || !atual.escolhaAcao2 || !atual.poderEscolhido) {
+        toast('Preencha nome, as duas ações únicas e um poder especial antes de salvar.', 'erro');
+        return;
+      }
+      atual.montado = true;
+      await window.fsSetDoc(assassinoRef(), atual);
+      toast('Assassino montado! Ficha pronta pra jogar.', 'sucesso');
+    };
+
+    window.reabrirAssassinoEdicao = async () => {
+      if (!confirm('Reabrir a edição do Assassino? Você vai poder trocar tudo de novo.')) return;
+      const atual = getAssassinoAtual();
+      atual.montado = false;
+      await window.fsSetDoc(assassinoRef(), atual);
+      toast('Ficha do Assassino liberada pra edição.', 'info');
+    };
+
+    const IMGBB_API_KEY = '27f5e02f2aefe0e203049fd80b7f628b';
+    window.uploadRetratoAssassino = async (file) => {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { toast('Escolha uma imagem.', 'erro'); return; }
+      if (file.size > 5 * 1024 * 1024) { toast('Máximo 5 MB.', 'erro'); return; }
+
+      toast('Enviando retrato...', 'info');
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const formData = new FormData();
+      formData.append('image', base64);
+      try {
+        const resposta = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:'POST', body:formData });
+        const dados = await resposta.json();
+        if (!dados.success) throw new Error('Falha');
+        const atual = getAssassinoAtual();
+        atual.retratoURL = dados.data.url;
+        await window.fsSetDoc(assassinoRef(), atual);
+        toast('Retrato atualizado.', 'sucesso');
+      } catch (e) {
+        console.error('Erro upload:', e);
+        toast('Não consegui enviar o retrato.', 'erro');
+      }
+    };
+
+    function renderRegrasTab() {
+      return `
+        <div class="card">
+          <div class="card-header">
+            <h2>📖 Regras Rápidas</h2>
+            <span class="badge">consulta de mesa</span>
+          </div>
+          <p class="meta">Referência rápida das regras de BRUTAL. Clique nos grupos para expandir.</p>
+        </div>
+
+        ${REGRAS.map(r => `
+          <details class="regra-grupo" ${regraAberta === r.id ? 'open' : ''}>
+            <summary>
+              <span><span class="summary-icon">${r.icon}</span>${r.titulo}</span>
+            </summary>
+            <div class="regra-body">${r.body}</div>
+          </details>
+        `).join('')}
+      `;
+    }
+
+// ===== CONTADORES DO ENCONTRO =====
+window.ajustarContadorEncontro = async (campo, delta) => {
+  const info = campanhaEstado.info;
+  if (!info) return;
+  const atual = info.encontro || { sustosUsados: 0, armadilhas: 0, phGasto: 0 };
+  const novo = { ...atual };
+  novo[campo] = Math.max(0, (atual[campo] || 0) + delta);
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { encontro: novo });
+};
+
+window.resetarEncontro = async () => {
+  if (!confirm('Resetar contadores do encontro? Use ao terminar um combate.')) return;
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), {
+    encontro: { sustosUsados: 0, armadilhas: 0, phGasto: 0 }
+  });
+  toast('Contadores do encontro zerados.', 'info');
+};
+
+// ===== PISTAS =====
+window.adicionarPista = async () => {
+  const nomeInput = document.getElementById('nova-pista-nome');
+  const descInput = document.getElementById('nova-pista-desc');
+  const nome = nomeInput.value.trim();
+  const desc = descInput.value.trim();
+  if (!nome) { toast('Dê um nome pra pista.', 'erro'); return; }
+  const info = campanhaEstado.info || {};
+  const pistas = [...(info.pistas || []), { nome, desc }];
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { pistas });
+  toast(`Pista "${nome}" registrada.`, 'sucesso');
+};
+
+window.removerPista = async (idx) => {
+  if (!confirm('Remover essa pista?')) return;
+  const info = campanhaEstado.info || {};
+  const pistas = (info.pistas || []).filter((_, i) => i !== idx);
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { pistas });
+  toast('Pista removida.', 'info');
+};
+
+// Cópia dos arquétipos (pra cicatrizes e validações no mestre)
+const ARQUETIPOS_MESTRE = {
+  "Atleta": [
+    { n:"Compra Extra", d:"Uma vez por encontro, adquire uma vantagem sem gastar a ação normalmente reservada pra isso." },
+    { n:"Aguento Tudo", d:"Uma vez por encontro, troca o resultado de um teste pelo valor do seu dado marcador atual." },
+    { n:"Não Foi Nada", d:"Uma vez por cena, ignora os efeitos de uma qualidade desfavorável do ambiente." },
+    { n:"Você Consegue", d:"Ao escapar de um encontro, dá um dado de fuga automático a outra sobrevivente." },
+    { n:"Sempre Superando", d:"Uma vez por encontro, recusa aumentar sua Sequela ao ser ferida." },
+    { n:"Hora da Revanche", d:"Uma vez por encontro, gasta um dado extra pra agir duas vezes no turno." }
+  ],
+  "Cética": [
+    { n:"Impossível!", d:"Pode re-rolar um teste de susto, uma vez." },
+    { n:"Deve Ter Explicação", d:"Fora de um encontro, uma vez por sessão, descobre quantos dados o Assassino tem." },
+    { n:"Talvez Eu Estivesse Errada", d:"Ao tirar o valor máximo num teste de susto, transforma um dado em dado de fuga no início do próximo encontro." },
+    { n:"Só Pode Ser Isso", d:"Uma vez por encontro, após cair numa armadilha, descobre quantas armadilhas restam no ambiente." },
+    { n:"Não É Tão Ruim", d:"As três primeiras falhas num ritual viram neutras, mas o dado ainda é descartado." },
+    { n:"★ Faz Direito", d:"Uma vez por encontro, cede sua ação a uma aliada; ambas ganham um dado extra." }
+  ],
+  "Esbelto": [
+    { n:"Sei Que Sou Demais", d:"Uma vez por encontro, gasta 4 PT pra dar +2 PT a todos os outros na mesa." },
+    { n:"Não Perco a Pose", d:"Uma vez por encontro, re-rola os dados ao tentar fugir." },
+    { n:"Eu Sou o Melhor", d:"Ganha 1 PT sempre que tirar o valor máximo (6) num dado." },
+    { n:"Tira Ele de Mim", d:"Uma vez por encontro, ao ser ajudada, recebe um dado extra da pilha de descarte." },
+    { n:"Olhos em Mim", d:"Uma vez por sessão, força o Assassino a mirar em você no próximo turno; se ele ferir, ganha PT igual ao resultado." },
+    { n:"★ Nasci Assim", d:"Tem um dado extra no Rito de Iniciação, sem sacrificar nada." }
+  ],
+  "Herói": [
+    { n:"Até o Fim", d:"Ao Arriscar Tudo por si mesmo, mantém um dado em vez de perder todos." },
+    { n:"Vai na Fé", d:"Uma vez por sessão, ao ajudar alguém, os dados doados viram dados de fuga." },
+    { n:"Tudo Por Você", d:"Ao Arriscar Tudo pra salvar outra sobrevivente, descarta só metade dos dados." },
+    { n:"Segue o Pai", d:"Aliados no mesmo caminho que você numa cena de suspense reduzem a dificuldade em 1." },
+    { n:"Eu Te Protejo", d:"Num encontro, cancela um efeito desfavorável de um aliado; enquanto isso, seus testes ficam complexos." },
+    { n:"★ Já Se Esqueceu de Mim?", d:"Pode continuar na iniciativa após escapar, doando dados de fuga a outra sobrevivente." }
+  ],
+  "Nerd": [
+    { n:"Deixa Comigo", d:"Uma vez por encontro, reduz em 1 o custo de uma vantagem de uma aliada." },
+    { n:"Eu Tenho uma Teoria", d:"Uma vez por sessão, força a Diretora a revelar a próxima ação do Assassino antes de ocorrer." },
+    { n:"Prevejo Tramoias", d:"Uma vez por cena de suspense, descobre o resultado de um caminho sem ativar armadilhas." },
+    { n:"Eu Sei um Atalho", d:"Uma vez por sessão, descobre quantos dados de fuga faltam pra escapar." },
+    { n:"Você Não Vai Querer Saber", d:"Uma vez por sessão, usa conhecimento oculto pra fazer uma oferenda extra." },
+    { n:"★ Eu Sei Seu Poder de Luta", d:"Uma vez por sessão, gasta um turno de encontro pra descobrir quantos dados o Assassino tem." }
+  ],
+  "Inocente": [
+    { n:"Me Ajudem!", d:"Uma vez por sessão, quem te ajuda não perde os dados doados." },
+    { n:"Eu Não Quero Morrer", d:"Se for a última numa cena de encontro, pode Arriscar Tudo e ainda manter seus dados." },
+    { n:"Não Mereço Isso", d:"Uma vez por sessão, ignora uma habilidade especial do Assassino direcionada a você." },
+    { n:"Se Fosse Uma Cobra", d:"A primeira armadilha que você ativa numa cena de suspense não tem efeito." },
+    { n:"Foi Sorte de Principiante", d:"Num ritual, pode re-rolar oferendas falhas até duas vezes." },
+    { n:"Pureza de Espírito", d:"Uma vez por sessão, descarta um dado marcador e ganha dados comuns iguais ao valor dele." }
+  ],
+  "Relaxado": [
+    { n:"Uh? Quê?", d:"Uma vez por encontro, ignora um teste de susto." },
+    { n:"Olé!", d:"Uma vez por encontro, ao ser ferida, re-rola o dado marcador e fica com o novo valor." },
+    { n:"Posso Até Tentar", d:"Compra uma vantagem fora da sua especialidade se passar num teste dela; falhando, perde o PT mesmo assim." },
+    { n:"Uni-Duni-Tê", d:"No primeiro turno de uma cena de suspense, segue dois caminhos ao mesmo tempo." },
+    { n:"Minha Nossa!", d:"Uma vez por sessão, força um teste de susto em si mesma pra ativar uma qualidade favorável." },
+    { n:"★ Já Estou Acostumado", d:"Choque de Realidade custa 1 PT a menos, permanentemente." }
+  ],
+  "Valentona": [
+    { n:"Daqui Ninguém Me Tira", d:"Uma vez por sessão, recusa sacrificar ou descartar dados numa rolagem." },
+    { n:"Eu Não Tenho Medo de Você", d:"Uma vez por encontro, descarta um dado de fuga pra remover um dado do Assassino." },
+    { n:"Me Passa o Que É Seu", d:"Uma vez por encontro, usa sua ação pra roubar um dado de fuga de outra sobrevivente." },
+    { n:"O Que Não Me Mata Me Fortalece", d:"Ao cair numa armadilha, ganha 2 PT." },
+    { n:"Nem Fodendo", d:"Uma vez por sessão, impede uma qualidade negativa de ativar pelo resto da cena." },
+    { n:"★ Vai Sentir Essa Amanhã", d:"Ao Partir Pra Cima, pode arriscar de forma complexa pra remover mais de um dado do Assassino." }
+  ]
+};
+
+// ===== CICATRIZES (fim de thriller) =====
+window.abrirCicatrizesModal = () => {
+  const sobreviventes = (campanhaEstado.sobreviventes || []).filter(s => (s.ferida || 0) < 6);
+  const mortas = (campanhaEstado.sobreviventes || []).filter(s => (s.ferida || 0) >= 6);
+
+  if (sobreviventes.length === 0) { toast('Nenhuma sobrevivente viva pra receber Cicatriz.', 'erro'); return; }
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(10px); z-index:9000; display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto;`;
+  overlay.innerHTML = `
+    <div style="background:var(--bg-elev-2); border:1px solid var(--border); border-left:4px solid var(--blood-bright); border-radius:16px; padding:32px; max-width:820px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow-deep);">
+      <h2 style="font-family:'Anton',sans-serif; font-size:26px; color:var(--bone); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">💀 Fim do Thriller</h2>
+      <p style="font-size:13px; color:var(--bone-dim); margin-bottom:24px; line-height:1.65;">
+        Quem sobreviveu ganha uma Cicatriz — uma nova habilidade do seu arquétipo, do arquétipo de alguém que morreu, ou a ★ Cicatriz de Sobrevivente. Escolha uma pra cada viva abaixo.
+      </p>
+
+      ${sobreviventes.map(s => {
+        const habs = ARQUETIPOS_MESTRE[s.arquetipo] || [];
+        const jaTem = (s.habilidades || []).filter(h => h.tem).map(h => h.idx);
+        const opcoesProprias = habs.map((h, i) => ({ arq: s.arquetipo, idx: i, nome: h.n, desc: h.d, morta: false, dono: s.nome }))
+          .filter(o => !jaTem.includes(o.idx));
+        const opcoesMortas = mortas.flatMap(m => {
+          const habsM = ARQUETIPOS_MESTRE[m.arquetipo] || [];
+          const jaTemM = (m.habilidades || []).filter(h => h.tem).map(h => h.idx);
+          return habsM.map((h, i) => ({ arq: m.arquetipo, idx: i, nome: h.n, desc: h.d, morta: true, dono: m.nome }))
+            .filter(o => !jaTemM.includes(o.idx));
+        });
+        const todasOpcoes = [...opcoesProprias, ...opcoesMortas];
+
+        return `
+          <div style="margin-bottom:20px; padding:18px; background:rgba(0,0,0,0.3); border:1px solid var(--border-light); border-radius:12px;">
+            <div style="font-family:'Anton',sans-serif; font-size:18px; color:var(--bone); margin-bottom:12px; letter-spacing:0.05em;">
+              ${window.escapeHtml(s.nome)} <span style="color:var(--blood-bright); font-size:13px;">· ${s.arquetipo}</span>
+            </div>
+            <select class="cicatriz-select" data-sid="${s.id}" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border-light); border-radius:8px; padding:12px 16px; color:var(--bone); font-size:13px; appearance:none;">
+              <option value="">— Escolha a Cicatriz —</option>
+              ${todasOpcoes.map((o, i) => `
+                <option value="${o.arq}|${o.idx}">
+                  ${o.morta ? '☠' : '◇'} [${o.arq}] ${o.nome}${o.morta ? ` (de ${o.dono})` : ''}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+        `;
+      }).join('')}
+
+      <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;">
+        <button id="cic-cancel" class="btn ghost small">Cancelar</button>
+        <button id="cic-confirm" class="btn small" style="background:var(--blood);border-color:var(--blood-bright);color:#fff;">Aplicar Cicatrizes</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  overlay.querySelector('#cic-cancel').onclick = () => overlay.remove();
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+  overlay.querySelector('#cic-confirm').onclick = async () => {
+    const selects = overlay.querySelectorAll('.cicatriz-select');
+    let aplicadas = 0;
+
+    for (const sel of selects) {
+      const sid = sel.dataset.sid;
+      const val = sel.value;
+      if (!val) continue;
+      const [arq, idxStr] = val.split('|');
+      const idx = Number(idxStr);
+
+      const snap = await window.fsGetDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', sid));
+      if (!snap.exists()) continue;
+      const s = snap.data();
+      const habs = [...(s.habilidades || [])];
+      const existente = habs.find(h => h.idx === idx);
+      if (existente) {
+        existente.tem = true;
+      } else {
+        habs.push({ idx, tem: true, usado: false });
+      }
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', sid), { habilidades: habs });
+      aplicadas++;
+    }
+
+    overlay.remove();
+    if (aplicadas > 0) {
+      toast(`${aplicadas} Cicatriz(es) aplicada(s).`, 'sucesso');
+    } else {
+      toast('Nenhuma seleção feita.', 'info');
+    }
+  };
+};
+
+// ===== DADO DA HORDA =====
+window.rolarDadoHorda = async () => {
+  const valor = 1 + Math.floor(Math.random() * 6);
+  await window.fsUpdateDoc(assassinoRef(), { dadoHorda: valor });
+  toast(`Dado da Horda: ${valor}${valor >= 3 ? ' — passiva ATIVA' : ''}.`, valor >= 3 ? 'sucesso' : 'info');
+};
+
+window.ajustarDadoHorda = async (delta) => {
+  const d = getAssassinoAtual();
+  const atual = Number(d.dadoHorda) || 0;
+  const novo = Math.max(0, Math.min(6, atual + delta));
+  await window.fsUpdateDoc(assassinoRef(), { dadoHorda: novo });
+};
+
+window.rerolarComPH = async () => {
+  const d = getAssassinoAtual();
+  if ((d.ph || 0) < 3) { toast('Precisa de 3 PH pra rerrolar o Dado da Horda.', 'erro'); return; }
+  const valor = 1 + Math.floor(Math.random() * 6);
+  await window.fsUpdateDoc(assassinoRef(), { dadoHorda: valor, ph: (d.ph || 0) - 3 });
+  toast(`Rerrolou por 3 PH: ${valor}${valor >= 3 ? ' — passiva ATIVA' : ''}.`, 'info');
+};
+
+function renderDadoHordaCard(d) {
+  if (d.ameaca1 !== 'Mestre' && d.ameaca2 !== 'Mestre') return '';
+  const dh = Number(d.dadoHorda) || 0;
+  const passivaAtiva = dh >= 3;
+  return `
+    <div class="horda-card">
+      <div class="horda-die ${passivaAtiva ? 'passiva-ativa' : ''}">
+        <img src="img/dado.png" alt="Dado da Horda">
+        <span class="val">${dh}</span>
+      </div>
+      <div class="horda-info">
+        <div class="titulo">☠ Dado da Horda</div>
+        <div class="meta-horda">
+          Valor define quantas sobreviventes um <b>Ferir</b> pode afetar (você distribui como quiser).
+          Sobreviventes podem <b>Partir pra Cima</b> pra reduzir 1, ou gastar recurso fora do encontro.
+        </div>
+        <div class="horda-botoes">
+          <button class="btn ghost small" onclick="ajustarDadoHorda(-1)">−1</button>
+          <button class="btn small" onclick="rolarDadoHorda()">🎲 Rolar Dado</button>
+          <button class="btn ghost small" onclick="ajustarDadoHorda(1)">+1</button>
+          <button class="btn small" style="background:var(--amber);border-color:var(--amber);color:#000;" onclick="rerolarComPH()">↻ Rerrolar (3 PH)</button>
+        </div>
+        ${passivaAtiva ? `<div class="horda-passiva-tag">✓ Passiva da Ameaça da Horda ativa</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ===== CLAMORES =====
+const QUALIDADES_SUGERIDAS = [
+  { nome: 'Esconderijo', tipo: 'favoravel', desc: 'Sobrevivente se esconde do Assassino durante um turno.' },
+  { nome: 'Despensa', tipo: 'favoravel', desc: 'Acham um Recurso novo no ambiente.' },
+  { nome: 'Enfermaria', tipo: 'favoravel', desc: 'Cura o dobro de Feridas ao usar Cuidar de Feridas aqui.' },
+  { nome: 'Escotilha', tipo: 'favoravel', desc: 'Menos 1 Etapa de Fuga necessária pro primeiro que escapar.' },
+  { nome: 'Cozinha com Facas', tipo: 'neutra', desc: 'Todos ganham 1 Recurso improvisado (arma) enquanto estiverem aqui.' },
+  { nome: 'Tempestade', tipo: 'neutra', desc: 'Testes de Percepção ficam complexos pra todos.' },
+  { nome: 'Casa em Chamas', tipo: 'neutra', desc: 'No fim de cada turno, todos rolam 1 dado ou sofrem 1 Ferida.' },
+  { nome: 'Sala Escura', tipo: 'desfavoravel', desc: 'Testes de Partir Pra Cima e Distrair ficam complexos.' },
+  { nome: 'Floresta Densa', tipo: 'desfavoravel', desc: 'Testes de Vazar Dali ficam complexos.' },
+  { nome: 'Piso Podre', tipo: 'desfavoravel', desc: 'Seguir caminhos rapidamente ativa uma armadilha extra.' }
+];
+
+window.ajustarClamor = async (lado, delta) => {
+  const info = campanhaEstado.info || {};
+  const atual = info.clamores || { mestre: 0, grupo: 0 };
+  const novo = { ...atual };
+  novo[lado] = Math.max(0, (atual[lado] || 0) + delta);
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { clamores: novo });
+};
+
+window.adicionarQualidade = async (tipo, nome, desc) => {
+  const info = campanhaEstado.info || {};
+  const qualidades = [...(info.qualidades || []), {
+    id: 'q_' + Date.now().toString(36),
+    nome, desc, tipo, criadaEm: Date.now()
+  }];
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { qualidades });
+};
+
+window.adicionarQualidadeManual = async () => {
+  const nomeInput = document.getElementById('nova-qualidade-nome');
+  const descInput = document.getElementById('nova-qualidade-desc');
+  const tipoSel = document.getElementById('nova-qualidade-tipo');
+  const nome = nomeInput.value.trim();
+  const desc = descInput.value.trim();
+  const tipo = tipoSel.value;
+  if (!nome) { toast('Dê um nome pra qualidade.', 'erro'); return; }
+  await window.adicionarQualidade(tipo, nome, desc);
+  nomeInput.value = ''; descInput.value = '';
+  toast(`Qualidade "${nome}" registrada.`, 'sucesso');
+};
+
+window.removerQualidade = async (id) => {
+  const info = campanhaEstado.info || {};
+  const qualidades = (info.qualidades || []).filter(q => q.id !== id);
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { qualidades });
+};
+
+window.usarQualidadeSugerida = async (idx) => {
+  const q = QUALIDADES_SUGERIDAS[idx];
+  if (!q) return;
+  const info = campanhaEstado.info || {};
+  const lado = q.tipo === 'desfavoravel' ? 'mestre' : 'grupo';
+  const atual = info.clamores || { mestre: 0, grupo: 0 };
+  if ((atual[lado] || 0) < 1) { toast(`Sem Clamores de ${lado === 'mestre' ? 'Diretora' : 'Grupo'} pra invocar essa qualidade.`, 'erro'); return; }
+  const novo = { ...atual, [lado]: (atual[lado] || 0) - 1 };
+  const qualidades = [...(info.qualidades || []), { id: 'q_' + Date.now().toString(36), nome: q.nome, desc: q.desc, tipo: q.tipo, criadaEm: Date.now() }];
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { clamores: novo, qualidades });
+  toast(`"${q.nome}" invocada (${-1} Clamor ${lado}).`, 'sucesso');
+};
+
+// ===== CENA DE SUSPENSE =====
+const SUSPENSE_PADRAO = {
+  ativa: false,
+  resolucao: { titulo: '', desc: '' },
+  caminhos: [],
+  passos: [],
+  armadilhas: [],
+  log: []
+};
+
+function getSuspense() {
+  const s = (campanhaEstado.info && campanhaEstado.info.suspense) || {};
+  return { ...SUSPENSE_PADRAO, ...s,
+    resolucao: { ...SUSPENSE_PADRAO.resolucao, ...(s.resolucao || {}) },
+    caminhos: s.caminhos || [],
+    passos: s.passos || [],
+    armadilhas: s.armadilhas || [],
+    log: s.log || []
+  };
+}
+
+async function salvarSuspense(novo) {
+  await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { suspense: novo });
+}
+
+window.ativarSuspense = async () => {
+  const s = getSuspense();
+  if (!s.resolucao.titulo || !s.caminhos.length) {
+    toast('Defina uma Resolução e pelo menos 1 Caminho antes de ativar.', 'erro');
+    return;
+  }
+  s.ativa = true;
+  await salvarSuspense(s);
+  toast('Cena de Suspense ativada!', 'sucesso');
+};
+
+window.desativarSuspense = async () => {
+  if (!confirm('Encerrar a cena de Suspense? A estrutura fica salva pra consulta.')) return;
+  const s = getSuspense();
+  s.ativa = false;
+  await salvarSuspense(s);
+  toast('Cena de Suspense encerrada.', 'info');
+};
+
+window.setSuspenseResolucao = async (campo, valor) => {
+  const s = getSuspense();
+  s.resolucao[campo] = valor;
+  await salvarSuspense(s);
+};
+
+window.adicionarCaminho = async () => {
+  const nomeInput = document.getElementById('susp-caminho-nome');
+  const descInput = document.getElementById('susp-caminho-desc');
+  const nome = nomeInput.value.trim();
+  const desc = descInput.value.trim();
+  if (!nome) { toast('Dê um nome pro caminho.', 'erro'); return; }
+  const s = getSuspense();
+  s.caminhos.push({ id: 'c_' + Date.now().toString(36), nome, desc });
+  await salvarSuspense(s);
+  nomeInput.value = ''; descInput.value = '';
+  toast(`Caminho "${nome}" adicionado.`, 'sucesso');
+};
+
+window.removerCaminho = async (id) => {
+  if (!confirm('Remover esse caminho? Passos e armadilhas dele também saem.')) return;
+  const s = getSuspense();
+  s.caminhos = s.caminhos.filter(c => c.id !== id);
+  s.passos = s.passos.filter(p => p.caminhoId !== id);
+  s.armadilhas = s.armadilhas.filter(a => a.caminhoId !== id);
+  await salvarSuspense(s);
+};
+
+window.adicionarPasso = async () => {
+  const nomeInput = document.getElementById('susp-passo-nome');
+  const descInput = document.getElementById('susp-passo-desc');
+  const caminhoSel = document.getElementById('susp-passo-caminho');
+  const nome = nomeInput.value.trim();
+  const desc = descInput.value.trim();
+  const caminhoId = caminhoSel.value;
+  if (!nome) { toast('Dê um nome pro passo.', 'erro'); return; }
+  if (!caminhoId) { toast('Escolha um caminho.', 'erro'); return; }
+  const s = getSuspense();
+  s.passos.push({ id: 'p_' + Date.now().toString(36), nome, desc, caminhoId, encontrado: false });
+  await salvarSuspense(s);
+  nomeInput.value = ''; descInput.value = '';
+  toast(`Passo "${nome}" adicionado.`, 'sucesso');
+};
+
+window.removerPasso = async (id) => {
+  const s = getSuspense();
+  s.passos = s.passos.filter(p => p.id !== id);
+  await salvarSuspense(s);
+};
+
+window.adicionarArmadilha = async () => {
+  const nomeInput = document.getElementById('susp-armadilha-nome');
+  const descInput = document.getElementById('susp-armadilha-desc');
+  const caminhoSel = document.getElementById('susp-armadilha-caminho');
+  const nome = nomeInput.value.trim();
+  const desc = descInput.value.trim();
+  const caminhoId = caminhoSel.value;
+  if (!nome) { toast('Dê um nome pra armadilha.', 'erro'); return; }
+  if (!caminhoId) { toast('Escolha um caminho.', 'erro'); return; }
+  const s = getSuspense();
+  s.armadilhas.push({ id: 'a_' + Date.now().toString(36), nome, desc, caminhoId, ativada: false });
+  await salvarSuspense(s);
+  nomeInput.value = ''; descInput.value = '';
+  toast(`Armadilha "${nome}" adicionada.`, 'sucesso');
+};
+
+window.removerArmadilha = async (id) => {
+  const s = getSuspense();
+  s.armadilhas = s.armadilhas.filter(a => a.id !== id);
+  await salvarSuspense(s);
+};
+
+window.marcarPassoEncontrado = async (id) => {
+  const s = getSuspense();
+  s.passos = s.passos.map(p => p.id === id ? { ...p, encontrado: !p.encontrado } : p);
+  await salvarSuspense(s);
+};
+
+window.marcarArmadilhaAtivada = async (id) => {
+  const s = getSuspense();
+  s.armadilhas = s.armadilhas.map(a => a.id === id ? { ...a, ativada: !a.ativada } : a);
+  await salvarSuspense(s);
+};
+
+window.resetarSuspense = async () => {
+  if (!confirm('Resetar a cena inteira? Caminhos, passos e armadilhas serão apagados.')) return;
+  await salvarSuspense({ ...SUSPENSE_PADRAO });
+  toast('Cena de Suspense resetada.', 'info');
+};
+
+function renderSuspenseCard() {
+  const s = getSuspense();
+  const totalPassos = s.passos.length;
+  const passosEncontrados = s.passos.filter(p => p.encontrado).length;
+  const opcoesCaminhos = s.caminhos.map(c => `<option value="${c.id}">${window.escapeHtml(c.nome)}</option>`).join('');
+
+  return `
+    <div class="suspense-card">
+      <div class="suspense-titulo">🕯️ Cena de Suspense ${s.ativa ? '· <span style="color:var(--sick)">ATIVA</span>' : '· <span style="color:var(--bone-dim)">em rascunho</span>'}</div>
+
+      <div class="suspense-resolucao">
+        <div class="tit">🎯 Resolução</div>
+        <div class="field" style="margin:6px 0 4px 0;">
+          <input id="susp-res-titulo" value="${window.escapeHtml(s.resolucao.titulo || '')}" placeholder="ex: realizar o ritual pra enfraquecer a criatura" onchange="setSuspenseResolucao('titulo', this.value)">
+        </div>
+        <div class="field" style="margin:0;">
+          <input id="susp-res-desc" value="${window.escapeHtml(s.resolucao.desc || '')}" placeholder="detalhes do objetivo da cena" onchange="setSuspenseResolucao('desc', this.value)">
+        </div>
+      </div>
+
+      ${totalPassos > 0 ? `
+        <div class="suspense-progresso">
+          <span>Progresso dos Passos:</span>
+          <b>${passosEncontrados} / ${totalPassos}</b>
+          <span>${passosEncontrados === totalPassos ? '✓ RESOLUÇÃO PRONTA' : ''}</span>
+        </div>
+      ` : ''}
+
+      <div style="margin-bottom:14px;">
+        <div style="font-family:'Anton',sans-serif; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--bone-dim); margin-bottom:8px;">🛤️ Caminhos (${s.caminhos.length})</div>
+        ${s.caminhos.length === 0
+          ? '<p class="meta">Nenhum caminho criado ainda.</p>'
+          : s.caminhos.map(c => {
+              const passosDoCaminho = s.passos.filter(p => p.caminhoId === c.id);
+              const armadilhasDoCaminho = s.armadilhas.filter(a => a.caminhoId === c.id);
+              return `
+                <div class="suspense-caminho">
+                  <div class="nome">
+                    ${window.escapeHtml(c.nome)}
+                    <button class="btn ghost small" style="margin-left:auto;" onclick="removerCaminho('${c.id}')">×</button>
+                  </div>
+                  ${c.desc ? `<div class="desc">${window.escapeHtml(c.desc)}</div>` : ''}
+                  ${passosDoCaminho.length || armadilhasDoCaminho.length ? `
+                    <div class="chips">
+                      ${passosDoCaminho.map(p => `<span class="chip-passo ${p.encontrado ? 'encontrado' : ''}" onclick="marcarPassoEncontrado('${p.id}')" style="cursor:pointer;" title="Clique pra marcar/desmarcar">✦ ${window.escapeHtml(p.nome)}</span>`).join('')}
+                      ${armadilhasDoCaminho.map(a => `<span class="chip-armadilha ${a.ativada ? 'ativada' : ''}" onclick="marcarArmadilhaAtivada('${a.id}')" style="cursor:pointer;" title="Clique pra marcar/desmarcar">⚔ ${window.escapeHtml(a.nome)}</span>`).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+      </div>
+
+      <details class="regra-grupo" style="margin-top:16px;">
+        <summary style="padding:10px 14px; font-size:12px;">
+          <span><span class="summary-icon" style="font-size:14px;">＋</span>Adicionar Caminho / Passo / Armadilha</span>
+        </summary>
+        <div style="padding:14px;">
+          <div class="suspense-add-grid">
+            <div class="field">
+              <label>Nome do Caminho</label>
+              <input id="susp-caminho-nome" placeholder="ex: Porta dos fundos">
+            </div>
+            <div class="field">
+              <label>Descrição</label>
+              <input id="susp-caminho-desc" placeholder="o que tem lá">
+            </div>
+            <div class="field" style="justify-content:flex-end;">
+              <button class="btn ghost small" onclick="adicionarCaminho()" ${s.caminhos.length >= 6 ? 'disabled' : ''}>+ Caminho</button>
+            </div>
+          </div>
+
+          ${s.caminhos.length > 0 ? `
+            <div class="suspense-add-grid" style="margin-top:14px;">
+              <div class="field">
+                <label>Passo (Revelação)</label>
+                <input id="susp-passo-nome" placeholder="ex: encontrar o amuleto">
+              </div>
+              <div class="field">
+                <label>Descrição</label>
+                <input id="susp-passo-desc" placeholder="detalhe do achado">
+              </div>
+              <div class="field">
+                <label>Caminho</label>
+                <select id="susp-passo-caminho">${opcoesCaminhos}</select>
+              </div>
+              <div class="field" style="justify-content:flex-end; grid-column: 1 / -1;">
+                <button class="btn ghost small" onclick="adicionarPasso()">+ Passo</button>
+              </div>
+            </div>
+
+            <div class="suspense-add-grid" style="margin-top:14px;">
+              <div class="field">
+                <label>Armadilha</label>
+                <input id="susp-armadilha-nome" placeholder="ex: telha solta">
+              </div>
+              <div class="field">
+                <label>Descrição</label>
+                <input id="susp-armadilha-desc" placeholder="efeito ao ativar">
+              </div>
+              <div class="field">
+                <label>Caminho</label>
+                <select id="susp-armadilha-caminho">${opcoesCaminhos}</select>
+              </div>
+              <div class="field" style="justify-content:flex-end; grid-column: 1 / -1;">
+                <button class="btn ghost small" onclick="adicionarArmadilha()">+ Armadilha</button>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </details>
+
+      <div class="assassino-saved-acoes" style="margin-top:20px;">
+        ${!s.ativa
+          ? `<button class="btn-montar-assassino" style="background:linear-gradient(135deg,#1e3a5f,var(--sky));border-color:var(--sky);" onclick="ativarSuspense()">🕯️ Ativar Cena</button>`
+          : `<button class="btn-reabrir-assassino" onclick="desativarSuspense()">⏹ Encerrar Cena</button>`
+        }
+        <button class="btn ghost small" onclick="resetarSuspense()">↻ Resetar</button>
+      </div>
+    </div>
+  `;
+}
+
+    window.avancarIniciativa = async () => {
+      const atual = campanhaEstado.info?.iniciativa || { indice: 0 };
+      const arquetipos = new Set((campanhaEstado.sobreviventes || []).map(s => s.arquetipo));
+      const ordem = INICIATIVA_ORDEM.filter(a => a === 'Assassino' || arquetipos.has(a));
+      const total = Math.max(ordem.length, 1);
+      const novoIndice = (atual.indice + 1) % total;
+      await window.fsUpdateDoc(window.fsDoc(window.db, 'campanhas', campanhaCodigo), { iniciativa: { indice: novoIndice } });
+    };
+  </script>
+</body>
+</html>
