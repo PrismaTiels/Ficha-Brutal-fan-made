@@ -3052,21 +3052,60 @@ body::after {
     };
 
     const IMGBB_API_KEY = '27f5e02f2aefe0e203049fd80b7f628b';
-    window.uploadRetratoAssassino = async (file) => {
-      if (!file) return;
-      if (!file.type.startsWith('image/')) { toast('Escolha uma imagem.', 'erro'); return; }
-      if (file.size > 5 * 1024 * 1024) { toast('Máximo 5 MB.', 'erro'); return; }
-
-      toast('Enviando retrato...', 'info');
-      const base64 = await new Promise((resolve, reject) => {
+   async function comprimirImagem(file, maxLado = 1400, qualidade = 0.82) {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                let { width, height } = img;
+
+                if (width > maxLado || height > maxLado) {
+                    if (width >= height) {
+                        height = Math.round((height * maxLado) / width);
+                        width = maxLado;
+                    } else {
+                        width = Math.round((width * maxLado) / height);
+                        height = maxLado;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const dataUrl = canvas.toDataURL('image/jpeg', qualidade);
+                resolve(dataUrl.split(',')[1]);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
         reader.onerror = reject;
         reader.readAsDataURL(file);
-      });
-      const formData = new FormData();
-      formData.append('image', base64);
-      try {
+    });
+}
+
+window.uploadRetratoAssassino = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { toast('Escolha uma imagem.', 'erro'); return; }
+    if (file.size > 15 * 1024 * 1024) { toast('Máximo 15 MB.', 'erro'); return; }
+
+    toast('Enviando retrato...', 'info');
+
+    let base64;
+    try {
+        base64 = await comprimirImagem(file);
+    } catch (e) {
+        console.error('Erro ao comprimir:', e);
+        toast('Não consegui processar a imagem.', 'erro');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', base64);
+    try {
         const resposta = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:'POST', body:formData });
         const dados = await resposta.json();
         if (!dados.success) throw new Error('Falha');
@@ -3074,11 +3113,11 @@ body::after {
         atual.retratoURL = dados.data.url;
         await window.fsSetDoc(assassinoRef(), atual);
         toast('Retrato atualizado.', 'sucesso');
-      } catch (e) {
+    } catch (e) {
         console.error('Erro upload:', e);
         toast('Não consegui enviar o retrato.', 'erro');
-      }
-    };
+    }
+};
 
     function renderRegrasTab() {
       return `
