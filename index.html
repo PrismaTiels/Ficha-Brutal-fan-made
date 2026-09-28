@@ -78,6 +78,7 @@
       cursor:pointer;
     }
     .btn:hover { background:var(--blood); border-color:var(--blood-bright); transform:translateY(-2px); box-shadow:0 8px 24px var(--blood-glow); }
+    .btn:disabled { opacity:.6; cursor:not-allowed; transform:none !important; }
     .btn.ghost { background:transparent; border-color:var(--border-light); }
     .btn.ghost:hover { background:rgba(212,63,52,0.12); border-color:var(--blood-bright); transform:none; box-shadow:none; }
     .btn.sick { background:rgba(136,192,91,0.12); border-color:#88c05b; color:#88c05b; }
@@ -178,90 +179,65 @@
       .row .field { min-width:unset; }
     }
     /* ===== FUNDO DO SITE ===== */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url('img/fundo.png');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  opacity: 0.18;
-  z-index: 0;
-  pointer-events: none;
-}
-body > * {
-  position: relative;
-  z-index: 1;
-}
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('img/fundo.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      opacity: 0.18;
+      z-index: 0;
+      pointer-events: none;
+    }
+    body > * { position: relative; z-index: 1; }
 
-/* ===== SCROLLBAR CUSTOMIZADA ===== */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.35); border-radius: 10px; }
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--blood), var(--blood-bright));
-  border-radius: 10px;
-  border: 2px solid rgba(11, 8, 8, 0.9);
-  background-clip: padding-box;
-  transition: background 0.2s;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--blood-bright), #ff5a3c);
-  background-clip: padding-box;
-}
-::-webkit-scrollbar-corner { background: transparent; }
-* { scrollbar-width: thin; scrollbar-color: var(--blood) rgba(0, 0, 0, 0.35); }
+    /* ===== SCROLLBAR CUSTOMIZADA ===== */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.35); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--blood), var(--blood-bright));
+      border-radius: 10px;
+      border: 2px solid rgba(11, 8, 8, 0.9);
+      background-clip: padding-box;
+      transition: background 0.2s;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--blood-bright), #ff5a3c);
+      background-clip: padding-box;
+    }
+    ::-webkit-scrollbar-corner { background: transparent; }
+    * { scrollbar-width: thin; scrollbar-color: var(--blood) rgba(0, 0, 0, 0.35); }
 
-/* ===== SELECT CUSTOMIZADO ===== */
-.field select,
-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: rgba(0, 0, 0, 0.4);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23d43f34' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 12px;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 10px 38px 10px 14px;
-  color: var(--bone);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: all var(--transition);
-  text-overflow: ellipsis;
-}
-.field select:hover,
-select:hover {
-  border-color: var(--blood);
-  background-color: rgba(0, 0, 0, 0.5);
-}
-.field select:focus,
-select:focus {
-  border-color: var(--blood-bright);
-  box-shadow: 0 0 0 3px var(--blood-glow);
-  outline: none;
-}
-.field select option,
-select option {
-  background: #1a1211;
-  color: var(--bone);
-  padding: 10px;
-  font-weight: 500;
-}
+    /* ===== SELECT CUSTOMIZADO ===== */
+    .field select, select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: rgba(0, 0, 0, 0.4);
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23d43f34' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 12px;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 10px 38px 10px 14px;
+      color: var(--bone);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-overflow: ellipsis;
+    }
+    .field select:hover, select:hover { border-color: var(--blood); background-color: rgba(0, 0, 0, 0.5); }
+    .field select:focus, select:focus { border-color: var(--blood-bright); box-shadow: 0 0 0 3px var(--blood-glow); outline: none; }
+    .field select option, select option { background: #1a1211; color: var(--bone); padding: 10px; font-weight: 500; }
 
-/* ===== INPUTS COM HOVER ===== */
-.field input {
-  background-color: rgba(0, 0, 0, 0.4);
-  transition: all var(--transition);
-}
-.field input:hover {
-  border-color: var(--blood);
-  background-color: rgba(0, 0, 0, 0.5);
-}
+    /* ===== INPUTS COM HOVER ===== */
+    .field input { background-color: rgba(0, 0, 0, 0.4); transition: all var(--transition); }
+    .field input:hover { border-color: var(--blood); background-color: rgba(0, 0, 0, 0.5); }
   </style>
 </head>
 <body>
@@ -275,7 +251,7 @@ select option {
       <div class="logo">BRUTAL<small>thriller de mesa</small></div>
     </div>
     <div class="header-right">
-      <button class="btn ghost small" id="btn-logout" style="display:none;" onclick="fazerLogout()">Sair</button>
+      <button class="btn ghost small" id="btn-logout" style="display:none;" onclick="fazerLogout(event)">Sair</button>
     </div>
   </header>
 
@@ -287,19 +263,42 @@ select option {
       <div class="auth-card">
         <div class="auth-logo"><div class="logo">BRUTAL<small>thriller de mesa</small></div></div>
         <div class="auth-tabs">
-          <button class="active" data-auth="login" onclick="mudarAbaAuth('login')">Entrar</button>
-          <button data-auth="cadastro" onclick="mudarAbaAuth('cadastro')">Criar conta</button>
+          <button type="button" class="active" data-auth="login" onclick="mudarAbaAuth('login')">Entrar</button>
+          <button type="button" data-auth="cadastro" onclick="mudarAbaAuth('cadastro')">Criar conta</button>
         </div>
+
         <div id="auth-form-login" class="auth-form active">
-          <div class="field"><label>Usuário</label><input id="login-usuario" placeholder="ex: duda_sobrevivente" autocomplete="username" /></div>
-          <div class="field"><label>Senha</label><input id="login-senha" type="password" placeholder="••••••" autocomplete="current-password" /></div>
-          <button class="btn" onclick="fazerLogin()">Entrar</button>
+          <form onsubmit="event.preventDefault(); fazerLogin(event);" novalidate>
+            <div class="field">
+              <label>Usuário</label>
+              <input id="login-usuario" placeholder="ex: duda_sobrevivente"
+                     autocomplete="username" enterkeyhint="next" autocapitalize="none" autocorrect="off" spellcheck="false" />
+            </div>
+            <div class="field">
+              <label>Senha</label>
+              <input id="login-senha" type="password" placeholder="••••••"
+                     autocomplete="current-password" enterkeyhint="go" />
+            </div>
+            <button class="btn" type="submit">Entrar</button>
+          </form>
         </div>
+
         <div id="auth-form-cadastro" class="auth-form">
-          <div class="field"><label>Usuário</label><input id="cad-usuario" placeholder="ex: duda_sobrevivente" autocomplete="username" /></div>
-          <div class="field"><label>Senha (mínimo 6 caracteres)</label><input id="cad-senha" type="password" placeholder="••••••" autocomplete="new-password" /></div>
-          <button class="btn sick" onclick="fazerCadastro()">Criar conta</button>
+          <form onsubmit="event.preventDefault(); fazerCadastro(event);" novalidate>
+            <div class="field">
+              <label>Usuário</label>
+              <input id="cad-usuario" placeholder="ex: duda_sobrevivente"
+                     autocomplete="username" enterkeyhint="next" autocapitalize="none" autocorrect="off" spellcheck="false" />
+            </div>
+            <div class="field">
+              <label>Senha (mínimo 6 caracteres)</label>
+              <input id="cad-senha" type="password" placeholder="••••••"
+                     autocomplete="new-password" enterkeyhint="go" />
+            </div>
+            <button class="btn sick" type="submit">Criar conta</button>
+          </form>
         </div>
+
         <p class="meta" style="text-align:center;margin-top:16px;">Sua conta guarda suas fichas e campanhas no banco de dados.</p>
       </div>
     </section>
@@ -315,18 +314,69 @@ select option {
       <div class="lobby-grid">
         <div class="card">
           <div class="card-header"><h4>Criar campanha</h4><span class="badge">Diretora</span></div>
-          <div class="field"><label>Nome da campanha</label><input id="c-nome" placeholder="ex: Acampamento Lago Negro" /></div>
-          <button class="btn" onclick="criarCampanha()">Criar sala</button>
+          <form onsubmit="event.preventDefault(); criarCampanha(event);" novalidate>
+            <div class="field">
+              <label>Nome da campanha</label>
+              <input id="c-nome" placeholder="ex: Acampamento Lago Negro" enterkeyhint="go" />
+            </div>
+            <button class="btn" type="submit">Criar sala</button>
+          </form>
         </div>
         <div class="card">
           <div class="card-header"><h4>Entrar como Intérprete</h4><span class="badge">Jogadora</span></div>
-          <div class="field"><label>Código da sala</label><input id="c-codigo" placeholder="ex: LAGO-NEGRO-42" /></div>
-          <button class="btn ghost" onclick="entrarCampanha()">Entrar</button>
+          <form onsubmit="event.preventDefault(); entrarCampanha(event);" novalidate>
+            <div class="field">
+              <label>Código da sala</label>
+              <input id="c-codigo" placeholder="ex: LAGO-NEGRO-42" enterkeyhint="go"
+                     autocapitalize="characters" autocorrect="off" spellcheck="false"
+                     style="text-transform:uppercase;" />
+            </div>
+            <button class="btn ghost" type="submit">Entrar</button>
+          </form>
         </div>
       </div>
     </section>
 
   </main>
+
+  <!-- Stub imediato (roda ANTES do módulo Firebase; evita "is not defined" no mobile) -->
+  <script>
+    window.toast = window.toast || function (msg, tipo) {
+      const c = document.getElementById('toast-container');
+      if (!c) return;
+      const el = document.createElement('div');
+      el.className = 'toast ' + (tipo || 'info');
+      el.textContent = msg;
+      c.appendChild(el);
+      setTimeout(() => { el.classList.add('saindo'); setTimeout(() => el.remove(), 220); }, 4200);
+    };
+
+    // Fila: se o usuário tocar antes do Firebase carregar, guarda a chamada
+    window.__fbPronto = false;
+    window.__fila = [];
+
+    ['mudarAbaAuth','fazerLogin','fazerCadastro','fazerLogout','criarCampanha','entrarCampanha']
+      .forEach(function (nome) {
+        window[nome] = function (ev) {
+          if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          if (!window.__fbPronto) {
+            window.__fila.push([nome, ev]);
+            window.toast('Carregando… tente de novo em 1 segundo.', 'info');
+            return;
+          }
+          window['_fb_' + nome](ev);
+        };
+      });
+
+    // Anti duplo-toque
+    window.__travado = false;
+    window.__lock = async function (fn) {
+      if (window.__travado) return;
+      window.__travado = true;
+      try { await fn(); }
+      finally { setTimeout(() => { window.__travado = false; }, 800); }
+    };
+  </script>
 
   <!-- Firebase (ES Module) -->
   <script type="module">
@@ -352,7 +402,7 @@ select option {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    enableIndexedDbPersistence(db).catch(()=>{});
+    enableIndexedDbPersistence(db).catch(() => {});
 
     // Disponibilizar funções no escopo global (para onclick)
     window.db = db;
@@ -377,17 +427,11 @@ select option {
 
     // ===== UTILITÁRIOS =====
     window.escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-    window.toast = (msg, tipo='info') => {
-      const container = document.getElementById('toast-container');
-      const el = document.createElement('div');
-      el.className = `toast ${tipo}`;
-      el.textContent = msg;
-      container.appendChild(el);
-      setTimeout(() => { el.classList.add('saindo'); setTimeout(() => el.remove(), 220); }, 4200);
-    };
+
     window.mostrarTela = (id) => {
       document.querySelectorAll('main > section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+      const el = document.getElementById(id);
+      if (el) el.classList.add('active');
     };
 
     // ===== AUTENTICAÇÃO =====
@@ -395,93 +439,112 @@ select option {
     let campanhaAtiva = null;
 
     function usernameParaEmail(usuario) {
-      const limpo = usuario.trim().toLowerCase().replace(/[^a-z0-9_.-]/g,'');
+      const limpo = usuario.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '');
       return `${limpo}@brutal.local`;
     }
 
-    window.mudarAbaAuth = (qual) => {
+    window._fb_mudarAbaAuth = (qual) => {
       document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.toggle('active', b.dataset.auth === qual));
       document.getElementById('auth-form-login').classList.toggle('active', qual === 'login');
       document.getElementById('auth-form-cadastro').classList.toggle('active', qual === 'cadastro');
     };
 
-    window.fazerCadastro = async () => {
-      const usuario = document.getElementById('cad-usuario').value.trim();
-      const senha = document.getElementById('cad-senha').value;
-      if (!usuario || usuario.length < 3) { toast('Usuário precisa ter pelo menos 3 letras.', 'erro'); return; }
-      if (!senha || senha.length < 6) { toast('Senha precisa ter pelo menos 6 caracteres.', 'erro'); return; }
-      try {
-        const cred = await window.fsCreateUser(window.auth, usernameParaEmail(usuario), senha);
-        await window.fsUpdateProfile(cred.user, { displayName: usuario });
-        await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', cred.user.uid), { nomeUsuario: usuario, campanhaAtiva: null });
-        toast(`Conta criada. Bem-vinda, ${usuario}!`, 'sucesso');
-      } catch (e) {
-        console.error(e);
-        if (e.code === 'auth/email-already-in-use') toast('Esse nome de usuário já existe.', 'erro');
-        else if (e.code === 'auth/weak-password') toast('Senha muito fraca.', 'erro');
-        else toast('Erro ao criar conta.', 'erro');
-      }
+    window._fb_fazerCadastro = async (ev) => {
+      if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+      window.__lock(async () => {
+        const usuario = document.getElementById('cad-usuario').value.trim();
+        const senha = document.getElementById('cad-senha').value;
+        if (!usuario || usuario.length < 3) { window.toast('Usuário precisa ter pelo menos 3 letras.', 'erro'); return; }
+        if (!senha || senha.length < 6) { window.toast('Senha precisa ter pelo menos 6 caracteres.', 'erro'); return; }
+        try {
+          const cred = await window.fsCreateUser(window.auth, usernameParaEmail(usuario), senha);
+          await window.fsUpdateProfile(cred.user, { displayName: usuario });
+          await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', cred.user.uid), { nomeUsuario: usuario, campanhaAtiva: null });
+          window.toast(`Conta criada. Bem-vinda, ${usuario}!`, 'sucesso');
+        } catch (e) {
+          console.error(e);
+          if (e.code === 'auth/email-already-in-use') window.toast('Esse nome de usuário já existe.', 'erro');
+          else if (e.code === 'auth/weak-password') window.toast('Senha muito fraca.', 'erro');
+          else window.toast('Erro ao criar conta.', 'erro');
+        }
+      });
     };
 
-    window.fazerLogin = async () => {
-      const usuario = document.getElementById('login-usuario').value.trim();
-      const senha = document.getElementById('login-senha').value;
-      if (!usuario || !senha) { toast('Preencha usuário e senha.', 'erro'); return; }
-      try {
-        await window.fsSignIn(window.auth, usernameParaEmail(usuario), senha);
-      } catch (e) {
-        console.error(e);
-        toast('Usuário ou senha incorretos.', 'erro');
-      }
+    window._fb_fazerLogin = async (ev) => {
+      if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+      window.__lock(async () => {
+        const usuario = document.getElementById('login-usuario').value.trim();
+        const senha = document.getElementById('login-senha').value;
+        if (!usuario || !senha) { window.toast('Preencha usuário e senha.', 'erro'); return; }
+        try {
+          await window.fsSignIn(window.auth, usernameParaEmail(usuario), senha);
+        } catch (e) {
+          console.error(e);
+          window.toast('Usuário ou senha incorretos.', 'erro');
+        }
+      });
     };
 
-    window.fazerLogout = async () => {
-      await window.fsSignOut(window.auth);
+    window._fb_fazerLogout = async (ev) => {
+      if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+      try { await window.fsSignOut(window.auth); } catch (e) { console.error(e); }
       window.location.reload();
     };
 
     // ===== CAMPANHAS =====
     function gerarCodigo(nome) {
-      return nome.toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-' + Math.floor(Math.random()*90+10);
+      return nome.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.floor(Math.random() * 90 + 10);
     }
 
-    window.criarCampanha = async () => {
-      if (!perfilAtual) return;
-      const nome = document.getElementById('c-nome').value.trim();
-      if (!nome) { toast('Dê um nome pra campanha.', 'erro'); return; }
-      const codigo = gerarCodigo(nome);
-      const membro = { uid: perfilAtual.uid, nomeUsuario: perfilAtual.nomeUsuario, papel: 'diretora' };
-      try {
-        await window.fsSetDoc(window.fsDoc(window.db, 'campanhas', codigo), {
-          nome, diretoraUid: perfilAtual.uid, membros: [membro], membrosUids: [perfilAtual.uid],
-          iniciativa: { indice: 0 }, descarte: { valor: 0 }, rolando: null, criadaEm: Date.now()
-        });
-        await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid), { nomeUsuario: perfilAtual.nomeUsuario, campanhaAtiva: codigo }, { merge: true });
-        toast(`Sala "${nome}" criada. Código: ${codigo}`, 'sucesso');
-        // Redirecionar para a página do mestre
-        window.location.href = `mestre.html?campanha=${codigo}`;
-      } catch (e) { console.error(e); toast('Erro ao criar sala.', 'erro'); }
+    window._fb_criarCampanha = async (ev) => {
+      if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+      if (!perfilAtual) { window.toast('Você precisa estar logada.', 'erro'); return; }
+      window.__lock(async () => {
+        const nome = document.getElementById('c-nome').value.trim();
+        if (!nome) { window.toast('Dê um nome pra campanha.', 'erro'); return; }
+        const codigo = gerarCodigo(nome);
+        const membro = { uid: perfilAtual.uid, nomeUsuario: perfilAtual.nomeUsuario, papel: 'diretora' };
+        try {
+          await window.fsSetDoc(window.fsDoc(window.db, 'campanhas', codigo), {
+            nome, diretoraUid: perfilAtual.uid, membros: [membro], membrosUids: [perfilAtual.uid],
+            iniciativa: { indice: 0 }, descarte: { valor: 0 }, rolando: null, criadaEm: Date.now()
+          });
+          await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid),
+            { nomeUsuario: perfilAtual.nomeUsuario, campanhaAtiva: codigo }, { merge: true });
+          window.toast(`Sala "${nome}" criada. Código: ${codigo}`, 'sucesso');
+          window.location.href = `mestre.html?campanha=${codigo}`;
+        } catch (e) {
+          console.error(e);
+          window.toast('Erro ao criar sala.', 'erro');
+        }
+      });
     };
 
-    window.entrarCampanha = async () => {
-      if (!perfilAtual) return;
-      const codigo = document.getElementById('c-codigo').value.trim().toUpperCase();
-      if (!codigo) { toast('Preencha o código.', 'erro'); return; }
-      try {
-        const ref = window.fsDoc(window.db, 'campanhas', codigo);
-        const snap = await window.fsGetDoc(ref);
-        if (!snap.exists()) { toast('Campanha não encontrada.', 'erro'); return; }
-        const info = snap.data();
-        if (!info.membrosUids.includes(perfilAtual.uid)) {
-          const membros = [...info.membros, { uid: perfilAtual.uid, nomeUsuario: perfilAtual.nomeUsuario, papel: 'jogador' }];
-          const membrosUids = [...info.membrosUids, perfilAtual.uid];
-          await window.fsUpdateDoc(ref, { membros, membrosUids });
+    window._fb_entrarCampanha = async (ev) => {
+      if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+      if (!perfilAtual) { window.toast('Você precisa estar logada.', 'erro'); return; }
+      window.__lock(async () => {
+        const codigo = document.getElementById('c-codigo').value.trim().toUpperCase();
+        if (!codigo) { window.toast('Preencha o código.', 'erro'); return; }
+        try {
+          const ref = window.fsDoc(window.db, 'campanhas', codigo);
+          const snap = await window.fsGetDoc(ref);
+          if (!snap.exists()) { window.toast('Campanha não encontrada.', 'erro'); return; }
+          const info = snap.data();
+          if (!info.membrosUids.includes(perfilAtual.uid)) {
+            const membros = [...info.membros, { uid: perfilAtual.uid, nomeUsuario: perfilAtual.nomeUsuario, papel: 'jogador' }];
+            const membrosUids = [...info.membrosUids, perfilAtual.uid];
+            await window.fsUpdateDoc(ref, { membros, membrosUids });
+          }
+          await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid),
+            { nomeUsuario: perfilAtual.nomeUsuario, campanhaAtiva: codigo }, { merge: true });
+          window.toast(`Entrou em "${info.nome}".`, 'sucesso');
+          window.location.href = `jogador.html?campanha=${codigo}`;
+        } catch (e) {
+          console.error(e);
+          window.toast('Erro ao entrar.', 'erro');
         }
-        await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid), { nomeUsuario: perfilAtual.nomeUsuario, campanhaAtiva: codigo }, { merge: true });
-        toast(`Entrou em "${info.nome}".`, 'sucesso');
-        // Redirecionar para a página do jogador
-        window.location.href = `jogador.html?campanha=${codigo}`;
-      } catch (e) { console.error(e); toast('Erro ao entrar.', 'erro'); }
+      });
     };
 
     // ===== ESTADO DE AUTENTICAÇÃO =====
@@ -489,6 +552,7 @@ select option {
       if (!user) {
         perfilAtual = null;
         document.getElementById('btn-logout').style.display = 'none';
+        document.getElementById('tela-auth').style.display = 'block';
         document.getElementById('tela-auth').classList.add('active');
         document.getElementById('tela-lobby').style.display = 'none';
         return;
@@ -509,20 +573,22 @@ select option {
       document.getElementById('tela-lobby').style.display = 'block';
       document.getElementById('tela-lobby').classList.add('active');
 
-      // Se já estiver em uma campanha, redirecionar automaticamente
       if (dadosUsuario.campanhaAtiva) {
-        // Buscar a campanha para saber o papel
         const snapCamp = await window.fsGetDoc(window.fsDoc(window.db, 'campanhas', dadosUsuario.campanhaAtiva));
         if (snapCamp.exists()) {
           const info = snapCamp.data();
           const papel = info.diretoraUid === perfilAtual.uid ? 'mestre' : 'jogador';
           window.location.href = `${papel}.html?campanha=${dadosUsuario.campanhaAtiva}`;
         } else {
-          // Campanha não existe mais
           await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', perfilAtual.uid), { campanhaAtiva: null }, { merge: true });
         }
       }
     });
+
+    // ===== LIBERA A FILA (stub → funções reais) =====
+    window.__fbPronto = true;
+    const fila = window.__fila.splice(0);
+    fila.forEach(([nome, ev]) => { try { window[nome](ev); } catch (e) { console.error(e); } });
   </script>
 </body>
 </html>
