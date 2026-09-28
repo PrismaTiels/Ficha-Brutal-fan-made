@@ -2,7 +2,7 @@
 
 Uma fichinha pra eu jogar com meus amigos. Fica aberto no GitHub caso alguém queira usar também, mas não é um projeto sério — é uma ferramenta caseira que funciona bem pro que a gente precisa.
 
-A **Diretora** cria a mesa, os **Intérpretes** entram com um código e todo mundo vê a iniciativa e as fichas em tempo real pelo celular.
+A **Diretora** cria a mesa, os **Intérpretes** entram com um código e todo mundo vê a iniciativa e as fichas em tempo real pelo celular ou pc.
 
 ---
 
