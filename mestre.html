@@ -1650,6 +1650,23 @@ body::after {
       .assassino-saved-acoes { justify-content: stretch; }
       .btn-montar-assassino { width: 100%; }
     }
+        /* ===== MOBILE PERFORMANCE ===== */
+    @media (max-width: 900px) {
+      header, .card, .toast, .ameaca-topo, .horda-card,
+      .encontro-bar, .suspense-card, .ameaca-salva-bloco {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      body::before { position: absolute; background-attachment: scroll; opacity: 0.15; }
+      body::after { background: radial-gradient(circle at 15% 15%, rgba(212,63,52,0.06), transparent 40%); }
+      .card { animation: none !important; }
+      .card::before, .card::after { display: none !important; }
+      .btn, .btn.small, .master-tab { min-height: 40px; }
+      .master-tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+      .master-tab { white-space: nowrap; flex-shrink: 0; }
+      .ameaca-grid, .ameaca-salva-grid, .clamores-grid { grid-template-columns: 1fr !important; }
+      .suspense-add-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -1720,7 +1737,11 @@ body::after {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    enableIndexedDbPersistence(db).catch(()=>{});
+    const ehMobile = /Android|iPhone|iPad|iPod|Mobile|Opera Mini/i.test(navigator.userAgent)
+                  || (navigator.maxTouchPoints > 0 && /Mac/.test(navigator.platform));
+    if (!ehMobile) {
+      enableIndexedDbPersistence(db).catch(()=>{});
+    }
 
     window.db = db; window.auth = auth;
     window.fsDoc = doc; window.fsSetDoc = setDoc; window.fsGetDoc = getDoc;

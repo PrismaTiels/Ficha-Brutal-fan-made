@@ -6,6 +6,8 @@
   <title>BRUTAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Butcherman&family=Anton&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     :root {
@@ -551,6 +553,137 @@
       text-decoration: line-through;
       text-decoration-thickness: 1.5px;
     }
+
+    /* ===== CROPPER DE AVATAR ===== */
+    #cropper-modal {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(8px);
+      z-index: 9500;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    #cropper-modal.aberto { display: flex; }
+    .cropper-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--blood-bright);
+      border-radius: 16px;
+      padding: 22px;
+      max-width: 520px; width: 100%;
+      max-height: 95vh; overflow-y: auto;
+      box-shadow: var(--shadow);
+      animation: fadeUp 0.25s ease;
+    }
+    .cropper-box h4 {
+      font-family: 'Anton', sans-serif;
+      font-size: 18px; color: var(--bone);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .cropper-box .cropper-hint {
+      font-size: 12px; color: var(--bone-dim);
+      line-height: 1.5; margin-bottom: 14px;
+    }
+    .cropper-stage {
+      position: relative;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      max-height: 55vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cropper-stage img {
+      display: block;
+      max-width: 100%;
+      max-height: 55vh;
+    }
+    .cropper-zoom-wrap {
+      margin-top: 14px;
+    }
+    .cropper-zoom-wrap label {
+      display: block;
+      font-family: 'Anton', sans-serif;
+      font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--bone-dim);
+      margin-bottom: 6px;
+    }
+    .cropper-zoom-wrap input[type="range"] {
+      width: 100%;
+      appearance: none; -webkit-appearance: none;
+      background: transparent;
+      height: 22px;
+    }
+    .cropper-zoom-wrap input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: linear-gradient(90deg, var(--blood), var(--blood-bright));
+      border-radius: 999px;
+    }
+    .cropper-zoom-wrap input[type="range"]::-moz-range-track {
+      height: 4px;
+      background: linear-gradient(90deg, var(--blood), var(--blood-bright));
+      border-radius: 999px;
+    }
+    .cropper-zoom-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--bone);
+      border: 2px solid var(--blood-bright);
+      box-shadow: 0 0 10px var(--blood-glow);
+      margin-top: -8px;
+      cursor: pointer;
+    }
+    .cropper-zoom-wrap input[type="range"]::-moz-range-thumb {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--bone);
+      border: 2px solid var(--blood-bright);
+      box-shadow: 0 0 10px var(--blood-glow);
+      cursor: pointer;
+    }
+    .cropper-actions {
+      display: flex; gap: 10px; justify-content: flex-end;
+      margin-top: 16px; flex-wrap: wrap;
+    }
+    .cropper-actions .btn { flex: 1; min-width: 120px; }
+
+    /* Círculo de referência sobre o crop */
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+    .cropper-view-box {
+      outline: 2px solid var(--blood-bright);
+      outline-color: var(--blood-bright);
+      box-shadow: 0 0 0 9999em rgba(0,0,0,0.7);
+    }
+    .cropper-line { background-color: var(--blood-bright); opacity: 0.7; }
+    .cropper-point { background-color: var(--blood-bright); }
+    .cropper-dashed { border-color: rgba(212,63,52,0.4); }
+
+        /* ===== MOBILE PERFORMANCE ===== */
+    @media (max-width: 900px) {
+      header, .card, .toast, .ficha-topo, .suspense-painel {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      body::before {
+        position: absolute;
+        background-attachment: scroll;
+        opacity: 0.12;
+      }
+      .card { animation: none !important; }
+      .dado.rolling { animation: none !important; }
+      .btn, .btn.small, .aba-ficha { min-height: 40px; }
+      .abas-ficha { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+      .aba-ficha { white-space: nowrap; flex-shrink: 0; }
+      .ficha-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -592,7 +725,11 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    enableIndexedDbPersistence(db).catch(()=>{});
+    const ehMobile = /Android|iPhone|iPad|iPod|Mobile|Opera Mini/i.test(navigator.userAgent)
+                  || (navigator.maxTouchPoints > 0 && /Mac/.test(navigator.platform));
+    if (!ehMobile) {
+      enableIndexedDbPersistence(db).catch(()=>{});
+    }
 
     window.db = db; window.auth = auth;
     window.fsDoc = doc; window.fsSetDoc = setDoc; window.fsGetDoc = getDoc;
@@ -900,11 +1037,14 @@ async function uploadImagemImgBB(file) {
       if (e.target.id !== 's-avatar-input') return;
       const file = e.target.files[0];
       if (!file) return;
-      avatarTempFile = file;
-      const preview = document.getElementById('s-avatar-preview');
-      if (preview) preview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="prévia">`;
-      const btnRemover = document.getElementById('s-avatar-remove');
-      if (btnRemover) btnRemover.style.display = 'inline-flex';
+      // Abre o cropper e recebe de volta o base64 cortado
+      abrirCropper(file, (base64) => {
+        avatarTempFile = base64ToFile(base64, file.name || 'avatar.jpg');
+        const preview = document.getElementById('s-avatar-preview');
+        if (preview) preview.innerHTML = `<img src="${base64}" alt="prévia">`;
+        const btnRemover = document.getElementById('s-avatar-remove');
+        if (btnRemover) btnRemover.style.display = 'inline-flex';
+      });
     });
 
     function renderizarJogador() {
@@ -952,7 +1092,7 @@ async function uploadImagemImgBB(file) {
             <div class="field"><label>Relação afetiva</label><input id="s-relacao" placeholder="ex: melhor amiga, Duda" /></div>
             <div class="field"><label>Desejo obscuro</label><input id="s-desejo" placeholder="ex: expor um segredo do grupo" /></div>
           </div>
-          <div id="s-hab-preview"></div>
+          <div id="s-hab-preview"></div>          
           <button class="btn" onclick="salvarSobrevivente()">Salvar sobrevivente</button>
         </div>
 
@@ -979,6 +1119,36 @@ async function uploadImagemImgBB(file) {
           `).join('') : '<div class="empty">Nenhuma sobrevivente criada ainda.</div>'}
         </div>
       `;
+
+      // ===== Rascunho automático (não perde ficha ao sair) =====
+      const chaveRascunho = 'brutal_rascunho_' + campanhaCodigo + '_' + perfilAtual.uid;
+      const camposRascunho = ['s-nome','s-pronomes','s-item','s-relacao','s-desejo','s-arquetipo'];
+      try {
+        const raw = localStorage.getItem(chaveRascunho);
+        if (raw) {
+          const r = JSON.parse(raw);
+          camposRascunho.forEach(id => {
+            const el2 = document.getElementById(id);
+            if (el2 && r[id] !== undefined) el2.value = r[id];
+          });
+        }
+      } catch(e) {}
+      const salvarRascunho = () => {
+        const dados = {};
+        camposRascunho.forEach(x => {
+          const e2 = document.getElementById(x);
+          if (e2) dados[x] = e2.value;
+        });
+        try { localStorage.setItem(chaveRascunho, JSON.stringify(dados)); } catch(e){}
+      };
+      camposRascunho.forEach(id => {
+        const el2 = document.getElementById(id);
+        if (el2) {
+          el2.addEventListener('input', salvarRascunho);
+          el2.addEventListener('change', salvarRascunho);
+        }
+      });
+
       renderHabilidadesPreview();
       renderEspecialidades();
     }
@@ -1032,6 +1202,7 @@ async function uploadImagemImgBB(file) {
       };
       try {
         await window.fsAddDoc(window.fsCollection(window.db, 'campanhas', campanhaCodigo, 'sobreviventes'), dados);
+        try { localStorage.removeItem('brutal_rascunho_' + campanhaCodigo + '_' + perfilAtual.uid); } catch(e){}
         document.getElementById('s-nome').value = '';
         document.getElementById('s-pronomes').value = '';
         document.getElementById('s-item').value = '';
@@ -1044,6 +1215,152 @@ async function uploadImagemImgBB(file) {
         toast('Erro ao salvar sobrevivente.', 'erro');
       }
     };
+    
+    window.editarAvatarSobrevivente = async (file) => {
+      if (!file || !fichaAberta) return;
+      if (!file.type.startsWith('image/')) { toast('Escolha uma imagem.', 'erro'); return; }
+      abrirCropper(file, async (base64) => {
+        toast('Enviando nova foto...', 'info');
+        const fileCropped = base64ToFile(base64, file.name || 'avatar.jpg');
+        const url = await uploadImagemImgBB(fileCropped);
+        if (!url) return;
+        await window.fsUpdateDoc(
+          window.fsDoc(window.db, 'campanhas', campanhaCodigo, 'sobreviventes', fichaAberta),
+          { avatarURL: url }
+        );
+        toast('Foto atualizada.', 'sucesso');
+      });
+    };
+
+        // ===== CROPPER DE AVATAR (enquadramento + zoom) =====
+    function base64ToFile(base64, filename) {
+      const arr = base64.split(',');
+      const mime = (arr[0].match(/:(.*?);/) || [,'image/jpeg'])[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) u8arr[n] = bstr.charCodeAt(n);
+      return new File([u8arr], filename, { type: mime });
+    }
+
+    function abrirCropper(file, onConfirmar) {
+      if (typeof Cropper === 'undefined') {
+        // Fallback: se a CDN falhar, usa o arquivo original
+        toast('Editor indisponível. Usando a imagem como está.', 'info');
+        const reader = new FileReader();
+        reader.onload = (e) => onConfirmar(e.target.result);
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      // Cria o modal (só uma vez)
+      let modal = document.getElementById('cropper-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cropper-modal';
+        modal.innerHTML = `
+          <div class="cropper-box">
+            <h4>✂️ Ajustar enquadramento</h4>
+            <p class="cropper-hint">Arraste pra mover. Use o slider pra dar zoom. Pinça com dois dedos também funciona.</p>
+            <div class="cropper-stage">
+              <img id="cropper-img" alt="Imagem pra recortar">
+            </div>
+            <div class="cropper-zoom-wrap">
+              <label>Zoom</label>
+              <input id="cropper-zoom" type="range" min="0.3" max="3" step="0.01" value="1">
+            </div>
+            <div class="cropper-actions">
+              <button type="button" class="btn ghost" id="cropper-cancel">Cancelar</button>
+              <button type="button" class="btn" id="cropper-confirm">✓ Confirmar</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Slider de zoom
+        modal.querySelector('#cropper-zoom').addEventListener('input', (e) => {
+          if (!modal.__cropper) return;
+          modal.__cropper.zoomTo(Number(e.target.value));
+        });
+
+        // Cancelar
+        modal.querySelector('#cropper-cancel').addEventListener('click', () => {
+          fecharCropper();
+        });
+
+        // Fechar clicando fora
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) fecharCropper();
+        });
+
+        // Confirmar
+        modal.querySelector('#cropper-confirm').addEventListener('click', () => {
+          if (!modal.__cropper) return;
+          const canvas = modal.__cropper.getCroppedCanvas({
+            width: 512,
+            height: 512,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+          });
+          const base64 = canvas.toDataURL('image/jpeg', 0.9);
+          const cb = modal.__callback;
+          fecharCropper();
+          if (typeof cb === 'function') cb(base64);
+        });
+      }
+
+      // Prepara a imagem
+      const img = modal.querySelector('#cropper-img');
+      modal.__callback = onConfirmar;
+      modal.classList.add('aberto');
+
+      // Se já tinha uma instância, destrói
+      if (modal.__cropper) {
+        try { modal.__cropper.destroy(); } catch(e) {}
+        modal.__cropper = null;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        img.src = ev.target.result;
+        img.onload = () => {
+          modal.querySelector('#cropper-zoom').value = 1;
+          modal.__cropper = new Cropper(img, {
+            aspectRatio: 1,            // quadrado (avatar redondo)
+            viewMode: 1,               // trava a imagem dentro do container
+            dragMode: 'move',
+            autoCropArea: 0.9,
+            responsive: true,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            background: false,
+            zoomOnTouch: true,
+            zoomOnWheel: true,
+            wheelZoomRatio: 0.1,
+            minContainerHeight: 240
+          });
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function fecharCropper() {
+      const modal = document.getElementById('cropper-modal');
+      if (!modal) return;
+      modal.classList.remove('aberto');
+      if (modal.__cropper) {
+        try { modal.__cropper.destroy(); } catch(e) {}
+        modal.__cropper = null;
+      }
+      modal.__callback = null;
+      const img = modal.querySelector('#cropper-img');
+      if (img) img.removeAttribute('src');
+    }
 
     window.abrirFicha = (id) => {
       fichaAberta = id;
@@ -1595,7 +1912,8 @@ async function uploadImagemImgBB(file) {
         acoes: { label: 'Ações', html: acoesHtml },
         ...(suspenseAtivo && suspenseAtivo.ativa ? { suspense: { label: '🕯️ Suspense', html: renderSuspenseAbaHtml() } } : {}),
         iniciativa: { label: 'Iniciativa', html: iniciativaHtml },
-        detalhes: { label: 'Detalhes', html: detalhesHtml }
+        // ⬇️ Só o dono vê os detalhes sensíveis (Desejo Obscuro, Item, Relação)
+        ...(editavel ? { detalhes: { label: '🔒 Detalhes', html: detalhesHtml } } : {})
       };
 
       // ⬇️ PATCH 1.5 - Especialidades com incapacitação
@@ -1603,10 +1921,25 @@ async function uploadImagemImgBB(file) {
 
       container.innerHTML = `
         <div class="ficha-topo">
-          ${d.avatarURL
-            ? `<img src="${d.avatarURL}" alt="${window.escapeHtml(d.nome)}" class="ficha-avatar-img">`
-            : `<div class="ficha-avatar">${window.escapeHtml((d.nome||'?').charAt(0).toUpperCase())}</div>`
-          }
+          <div style="position:relative;width:80px;height:80px;flex-shrink:0;">
+            ${d.avatarURL
+              ? `<img src="${d.avatarURL}" alt="${window.escapeHtml(d.nome)}" class="ficha-avatar-img">`
+              : `<div class="ficha-avatar">${window.escapeHtml((d.nome||'?').charAt(0).toUpperCase())}</div>`
+            }
+            ${editavel ? `
+              <button type="button"
+                onclick="document.getElementById('editar-avatar-input').click()"
+                title="Trocar foto"
+                style="position:absolute;bottom:-4px;right:-4px;
+                       width:30px;height:30px;border-radius:50%;
+                       background:var(--blood);border:2px solid var(--blood-bright);
+                       color:#fff;font-size:13px;cursor:pointer;
+                       display:flex;align-items:center;justify-content:center;
+                       box-shadow:0 0 10px var(--blood-glow);z-index:2;">📷</button>
+              <input type="file" id="editar-avatar-input" accept="image/*"
+                     style="display:none" onchange="editarAvatarSobrevivente(this.files[0])">
+            ` : ''}
+          </div>
           <div class="info">
             <div class="row">
               <div class="field"><label>Nome</label><input value="${window.escapeHtml(d.nome)}" ${editavel?'':'disabled'} onchange="atualizarDetalhe('nome',this.value)" /></div>
