@@ -238,6 +238,21 @@
     /* ===== INPUTS COM HOVER ===== */
     .field input { background-color: rgba(0, 0, 0, 0.4); transition: all var(--transition); }
     .field input:hover { border-color: var(--blood); background-color: rgba(0, 0, 0, 0.5); }
+
+    /* ===== MOBILE PERFORMANCE ===== */
+    @media (max-width: 900px) {
+      header, .card, .toast, .auth-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      body::before {
+        position: absolute;
+        background-attachment: scroll;
+        opacity: 0.15;
+      }
+      .btn, .btn.small { min-height: 42px; padding: 10px 18px; }
+      .auth-tabs button { min-height: 44px; }
+    }
   </style>
 </head>
 <body>
@@ -272,12 +287,23 @@
             <div class="field">
               <label>Usuário</label>
               <input id="login-usuario" placeholder="ex: duda_sobrevivente"
-                     autocomplete="username" enterkeyhint="next" autocapitalize="none" autocorrect="off" spellcheck="false" />
+                     autocomplete="username" enterkeyhint="next"
+                     autocapitalize="none" autocorrect="off" spellcheck="false"
+                     inputmode="text" />
             </div>
             <div class="field">
               <label>Senha</label>
-              <input id="login-senha" type="password" placeholder="••••••"
-                     autocomplete="current-password" enterkeyhint="go" />
+              <div style="position:relative;">
+                <input id="login-senha" type="password" placeholder="••••••"
+                       autocomplete="current-password" enterkeyhint="go"
+                       autocapitalize="none" autocorrect="off" spellcheck="false"
+                       inputmode="text"
+                       style="width:100%;padding-right:44px;" />
+                <button type="button" onclick="toggleSenha('login-senha', this)"
+                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);
+                               background:none;border:none;color:var(--bone-dim);cursor:pointer;
+                               font-size:16px;padding:8px;">👁</button>
+              </div>
             </div>
             <button class="btn" type="submit">Entrar</button>
           </form>
@@ -288,12 +314,23 @@
             <div class="field">
               <label>Usuário</label>
               <input id="cad-usuario" placeholder="ex: duda_sobrevivente"
-                     autocomplete="username" enterkeyhint="next" autocapitalize="none" autocorrect="off" spellcheck="false" />
+                     autocomplete="username" enterkeyhint="next"
+                     autocapitalize="none" autocorrect="off" spellcheck="false"
+                     inputmode="text" />
             </div>
             <div class="field">
               <label>Senha (mínimo 6 caracteres)</label>
-              <input id="cad-senha" type="password" placeholder="••••••"
-                     autocomplete="new-password" enterkeyhint="go" />
+              <div style="position:relative;">
+                <input id="cad-senha" type="password" placeholder="••••••"
+                       autocomplete="new-password" enterkeyhint="go"
+                       autocapitalize="none" autocorrect="off" spellcheck="false"
+                       inputmode="text"
+                       style="width:100%;padding-right:44px;" />
+                <button type="button" onclick="toggleSenha('cad-senha', this)"
+                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);
+                               background:none;border:none;color:var(--bone-dim);cursor:pointer;
+                               font-size:16px;padding:8px;">👁</button>
+              </div>
             </div>
             <button class="btn sick" type="submit">Criar conta</button>
           </form>
@@ -339,7 +376,7 @@
 
   </main>
 
-  <!-- Stub imediato (roda ANTES do módulo Firebase; evita "is not defined" no mobile) -->
+  <!-- Stub imediato (roda ANTES do módulo Firebase) -->
   <script>
     window.toast = window.toast || function (msg, tipo) {
       const c = document.getElementById('toast-container');
@@ -349,6 +386,14 @@
       el.textContent = msg;
       c.appendChild(el);
       setTimeout(() => { el.classList.add('saindo'); setTimeout(() => el.remove(), 220); }, 4200);
+    };
+
+    // Toggle de senha (olho)
+    window.toggleSenha = function(id, btn) {
+      const inp = document.getElementById(id);
+      if (!inp) return;
+      if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+      else { inp.type = 'password'; btn.textContent = '👁'; }
     };
 
     // Fila: se o usuário tocar antes do Firebase carregar, guarda a chamada
@@ -368,13 +413,13 @@
         };
       });
 
-    // Anti duplo-toque
+    // Anti duplo-toque (1.5s — celular tem resposta mais lenta)
     window.__travado = false;
     window.__lock = async function (fn) {
       if (window.__travado) return;
       window.__travado = true;
       try { await fn(); }
-      finally { setTimeout(() => { window.__travado = false; }, 800); }
+      finally { setTimeout(() => { window.__travado = false; }, 1500); }
     };
   </script>
 
@@ -402,7 +447,13 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    enableIndexedDbPersistence(db).catch(() => {});
+
+    // IndexedDB persistence quebra muito no iOS Safari — desabilitar em mobile
+    const ehMobile = /Android|iPhone|iPad|iPod|Mobile|Opera Mini/i.test(navigator.userAgent)
+                  || (navigator.maxTouchPoints > 0 && /Mac/.test(navigator.platform));
+    if (!ehMobile) {
+      enableIndexedDbPersistence(db).catch(() => {});
+    }
 
     // Disponibilizar funções no escopo global (para onclick)
     window.db = db;
@@ -438,8 +489,11 @@
     let perfilAtual = null;
     let campanhaAtiva = null;
 
+    // Normaliza usuário (remove acentos e caracteres inválidos)
     function usernameParaEmail(usuario) {
-      const limpo = usuario.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '');
+      const limpo = usuario.trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9_.-]/g, '');
       return `${limpo}@brutal.local`;
     }
 
@@ -462,10 +516,11 @@
           await window.fsSetDoc(window.fsDoc(window.db, 'usuarios', cred.user.uid), { nomeUsuario: usuario, campanhaAtiva: null });
           window.toast(`Conta criada. Bem-vinda, ${usuario}!`, 'sucesso');
         } catch (e) {
-          console.error(e);
+          console.error('[CADASTRO]', e.code, e.message);
           if (e.code === 'auth/email-already-in-use') window.toast('Esse nome de usuário já existe.', 'erro');
           else if (e.code === 'auth/weak-password') window.toast('Senha muito fraca.', 'erro');
-          else window.toast('Erro ao criar conta.', 'erro');
+          else if (e.code === 'auth/invalid-email') window.toast('Nome de usuário contém caracteres inválidos.', 'erro');
+          else window.toast('Erro ao criar conta: ' + (e.code || 'desconhecido'), 'erro');
         }
       });
     };
@@ -479,8 +534,14 @@
         try {
           await window.fsSignIn(window.auth, usernameParaEmail(usuario), senha);
         } catch (e) {
-          console.error(e);
-          window.toast('Usuário ou senha incorretos.', 'erro');
+          console.error('[LOGIN]', e.code, e.message);
+          if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
+            window.toast('Usuário ou senha incorretos. Verifique se a senha não foi alterada pelo teclado do celular.', 'erro');
+          } else if (e.code === 'auth/too-many-requests') {
+            window.toast('Muitas tentativas. Espere 1 minuto.', 'erro');
+          } else {
+            window.toast('Erro ao entrar: ' + (e.code || 'desconhecido'), 'erro');
+          }
         }
       });
     };
@@ -585,8 +646,7 @@
       }
     });
 
-    // ===== LIBERA A FILA (stub → funções reais) =====
-    window.__fbPronto = true;
+      window.__fbPronto = true;
     const fila = window.__fila.splice(0);
     fila.forEach(([nome, ev]) => { try { window[nome](ev); } catch (e) { console.error(e); } });
   </script>
